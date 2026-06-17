@@ -10,6 +10,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "api:dev": "lerna run start:dev --scope=api",
+    "client:dev": "lerna run start:dev --scope=client",
     "types:build": "lerna run build --scope=types"
   },
   "dependencies": {},
