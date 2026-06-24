@@ -1,0 +1,45 @@
+.signupForm {
+  width: 500px;
+  display: grid;
+  gap: 15px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.signupFormEmail {
+  grid-column: 1 / -1;
+  grid-row: 2 / 3;
+}
+
+.signupFormPassword {
+  grid-column: 1 / -1;
+  grid-row: 3 / 4;
+}
+
+.signupSubmit {
+  grid-column: 1 / -1;
+  grid-row: 4 / 5;
+}
+
+@media (max-width: 870px) {
+  .signupFormFirstName {
+    grid-column: 1 / -1;
+    grid-row: 1 / 2;
+  }
+  .signupFormLastName {
+    grid-column: 1 / -1;
+    grid-row: 2 / 3;
+  }
+  .signupFormEmail {
+    grid-column: 1 / -1;
+    grid-row: 3 / 4;
+  }
+  .signupFormPassword {
+    grid-column: 1 / -1;
+    grid-row: 4 / 5;
+  }
+  .signupSubmit {
+    grid-column: 1 / -1;
+    grid-row: 5 / 6;
+  }
+}

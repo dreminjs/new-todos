@@ -3,7 +3,7 @@ import { AuthFormLayout } from "./AuthFormLayout";
 import { AuthField } from "./AuthField/AuthField";
 import { AuthSubmit } from "./AuthSubmit";
 import { useSignup } from "../api/queries";
-import styles from "./Auth.module.css";
+import styles from "./Signup.module.css";
 import type { SignUpDto } from "types";
 
 export const SignupForm = () => {
@@ -20,7 +20,7 @@ export const SignupForm = () => {
       title={"Register"}
       subtitle={"Please enter your details to register."}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className={styles.authForm}>
+      <form onSubmit={handleSubmit(onSubmit)} className={styles.signupForm}>
         <AuthField<SignUpDto>
           label={"First Name"}
           name={"firstName"}
@@ -28,7 +28,7 @@ export const SignupForm = () => {
           type={"text"}
           error={errors.firstName?.message}
           placeholder={"First name"}
-          className={styles.authFormFirstName}
+          className={styles.signupFormFirstName}
         />
         <AuthField<SignUpDto>
           label={"Last Name"}
@@ -37,7 +37,7 @@ export const SignupForm = () => {
           type={"text"}
           error={errors.lastName?.message}
           placeholder={"Last name"}
-          className={styles.authFormLastName}
+          className={styles.signupFormLastName}
         />
         <AuthField<SignUpDto>
           label={"Email"}
@@ -46,7 +46,7 @@ export const SignupForm = () => {
           type={"email"}
           error={errors.email?.message}
           placeholder={"Email"}
-          className={styles.authFormEmail}
+          className={styles.signupFormEmail}
         />
         <AuthField<SignUpDto>
           label={"Password"}
@@ -55,9 +55,13 @@ export const SignupForm = () => {
           type={"password"}
           error={errors.password?.message}
           placeholder={"Password"}
-          className={styles.authFormPassword}
+          className={styles.signupFormPassword}
         />
-        <AuthSubmit isLoading={isPending} label={"Sign up"} />
+        <AuthSubmit
+          className={styles.signupSubmit}
+          isLoading={isPending}
+          label={"Sign up"}
+        />
       </form>
     </AuthFormLayout>
   );

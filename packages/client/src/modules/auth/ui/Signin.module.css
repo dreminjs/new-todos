@@ -1,0 +1,10 @@
+.signinForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.signinSubmit {
+  display: block;
+  width: 100%;
+}
