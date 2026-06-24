@@ -10,11 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
     "@tanstack/react-query": "^5.101.0",
     "axios": "^1.16.0",
+    "clsx": "^2.1.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router": "^7.17.0"
+    "react-hook-form": "^7.80.0",
+    "react-router": "^7.17.0",
+    "types": "*",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -28,6 +34,7 @@
     "globals": "^17.6.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "vite-plugin-svgr": "^5.2.0"
   }
 }

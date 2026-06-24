@@ -1,0 +1,40 @@
+.authField {
+  width: 100%;
+}
+
+.authFieldInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: 1px solid #6b7280;
+  border-radius: 6px;
+  padding: 9px 0px 9px 17px;
+}
+
+.authFieldInner > input {
+  flex-basis: 90%;
+}
+
+.authFieldInner > button {
+  flex-basis: 10%;
+}
+
+.authFieldLabel {
+  color: #464555;
+  font-size: 12px;
+}
+
+.authFieldError {
+  color: #ff0000;
+  margin-top: 6px;
+}
+
+.authField:last-child {
+  margin-bottom: 0px;
+}
+
+.eyePasswordIcon {
+  margin: 0 auto;
+  display: block;
+}

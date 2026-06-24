@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 import { authSchema, signUpSchema } from "./auth.schema.js";
 
 export type AuthDto = z.infer<typeof authSchema>;

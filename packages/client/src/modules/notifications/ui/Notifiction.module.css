@@ -1,0 +1,33 @@
+.notificationItem {
+  padding: 10px;
+}
+
+.notificationList {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  top: 10px;
+  right: 10px;
+}
+
+.notificationItemSuccess {
+  background-color: limegreen;
+  border-left: 5px solid #228b22;
+  color: white;
+}
+.notificationItemInfo {
+  background-color: #d1ecf1;
+  border-left: 5px solid #0c5460;
+  color: #0c5460;
+}
+.notificationItemWarning {
+  background-color: #ffc107;
+  border-left: 5px solid #856404;
+  color: #856404;
+}
+.notificationItemError {
+  background-color: #dc3545;
+  border-left: 5px solid #8b0000;
+  color: white;
+}

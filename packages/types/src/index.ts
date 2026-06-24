@@ -3,3 +3,5 @@ export * from "./tokens/tokens.schema.js";
 export * from "./api/response.interface.js";
 export * from "./auth/auth.interface.js";
 export * from "./auth/auth.schema.js";
+export * from "./user/user.interface.js";
+export * from "./user/user.schema.js";

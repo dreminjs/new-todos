@@ -1,0 +1,24 @@
+.authNavigation {
+  margin-bottom: 26px;
+}
+.authNavigationList {
+  display: flex;
+}
+
+.authNavigationListItem {
+  width: 196px;
+  text-align: center;
+  padding: 16px 0px;
+  flex-basis: 50%;
+}
+
+.authNavigationListItem > a {
+  width: 100%;
+  display: block;
+}
+
+.authNavigationListItemActive {
+  color: #3525cd;
+  border-bottom: 1px solid #3525cd;
+  font-weight: 600;
+}
