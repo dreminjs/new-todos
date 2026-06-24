@@ -1,5 +1,8 @@
 .notificationItem {
-  padding: 10px;
+  padding: 14px;
+  width: 350px;
+  font-size: 21px;
+  font-weight: 600;
 }
 
 .notificationList {
@@ -13,21 +16,21 @@
 
 .notificationItemSuccess {
   background-color: limegreen;
-  border-left: 5px solid #228b22;
+  border-left: 12px solid #228b22;
   color: white;
 }
 .notificationItemInfo {
   background-color: #d1ecf1;
-  border-left: 5px solid #0c5460;
+  border-left: 12px solid #0c5460;
   color: #0c5460;
 }
 .notificationItemWarning {
   background-color: #ffc107;
-  border-left: 5px solid #856404;
+  border-left: 12px solid #856404;
   color: #856404;
 }
 .notificationItemError {
   background-color: #dc3545;
-  border-left: 5px solid #8b0000;
+  border-left: 12px solid #8b0000;
   color: white;
 }

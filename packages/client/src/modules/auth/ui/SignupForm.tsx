@@ -1,19 +1,26 @@
 import { useSignupForm } from "../model/hooks/useSignupForm";
 import { AuthFormLayout } from "./AuthFormLayout";
 import { AuthField } from "./AuthField/AuthField";
-import type { SignUpDto } from "types";
-import styles from "./Auth.module.css";
 import { AuthSubmit } from "./AuthSubmit";
+import { useSignup } from "../api/queries";
+import styles from "./Auth.module.css";
+import type { SignUpDto } from "types";
 
 export const SignupForm = () => {
   const { register, errors, handleSubmit } = useSignupForm();
 
+  const { isPending, mutate } = useSignup();
+
+  const onSubmit = async (dto: SignUpDto) => {
+    mutate(dto);
+  };
+
   return (
     <AuthFormLayout
-      title={"Welcome back"}
-      subtitle={"Please enter your details to sign in."}
+      title={"Register"}
+      subtitle={"Please enter your details to register."}
     >
-      <form className={styles.authForm}>
+      <form onSubmit={handleSubmit(onSubmit)} className={styles.authForm}>
         <AuthField<SignUpDto>
           label={"First Name"}
           name={"firstName"}
@@ -50,7 +57,7 @@ export const SignupForm = () => {
           placeholder={"Password"}
           className={styles.authFormPassword}
         />
-        <AuthSubmit label={"Sign up"} />
+        <AuthSubmit isLoading={isPending} label={"Sign up"} />
       </form>
     </AuthFormLayout>
   );
