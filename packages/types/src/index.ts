@@ -5,3 +5,5 @@ export * from "./auth/auth.interface.js";
 export * from "./auth/auth.schema.js";
 export * from "./user/user.interface.js";
 export * from "./user/user.schema.js";
+export * from "./todos/todos.interface.js";
+export * from "./todos/todos.schema.js";
