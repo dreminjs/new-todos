@@ -1,0 +1,27 @@
+.sidebar {
+  background-color: #1e1f2e;
+}
+
+.sidebarHeaderLink {
+  display: flex;
+  gap: 5px;
+  color: white;
+}
+
+.sidebarHeaderLinkContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.sidebarHeaderTitle {
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 24px;
+}
+
+.sidebarHeaderSubtitle {
+  font-weight: 600;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}

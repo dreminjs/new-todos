@@ -21,7 +21,7 @@ export const useAuthProtection = (props: UseAuthProtectionProps) => {
     } else if (forAuthOnly && !userId) {
       navigate("/auth/signin");
     }
-  }, [userId, isLoading, props, navigate]);
+  }, [userId, isLoading, navigate, props.forPublicOnly, props.forAuthOnly]);
 
   return { isLoading };
 };

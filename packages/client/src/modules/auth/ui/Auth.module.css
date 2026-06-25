@@ -1,5 +1,7 @@
 .authFormLayout {
   padding: 10px;
+  width: 100%;
+  max-width: 510px;
 }
 
 .authFormLayoutTitle {
