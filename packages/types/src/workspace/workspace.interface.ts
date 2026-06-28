@@ -3,6 +3,7 @@ import {
   createWorkspaceInvitationSchema,
   createWorkspaceSchema,
   joinWorkspaceSchema,
+  workspaceInvitationSchema,
   workspaceSchema,
 } from "./workspace.schema.js";
 
@@ -12,3 +13,15 @@ export type TJoinWorkspace = z.infer<typeof joinWorkspaceSchema>;
 export type TCreateWorkspaceInvitation = z.infer<
   typeof createWorkspaceInvitationSchema
 >;
+export type TWorkspaceInvitation = z.infer<typeof workspaceInvitationSchema>;
+
+export interface IWorkspaceParticipant {
+  firstName: string;
+  lastName: string;
+  avatarUrl: string;
+  id: string;
+}
+
+export interface IWorkspaceParticipantResponse {
+  user: IWorkspaceParticipant;
+}

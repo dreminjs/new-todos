@@ -1,0 +1,15 @@
+.select {
+  background-color: #f8f9fb;
+  border: 1px solid #6b7280;
+}
+
+.selectDropdown {
+  background-color: #f8f9fb;
+  border: 1px solid #6b7280;
+  padding: 0;
+}
+
+.selectDropdownItem {
+  padding: 15px 25px;
+  font-size: 18px;
+}

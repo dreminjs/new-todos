@@ -13,3 +13,5 @@ export * from "./workspace/workspace.interface.js";
 export * from "./workspace/workspace.schema.js";
 export * from "./notifications/notifications.interface.js";
 export * from "./notifications/notifications.schema.js";
+export * from "./todos/todos.interface.js";
+export * from "./todos/todos.schema.js";

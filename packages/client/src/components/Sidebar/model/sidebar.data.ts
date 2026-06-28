@@ -10,22 +10,27 @@ export const sidebarMenuData = [
   {
     icon: SunIcon,
     label: "My day",
+    to: "/todos/my-day",
   },
   {
     icon: StarIcon,
     label: "Important",
+    to: "/todos/important",
   },
   {
     icon: PlannedIcon,
     label: "Planned",
+    to: "/todos/planned",
   },
   {
     icon: AssignedMeIcon,
     label: "Assigned to me",
+    to: "/todos/assigned-to-me",
   },
   {
     icon: AllTasksIcon,
     label: "All tasks",
+    to: "/todos/all-tasks",
   },
 ] as const;
 

@@ -6,11 +6,12 @@ export const SidebarMenu = () => {
     <div className={styles.sidebarMenu}>
       <h3 className={styles.sidebarMenuTitle}>my lists</h3>
       <ul>
-        {sidebarMenuData.map(({ label, icon: Icon }, idx) => (
+        {sidebarMenuData.map(({ label, icon: Icon, to }, idx) => (
           <SidebarMenuItem
             key={idx}
             icon={<Icon height={22} width={22} />}
             label={label}
+            to={to}
           />
         ))}
       </ul>

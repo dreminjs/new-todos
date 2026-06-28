@@ -1,0 +1,149 @@
+import { type FC } from "react";
+import {
+  CustomDatePicker,
+  FormField,
+  Modal,
+  CustomSelect,
+} from "../../../../shared";
+import { useCreateTodo } from "../../api/queries";
+import { useGetParticipants } from "../../../workspaces";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createTodoFormSchema } from "../../model/todo.schema";
+import type {
+  ICreateTodoContext,
+  TCreateTodo,
+} from "../../model/todo.interface";
+import {
+  COLOR_TODO_PRIORITY,
+  TODO_PRIORITY_OPTIONS,
+  TODO_STATUS_OPTIONS,
+} from "../../model/todo.constants";
+import styles from "./AddTodoModal.module.css";
+import { TodoFormBottom } from "./TodoFormBottom";
+
+type TAddTodoModal = {
+  onClose: () => void;
+  isOpen: boolean;
+  showAssignee: boolean;
+} & ICreateTodoContext;
+
+export const AddTodoModal: FC<TAddTodoModal> = ({ showAssignee, ...props }) => {
+  const {
+    register,
+    control,
+    formState: { errors },
+    watch,
+    handleSubmit,
+    reset,
+  } = useForm<TCreateTodo>({
+    resolver: zodResolver(createTodoFormSchema),
+    defaultValues: {
+      status: props.status,
+    },
+  });
+
+  const { mutate, ...rest } = useCreateTodo(
+    {
+      status: props.status,
+      workspaceId: props.workspaceId,
+      isMyToday: props.isMyToday,
+      todoGroupId: props.todoGroupId,
+    },
+    reset,
+  );
+
+  const { data } = useGetParticipants({ enable: showAssignee });
+
+  return (
+    <Modal title="Add Todo" {...props}>
+      <form onSubmit={handleSubmit(mutate)} className={styles.addTodoForm}>
+        <FormField<TCreateTodo>
+          name={"title"}
+          register={register}
+          error={errors.title?.message}
+          label={"Title"}
+          className={styles.fieldTitle}
+        />
+        <FormField<TCreateTodo>
+          name={"description"}
+          register={register}
+          error={errors.description?.message}
+          label={"Description"}
+          isTextarea
+          className={styles.fieldDescription}
+        />
+        <Controller
+          render={({ field }) => (
+            <CustomSelect
+              value={field.value}
+              onChange={field.onChange}
+              name={field.name}
+              register={register}
+              label={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+              options={TODO_STATUS_OPTIONS}
+              className={styles.selectStatus}
+              placeholder="Status"
+            />
+          )}
+          name={"status"}
+          control={control}
+        />
+
+        <Controller
+          render={({ field }) => (
+            <CustomSelect
+              value={field.value}
+              onChange={field.onChange}
+              name={field.name}
+              register={register}
+              label={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+              options={TODO_PRIORITY_OPTIONS}
+              className={styles.selectPriority}
+              placeholder="Priority"
+              color={
+                watch("priority") && COLOR_TODO_PRIORITY[watch("priority")]
+              }
+            />
+          )}
+          name={"priority"}
+          control={control}
+        />
+        {showAssignee && (
+          <Controller
+            render={({ field }) => (
+              <CustomSelect
+                name={"userId"}
+                register={register}
+                label={"Assignee"}
+                options={
+                  data?.map((user) => ({
+                    value: user.user.id,
+                    label: `${user.user.firstName} ${user.user.lastName}`,
+                  })) ?? []
+                }
+                className={styles.selectAssignee}
+                onChange={field.onChange}
+              />
+            )}
+            name={"userId"}
+            control={control}
+          />
+        )}
+
+        <Controller
+          control={control}
+          name={"deadline"}
+          render={({ field }) => (
+            <CustomDatePicker
+              label="Deadline"
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+        <TodoFormBottom onClose={props.onClose} isLoading={rest.isPending} />
+      </form>
+    </Modal>
+  );
+};

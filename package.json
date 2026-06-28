@@ -13,7 +13,9 @@
     "client:dev": "lerna run start:dev --scope=client",
     "types:build": "lerna run build --scope=types"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react-intersection-observer": "^10.0.3"
+  },
   "devDependencies": {
     "lerna": "^9.0.3"
   },

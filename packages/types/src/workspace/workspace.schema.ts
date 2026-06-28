@@ -6,8 +6,7 @@ export const createWorkspaceSchema = z.object({
 
 export const workspaceSchema = createWorkspaceSchema.extend({
   id: z.string(),
-  workspaceId: z.string(),
-  userId: z.string(),
+  ownerId: z.string(),
 });
 
 export const joinWorkspaceSchema = z.object({
@@ -17,4 +16,17 @@ export const joinWorkspaceSchema = z.object({
 export const createWorkspaceInvitationSchema = z.object({
   workspaceId: z.string(),
   userId: z.string(),
+});
+
+export const createWorkspaceParticipantSchema =
+  createWorkspaceInvitationSchema.extend({
+    role: z.string(),
+  });
+
+export const workspaceInvitationSchema = z.object({
+  id: z.string(),
+  workspaceId: z.string(),
+  userId: z.string(),
+  notificationId: z.string(),
+  createdAt: z.date(),
 });
