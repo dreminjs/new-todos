@@ -1,6 +1,12 @@
 .TodoKanbanBoardList {
   display: flex;
   gap: 32px;
+  width: 100%;
+  height: 100%;
+}
+
+.TodoKanbanBoardColumnList {
+  flex: 1;
 }
 
 .TodoKanbanBoardHeading {
@@ -12,6 +18,8 @@
 
 .TodoKanbanBoardColumn {
   width: 320px;
+  display: flex;
+  flex-direction: column;
 }
 
 .TodoKanbanBoardStatus {

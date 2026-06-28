@@ -57,7 +57,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
             +
           </button>
         </h3>
-        <ul ref={ref}>
+        <ul className={styles.TodoKanbanBoardColumnList} ref={ref}>
           {todos.pages.map((page) => (
             <Fragment key={`draggable-${page.nextCursor}-${props.status}`}>
               {page.items.map((item) => (
