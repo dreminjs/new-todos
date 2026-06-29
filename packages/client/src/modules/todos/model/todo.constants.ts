@@ -7,6 +7,11 @@ export const TODO_STATUS = {
   CANCELLED: "cancelled",
 };
 
+export const PRIORITY_WEIGHT: Record<TTodoPriority, number> = {
+  HIGH: 0,
+  MEDIUM: 1,
+  LOW: 2,
+};
 export const TODO_PRIORITY = {
   LOW: "LOW",
   MEDIUM: "MEDIUM",

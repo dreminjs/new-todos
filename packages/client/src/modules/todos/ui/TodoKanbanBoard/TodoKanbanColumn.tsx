@@ -10,6 +10,7 @@ import { AddTodoModal } from "../AddTodoModal/AddTodoModal";
 import { useGetTodos } from "../../api/queries";
 import { Skeleton } from "@chakra-ui/react";
 import { useDroppable } from "@dnd-kit/react";
+import { PRIORITY_WEIGHT } from "../../model/todo.constants";
 
 type TKanbanColumn = IKanbanColumn & {
   showAssignee: boolean;
@@ -60,12 +61,20 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
         <ul className={styles.TodoKanbanBoardColumnList} ref={ref}>
           {todos.pages.map((page) => (
             <Fragment key={`draggable-${page.nextCursor}-${props.status}`}>
-              {page.items.map((item) => (
-                <TodoItem
-                  key={`draggable-${item.id}-${props.status}`}
-                  {...item}
-                />
-              ))}
+              {page.items
+                .sort((a, b) => {
+                  const weightA =
+                    a.priority != null ? PRIORITY_WEIGHT[a.priority] : Infinity;
+                  const weightB =
+                    b.priority != null ? PRIORITY_WEIGHT[b.priority] : Infinity;
+                  return weightA - weightB;
+                })
+                .map((item) => (
+                  <TodoItem
+                    key={`draggable-${item.id}-${props.status}`}
+                    {...item}
+                  />
+                ))}
             </Fragment>
           ))}
         </ul>
