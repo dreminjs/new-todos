@@ -9,35 +9,34 @@ export const statusSchema = z.enum([
 
 export const prioritySchema = z.enum(["LOW", "MEDIUM", "HIGH"]);
 
+const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+
+const boolean = z.coerce.boolean();
+
 export const todoSchema = z.object({
   id: z.string().uuid(),
   title: z.string().min(2),
   description: z.string().nullable(),
   priority: prioritySchema.optional(),
   status: statusSchema,
-  completed: z.boolean().default(false),
-  isMyToday: z.coerce.boolean().optional(),
-  createdAt: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .nullable(),
+  completed: boolean.default(false),
+  isMyToday: boolean.optional(),
+  createdAt: date,
   userId: z.string().uuid(),
   workspaceId: z.string().uuid().optional(),
   todoGroupId: z.string().uuid().optional(),
+  deadline: date.optional(),
 });
 
 export const findTodosSchema = z.object({
-  deadline: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
+  deadline: date.optional(),
   workspaceId: z.string().optional(),
   assignedUserId: z.string().optional(),
   priority: prioritySchema.optional(),
   status: statusSchema,
-  planned: z.coerce.boolean().optional(),
-  assignedMe: z.coerce.boolean().optional(),
-  isMyToday: z.coerce.boolean().optional(),
+  planned: boolean.optional(),
+  assignedMe: boolean.optional(),
+  isMyToday: boolean.optional(),
   cursor: z.string().uuid().optional(),
   limit: z.coerce.number(),
 });

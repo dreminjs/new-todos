@@ -1,5 +1,5 @@
 import type { TTodoPriority, TTodoStatus } from "types";
-
+import styles from "../ui/TodoKanbanBoard/TodoKanbanBoard.module.css";
 export const TODO_STATUS = {
   TODO: "todo",
   IN_PROGRESS: "in-progress",
@@ -22,6 +22,12 @@ export const COLOR_TODO_PRIORITY = {
   [TODO_PRIORITY.LOW]: "green",
   [TODO_PRIORITY.MEDIUM]: "yellow",
   [TODO_PRIORITY.HIGH]: "red",
+} as Record<TTodoPriority, string>;
+
+export const TODO_PRIORITY_CLASSES = {
+  [TODO_PRIORITY.LOW]: styles.TodoItemLowPriority,
+  [TODO_PRIORITY.MEDIUM]: styles.TodoItemMediumPriority,
+  [TODO_PRIORITY.HIGH]: styles.TodoItemHighPriority,
 } as Record<TTodoPriority, string>;
 
 export const TODO_STATUS_OPTIONS = [

@@ -22,13 +22,16 @@ import {
 import styles from "./AddTodoModal.module.css";
 import { TodoFormBottom } from "./TodoFormBottom";
 
-type TAddTodoModal = {
+type TAddTodoModalProps = {
   onClose: () => void;
   isOpen: boolean;
   showAssignee: boolean;
 } & ICreateTodoContext;
 
-export const AddTodoModal: FC<TAddTodoModal> = ({ showAssignee, ...props }) => {
+export const AddTodoModal: FC<TAddTodoModalProps> = ({
+  showAssignee,
+  ...props
+}) => {
   const {
     register,
     control,

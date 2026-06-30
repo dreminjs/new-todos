@@ -13,6 +13,8 @@ import type {
 } from "../model/todo.interface";
 import type { UseFormReset } from "react-hook-form";
 import type { IItemsResponse, TTodo, TUpdateTodoStatus } from "types";
+import type { DragEndEvent } from "@dnd-kit/react";
+import { useState } from "react";
 
 export const useCreateTodo = (
   dto: ICreateTodoContext,
@@ -59,8 +61,17 @@ export const useGetTodos = (query: TFindAllQuery) => {
 
 export const useUpdateTodoStatus = () => {
   const queryClient = useQueryClient();
+  const [activeTodo, setActiveTodo] = useState<TTodo | null>(null);
+  const handleDragEnd = (e: DragEndEvent) => {
+    const todoId = e.operation.source?.id.toString().split("_")[1] as string;
+    const newStatus = e.operation.target?.id as TTodoStatus;
 
-  return useMutation({
+    const currentStatus = e.operation.source?.data?.status as TTodoStatus;
+    if (currentStatus === newStatus) return;
+
+    updateStatus({ todoId: todoId, dto: { status: newStatus } });
+  };
+  const { mutate: updateStatus } = useMutation({
     mutationFn: ({ todoId, dto }: { todoId: string; dto: TUpdateTodoStatus }) =>
       updateStatus(todoId, dto),
 
@@ -98,4 +109,11 @@ export const useUpdateTodoStatus = () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
+
+  return {
+    updateStatus,
+    handleDragEnd,
+    activeTodo,
+    setActiveTodo,
+  };
 };

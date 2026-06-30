@@ -22,20 +22,18 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
   showAssignee,
   ...props
 }) => {
-  const [todoModalOpen, setTodoModalOpen] = useState(false);
-
   const { ref } = useDroppable({
     id: props.status,
   });
-
-  const handleTodoModalToggle = () => setTodoModalOpen((prev) => !prev);
 
   const { data: todos, isLoading } = useGetTodos({
     ...props,
     status: props.status,
   });
 
-  console.log(todos);
+  const [todoModalOpen, setTodoModalOpen] = useState(false);
+
+  const handleTodoModalToggle = () => setTodoModalOpen((prev) => !prev);
 
   if (isLoading) {
     return <Skeleton bg={"gray.100"} height="400px" />;

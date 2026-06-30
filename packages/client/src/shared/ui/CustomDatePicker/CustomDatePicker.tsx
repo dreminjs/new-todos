@@ -2,6 +2,10 @@ import { DatePicker, Field, Portal } from "@chakra-ui/react";
 import { LuCalendar } from "react-icons/lu";
 import { parseDate, getLocalTimeZone } from "@internationalized/date";
 import styles from "./CustomDatePicker.module.css";
+import {
+  formatToLocalYYYYMMDD,
+  formatToUTCYYYYMMDD,
+} from "../../model/date.helper";
 
 interface IDatePickerProps {
   value: Date;
@@ -20,10 +24,11 @@ export function CustomDatePicker({
     <>
       <Field.Root invalid={!!error}>
         <DatePicker.Root
-          value={value ? [parseDate(value.toISOString().split("T")[0])] : []}
+          min={parseDate(formatToLocalYYYYMMDD(new Date()))}
+          value={value ? [parseDate(formatToUTCYYYYMMDD(value))] : []}
           onValueChange={(e) => {
             const dateValue = e.value[0];
-            onChange(dateValue ? dateValue.toDate(getLocalTimeZone()) : null);
+            onChange(dateValue ? dateValue.toDate("UTC") : null);
           }}
           invalid={!!error}
         >

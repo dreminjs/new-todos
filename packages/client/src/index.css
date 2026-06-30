@@ -51,7 +51,8 @@ h6 {
 }
 
 ul,
-ol {
+ol,
+li {
   list-style: none;
   padding: 0;
 }

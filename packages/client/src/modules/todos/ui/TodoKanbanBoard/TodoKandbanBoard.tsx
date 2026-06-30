@@ -1,4 +1,4 @@
-import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
+import { DragDropProvider, DragOverlay } from "@dnd-kit/react";
 import { type FC } from "react";
 import { TodoKanbanColumn } from "./TodoKanbanColumn";
 import styles from "./TodoKanbanBoard.module.css";
@@ -7,8 +7,9 @@ import type {
   TFindAllQuery,
 } from "../../model/todo.interface";
 import { useUpdateTodoStatus } from "../../api/queries";
-import type { TTodoStatus } from "types";
-
+import type { TTodo } from "types";
+import {} from "@dnd-kit/dom";
+import { TodoItem } from "./TodoItem";
 type TTodoKanbanBoardProps = Omit<TFindAllQuery, "status"> & {
   showAssignee: boolean;
 } & Omit<ICreateTodoContext, "status">;
@@ -16,22 +17,22 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
   showAssignee,
   ...props
 }) => {
-  const { mutate: updateStatus } = useUpdateTodoStatus();
-
-  const handleDragEnd = (e: DragEndEvent) => {
-    const todoId = e.operation.source?.id.toString().split("_")[1] as string;
-    const newStatus = e.operation.target?.id as TTodoStatus;
-    console.log(e.operation.source.id.toString().split("_")[1]);
-
-    const currentStatus = e.operation.source?.data?.status as TTodoStatus;
-    if (currentStatus === newStatus) return;
-
-    updateStatus({ todoId: todoId, dto: { status: newStatus } });
-  };
+  const { setActiveTodo, handleDragEnd, activeTodo } = useUpdateTodoStatus();
 
   return (
     <>
-      <DragDropProvider onDragEnd={handleDragEnd}>
+      <DragDropProvider
+        onDragStart={(e) => {
+          const data = e.operation.source?.data;
+          setActiveTodo({
+            id: data?.id,
+            title: data?.title,
+            priority: data?.priority,
+            status: data?.status,
+          } as TTodo);
+        }}
+        onDragEnd={handleDragEnd}
+      >
         <ul className={styles.TodoKanbanBoardList}>
           <TodoKanbanColumn
             showAssignee={showAssignee}
@@ -58,6 +59,9 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
             {...props}
           />
         </ul>
+        <DragOverlay>
+          {activeTodo && <TodoItem {...activeTodo} isOverlay={true} />}
+        </DragOverlay>
       </DragDropProvider>
     </>
   );
