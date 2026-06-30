@@ -1,6 +1,7 @@
 import type { IItemsResponse, TTodo, TUpdateTodoStatus } from "types";
 import { instance } from "../../../shared/api/api.instance";
 import type { TCreateTodo, TFindAllQuery } from "../model/todo.interface";
+import clsx from "clsx";
 
 export const createOne = async (data: TCreateTodo): Promise<TTodo> => {
   return (await instance.post("/todos", data)).data;
@@ -8,8 +9,11 @@ export const createOne = async (data: TCreateTodo): Promise<TTodo> => {
 
 export const findAll = async (
   query: TFindAllQuery,
+  endpoint?: string,
 ): Promise<IItemsResponse<TTodo>> => {
-  const { data } = await instance.get("/todos", { params: query });
+  const { data } = await instance.get(clsx("/todos", endpoint), {
+    params: query,
+  });
   return data;
 };
 

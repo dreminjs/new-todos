@@ -14,22 +14,27 @@ import { PRIORITY_WEIGHT } from "../../model/todo.constants";
 
 type TKanbanColumn = IKanbanColumn & {
   showAssignee: boolean;
+  endpoint?: string;
 } & ICreateTodoContext &
   Omit<TFindAllQuery, "priority">;
 
 export const TodoKanbanColumn: FC<TKanbanColumn> = ({
   title,
   showAssignee,
+  endpoint,
   ...props
 }) => {
   const { ref } = useDroppable({
     id: props.status,
   });
 
-  const { data: todos, isLoading } = useGetTodos({
-    ...props,
-    status: props.status,
-  });
+  const { data: todos, isLoading } = useGetTodos(
+    {
+      ...props,
+      status: props.status,
+    },
+    endpoint,
+  );
 
   const [todoModalOpen, setTodoModalOpen] = useState(false);
 

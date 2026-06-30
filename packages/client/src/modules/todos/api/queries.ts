@@ -50,10 +50,11 @@ export const useCreateTodo = (
   return { ...rest, mutate: handleCreateTodo };
 };
 
-export const useGetTodos = (query: TFindAllQuery) => {
+export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
+  console.log(endpoint);
   return useInfiniteQuery({
     queryKey: ["todos", query],
-    queryFn: () => findAll(query),
+    queryFn: () => findAll(query, endpoint),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });

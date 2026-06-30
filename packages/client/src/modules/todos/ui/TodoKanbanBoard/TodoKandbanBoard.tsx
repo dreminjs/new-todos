@@ -8,13 +8,14 @@ import type {
 } from "../../model/todo.interface";
 import { useUpdateTodoStatus } from "../../api/queries";
 import type { TTodo } from "types";
-import {} from "@dnd-kit/dom";
 import { TodoItem } from "./TodoItem";
 type TTodoKanbanBoardProps = Omit<TFindAllQuery, "status"> & {
   showAssignee: boolean;
+  endpoint?: string;
 } & Omit<ICreateTodoContext, "status">;
 export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
   showAssignee,
+  endpoint,
   ...props
 }) => {
   const { setActiveTodo, handleDragEnd, activeTodo } = useUpdateTodoStatus();
@@ -35,24 +36,28 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
       >
         <ul className={styles.TodoKanbanBoardList}>
           <TodoKanbanColumn
+            endpoint={endpoint}
             showAssignee={showAssignee}
             title={"PENDING"}
             status="PENDING"
             {...props}
           />
           <TodoKanbanColumn
+            endpoint={endpoint}
             showAssignee={showAssignee}
             title={"IN PROGRESS"}
             status={"IN_PROGRESS"}
             {...props}
           />
           <TodoKanbanColumn
+            endpoint={endpoint}
             showAssignee={showAssignee}
             title={"COMPLETED"}
             status={"COMPLETED"}
             {...props}
           />
           <TodoKanbanColumn
+            endpoint={endpoint}
             showAssignee={showAssignee}
             title={"CANCELLED"}
             status={"CANCELLED"}
