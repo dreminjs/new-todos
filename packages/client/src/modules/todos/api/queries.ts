@@ -12,7 +12,12 @@ import type {
   TFindAllQuery,
 } from "../model/todo.interface";
 import type { UseFormReset } from "react-hook-form";
-import type { IItemsResponse, TTodo, TUpdateTodoStatus } from "types";
+import type {
+  IItemsResponse,
+  TTodo,
+  TTodoStatus,
+  TUpdateTodoStatus,
+} from "types";
 import type { DragEndEvent } from "@dnd-kit/react";
 import { useState } from "react";
 
@@ -51,7 +56,6 @@ export const useCreateTodo = (
 };
 
 export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
-  console.log(endpoint);
   return useInfiniteQuery({
     queryKey: ["todos", query],
     queryFn: () => findAll(query, endpoint),
@@ -67,12 +71,10 @@ export const useUpdateTodoStatus = () => {
     const todoId = e.operation.source?.id.toString().split("_")[1] as string;
     const newStatus = e.operation.target?.id as TTodoStatus;
 
-    const currentStatus = e.operation.source?.data?.status as TTodoStatus;
-    if (currentStatus === newStatus) return;
-
-    updateStatus({ todoId: todoId, dto: { status: newStatus } });
+    console.log("todoId", todoId, "newStatus", newStatus);
+    mutate({ todoId: todoId, dto: { status: newStatus } });
   };
-  const { mutate: updateStatus } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: ({ todoId, dto }: { todoId: string; dto: TUpdateTodoStatus }) =>
       updateStatus(todoId, dto),
 
