@@ -6,6 +6,13 @@ export const createOne = async (data: TCreateTodo): Promise<TTodo> => {
   return (await instance.post("/todos", data)).data;
 };
 
+export const updateOne = async (
+  data: TCreateTodo,
+  id: string,
+): Promise<TTodo> => {
+  return (await instance.put(`/todos/${id}`, data)).data;
+};
+
 export const findAll = async (
   query: TFindAllQuery,
   endpoint?: string,

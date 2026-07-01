@@ -4,7 +4,7 @@ import {
   useQueryClient,
   type InfiniteData,
 } from "@tanstack/react-query";
-import { createOne, findAll, updateStatus } from "./service";
+import { createOne, findAll, updateStatus, updateOne } from "./service";
 import { useNotificationStore } from "../../notifications/model/notification.store";
 import type {
   ICreateTodoContext,
@@ -68,10 +68,10 @@ export const useUpdateTodoStatus = () => {
   const queryClient = useQueryClient();
   const [activeTodo, setActiveTodo] = useState<TTodo | null>(null);
   const handleDragEnd = (e: DragEndEvent) => {
+    console.log(e);
     const todoId = e.operation.source?.id.toString().split("_")[1] as string;
     const newStatus = e.operation.target?.id as TTodoStatus;
 
-    console.log("todoId", todoId, "newStatus", newStatus);
     mutate({ todoId: todoId, dto: { status: newStatus } });
   };
   const { mutate } = useMutation({
@@ -118,5 +118,38 @@ export const useUpdateTodoStatus = () => {
     handleDragEnd,
     activeTodo,
     setActiveTodo,
+  };
+};
+
+export const useUpdateTodo = (
+  dto: ICreateTodoContext & { todoId: string },
+  reset: UseFormReset<TCreateTodo>,
+) => {
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification,
+  );
+  const client = useQueryClient();
+
+  const todoId = dto.todoId;
+  const { mutate, ...props } = useMutation({
+    mutationFn: (dto: TCreateTodo) => updateOne(dto, todoId),
+    onSuccess: () => {
+      addNotification({
+        message: "Todo updated successfully",
+        type: "success",
+      });
+      client.invalidateQueries({ queryKey: ["todos"] });
+    },
+    onError: () => {
+      addNotification({ message: "Failed to update todo", type: "error" });
+      reset();
+    },
+  });
+  const handleUpdateTodo = (data: TCreateTodo) => {
+    mutate({ ...dto, ...data });
+  };
+  return {
+    mutate: handleUpdateTodo,
+    ...props,
   };
 };

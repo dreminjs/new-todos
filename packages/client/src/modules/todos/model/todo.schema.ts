@@ -1,7 +1,7 @@
 import { todoSchema } from "types";
 import { z } from "zod";
 
-export const createTodoFormSchema = todoSchema
+export const todoFormSchema = todoSchema
   .extend({
     deadline: z.date().nullable().optional(),
     userId: z.string().uuid().optional(),

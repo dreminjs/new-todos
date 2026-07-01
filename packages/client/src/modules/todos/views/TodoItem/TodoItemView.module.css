@@ -1,0 +1,61 @@
+.TodoItemName {
+  padding-bottom: 5px;
+  color: #191c1e;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 19px;
+  text-align: left;
+}
+
+.TodoItemBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid slategray;
+  padding-top: 5px;
+}
+
+.TodoItem > button {
+  display: block;
+  width: 100%;
+  user-select: none;
+  padding: 16px;
+  background-color: white;
+  border-radius: 12px;
+  transition: opacity 150ms ease;
+  cursor: grab;
+}
+
+.todoItem:active {
+  cursor: grabbing;
+}
+
+.TodoItemComplete {
+  text-decoration: line-through;
+}
+
+.TodoItemPriority {
+  width: 8px;
+  height: 28px;
+  border-radius: 5px;
+  display: inline-block;
+}
+.TodoItemHighPriority {
+  background-color: #ba1a1a;
+}
+.TodoItemMediumPriority {
+  background-color: #f0ad4e;
+}
+.TodoItemLowPriority {
+  background-color: #5cb85c;
+}
+
+.TodoItemDeadline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.TodoItemExpired {
+  color: #ba1a1a;
+}

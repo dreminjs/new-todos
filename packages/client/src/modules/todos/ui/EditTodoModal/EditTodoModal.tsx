@@ -1,11 +1,11 @@
-import { type FC } from "react";
+import { useEffect, type FC } from "react";
 import {
   CustomDatePicker,
   FormField,
   Modal,
   CustomSelect,
 } from "../../../../shared";
-import { useCreateTodo } from "../../api/queries";
+import { useCreateTodo, useUpdateTodo } from "../../api/queries";
 import { useGetParticipants } from "../../../workspaces";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,17 +19,22 @@ import {
   TODO_PRIORITY_OPTIONS,
   TODO_STATUS_OPTIONS,
 } from "../../model/todo.constants";
-import styles from "./AddTodoModal.module.css";
+import styles from "./EditTodoModal.module.css";
 import { TodoFormBottom } from "./TodoFormBottom";
 
-type TAddTodoModalProps = {
+type TEditTodoModalProps = {
   onClose: () => void;
   isOpen: boolean;
   showAssignee: boolean;
-} & ICreateTodoContext;
+  todoId: string;
+} & TCreateTodo &
+  ICreateTodoContext;
 
-export const AddTodoModal: FC<TAddTodoModalProps> = ({
+export const EditTodoModal: FC<TEditTodoModalProps> = ({
+  isOpen,
   showAssignee,
+  onClose,
+  todoId,
   ...props
 }) => {
   const {
@@ -43,11 +48,16 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
     resolver: zodResolver(todoFormSchema),
     defaultValues: {
       status: props.status,
+      title: props.title,
+      description: props.description,
+      priority: props.priority,
+      deadline: props.deadline,
     },
   });
 
-  const { mutate, ...rest } = useCreateTodo(
+  const { mutate, ...rest } = useUpdateTodo(
     {
+      todoId,
       status: props.status,
       workspaceId: props.workspaceId,
       isMyToday: props.isMyToday,
@@ -59,8 +69,8 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
   const { data } = useGetParticipants({ enable: showAssignee });
 
   return (
-    <Modal title="Add Todo" {...props}>
-      <form onSubmit={handleSubmit(mutate)} className={styles.addTodoForm}>
+    <Modal onClose={onClose} isOpen={isOpen} title="Edit Todo">
+      <form onSubmit={handleSubmit(mutate)} className={styles.editTodoForm}>
         <FormField<TCreateTodo>
           name={"title"}
           register={register}
@@ -145,7 +155,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
             />
           )}
         />
-        <TodoFormBottom onClose={props.onClose} isLoading={rest.isPending} />
+        <TodoFormBottom onClose={onClose} isLoading={rest.isPending} />
       </form>
     </Modal>
   );

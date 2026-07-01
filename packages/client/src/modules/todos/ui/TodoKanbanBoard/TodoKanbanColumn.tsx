@@ -1,4 +1,4 @@
-import { Fragment, useState, type FC } from "react";
+import { Fragment, useEffect, useState, type FC } from "react";
 import type {
   ICreateTodoContext,
   IKanbanColumn,
@@ -11,6 +11,9 @@ import { useGetTodos } from "../../api/queries";
 import { Skeleton } from "@chakra-ui/react";
 import { useDroppable } from "@dnd-kit/react";
 import { PRIORITY_WEIGHT } from "../../model/todo.constants";
+import { EditTodoModal } from "../EditTodoModal/EditTodoModal";
+import type { TTodo } from "types";
+import { TodoKanbanHeader } from "./TodoKanbanHeader";
 
 type TKanbanColumn = IKanbanColumn & {
   showAssignee: boolean;
@@ -36,33 +39,28 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
     endpoint,
   );
 
+  const [editingTodo, setEditingTodo] = useState<TTodo>(null);
+
   const [todoModalOpen, setTodoModalOpen] = useState(false);
 
   const handleTodoModalToggle = () => setTodoModalOpen((prev) => !prev);
 
-  if (isLoading) {
-    return <Skeleton bg={"gray.100"} height="400px" />;
-  }
+  const handleSetEditTodo = (todo: TTodo | null) => {
+    setEditingTodo(todo);
+  };
+
+  if (isLoading) return null;
 
   return (
     <>
       <div className={styles.TodoKanbanBoardColumn}>
-        <h3 className={styles.TodoKanbanBoardHeading}>
-          <span>
-            <span className={styles.TodoKanbanBoardStatus}>{title}</span>
-            <span className={styles.TodoKanbanBoardCount}>
-              {todos.pages.reduce((acc, page) => acc + page.items.length, 0)}
-            </span>
-          </span>
-          <button
-            onClick={handleTodoModalToggle}
-            className={styles.TodoKanbanBoardPlus}
-          >
-            +
-          </button>
-        </h3>
+        <TodoKanbanHeader
+          title={title}
+          todos={todos}
+          handleTodoModalToggle={handleTodoModalToggle}
+        />
         <ul className={styles.TodoKanbanBoardColumnList} ref={ref}>
-          {todos.pages.map((page) => (
+          {todos?.pages?.map((page) => (
             <Fragment key={`draggable-${page.nextCursor}-${props.status}`}>
               {page.items
                 .sort((a, b) => {
@@ -74,6 +72,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
                 })
                 .map((item) => (
                   <TodoItem
+                    onChoose={handleSetEditTodo.bind(null, item)}
                     key={`draggable-${item.id}-${props.status}`}
                     {...item}
                   />
@@ -91,6 +90,23 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
         workspaceId={props.workspaceId}
         status={props.status}
       />
+      {editingTodo?.id && (
+        <EditTodoModal
+          todoId={editingTodo.id}
+          onClose={handleSetEditTodo.bind(null, null)}
+          isOpen={Boolean(editingTodo)}
+          showAssignee={showAssignee}
+          status={editingTodo?.status}
+          title={editingTodo?.title}
+          description={editingTodo?.description}
+          priority={editingTodo?.priority}
+          deadline={
+            editingTodo?.deadline != null
+              ? new Date(editingTodo?.deadline)
+              : null
+          }
+        />
+      )}
     </>
   );
 };

@@ -25,6 +25,7 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
       <DragDropProvider
         onDragStart={(e) => {
           const data = e.operation.source?.data;
+          console.log(e);
           setActiveTodo({
             id: data?.id,
             title: data?.title,
