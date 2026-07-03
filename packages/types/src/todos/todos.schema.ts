@@ -16,9 +16,9 @@ const boolean = z.coerce.boolean();
 export const todoSchema = z.object({
   id: z.string().uuid(),
   title: z.string().min(2),
-  description: z.string().nullable(),
+  description: z.string().optional(),
   priority: prioritySchema.optional(),
-  status: statusSchema,
+  status: statusSchema.nullable(),
   completed: boolean.default(false),
   isMyToday: boolean.optional(),
   createdAt: date,

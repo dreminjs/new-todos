@@ -10,7 +10,8 @@ export const updateOne = async (
   data: TCreateTodo,
   id: string,
 ): Promise<TTodo> => {
-  return (await instance.put(`/todos/${id}`, data)).data;
+  return (await instance.put(`/todos/${id}`, { ...data, todoId: undefined }))
+    .data;
 };
 
 export const findAll = async (

@@ -1,10 +1,11 @@
-import { todoSchema } from "types";
+import { prioritySchema, todoSchema } from "types";
 import { z } from "zod";
 
 export const todoFormSchema = todoSchema
   .extend({
     deadline: z.date().nullable().optional(),
     userId: z.string().uuid().optional(),
+    priority: prioritySchema.optional().nullable(),
   })
   .omit({
     completed: true,
