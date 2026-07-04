@@ -1,4 +1,4 @@
-import { type FC } from "react";
+import { useMemo, type FC } from "react";
 import {
   CustomDatePicker,
   FormField,
@@ -9,11 +9,7 @@ import { useCreateTodo } from "../../api/queries";
 import { useGetParticipants } from "../../../workspaces";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { todoFormSchema } from "../../model/todo.schema";
-import type {
-  ICreateTodoContext,
-  TCreateTodo,
-} from "../../model/todo.interface";
+import type { ICreateTodoContext } from "../../model/todo.interface";
 import {
   COLOR_TODO_PRIORITY,
   TODO_PRIORITY_OPTIONS,
@@ -21,17 +17,26 @@ import {
 } from "../../model/todo.constants";
 import styles from "./AddTodoModal.module.css";
 import { TodoFormBottom } from "../TodoFormBottom/TodoFormBottom";
+import {
+  buildTodoFormSchema,
+  type TCreateTodoForm,
+} from "../../model/buildTodo.schema";
 
 type TAddTodoModalProps = {
   onClose: () => void;
   isOpen: boolean;
   showAssignee: boolean;
+  planned: boolean;
 } & ICreateTodoContext;
 
 export const AddTodoModal: FC<TAddTodoModalProps> = ({
   showAssignee,
   ...props
 }) => {
+  const formSchema = useMemo(
+    () => buildTodoFormSchema(props.planned),
+    [props.planned],
+  );
   const {
     register,
     control,
@@ -39,8 +44,8 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
     watch,
     handleSubmit,
     reset,
-  } = useForm<TCreateTodo>({
-    resolver: zodResolver(todoFormSchema),
+  } = useForm<TCreateTodoForm>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       status: props.status,
       priority: props.priority,
@@ -59,18 +64,18 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
   );
 
   const { data } = useGetParticipants({ enable: showAssignee });
-  console.log(props.priority);
+
   return (
     <Modal title="Add Todo" {...props}>
       <form onSubmit={handleSubmit(mutate)} className={styles.addTodoForm}>
-        <FormField<TCreateTodo>
+        <FormField<TCreateTodoForm>
           name={"title"}
           register={register}
           error={errors.title?.message}
           label={"Title"}
           className={styles.fieldTitle}
         />
-        <FormField<TCreateTodo>
+        <FormField<TCreateTodoForm>
           name={"description"}
           register={register}
           error={errors.description?.message}
@@ -145,6 +150,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
               label="Deadline"
               value={field.value}
               onChange={field.onChange}
+              error={errors.deadline?.message}
             />
           )}
         />

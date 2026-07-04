@@ -80,14 +80,15 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
         </ul>
       </div>
       <AddTodoModal
-        isOpen={todoModalOpen}
-        onClose={handleTodoModalToggle}
+        planned={props.planned}
         showAssignee={showAssignee}
         isMyToday={props.isMyToday}
         todoGroupId={props.todoGroupId}
         workspaceId={props.workspaceId}
         status={props.status}
         priority={props.priority}
+        onClose={handleTodoModalToggle}
+        isOpen={todoModalOpen}
       />
       {editingTodo?.id && (
         <EditTodoModal
