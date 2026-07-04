@@ -4,7 +4,13 @@ import {
   useQueryClient,
   type InfiniteData,
 } from "@tanstack/react-query";
-import { createOne, findAll, updateStatus, updateOne } from "./service";
+import {
+  createOne,
+  findAll,
+  updateStatus,
+  updateOne,
+  deleteOne,
+} from "./service";
 import { useNotificationStore } from "../../notifications/model/notification.store";
 import type {
   ICreateTodoContext,
@@ -138,7 +144,17 @@ export const useUpdateTodo = (
         message: "Todo updated successfully",
         type: "success",
       });
-      client.invalidateQueries({ queryKey: ["todos"] });
+      client.invalidateQueries({ queryKey: ["todos", { status: dto.status }] });
+      const previousData = client.getQueryData([
+        "todos",
+        { status: dto.status },
+      ]);
+      if (previousData) {
+        client.setQueryData(["todos", { status: dto.status }], previousData);
+      }
+      return {
+        previousData: previousData,
+      };
     },
     onError: () => {
       addNotification({ message: "Failed to update todo", type: "error" });
@@ -150,6 +166,42 @@ export const useUpdateTodo = (
   };
   return {
     mutate: handleUpdateTodo,
+    ...props,
+  };
+};
+
+export const useDeleteTodo = () => {
+  const client = useQueryClient();
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification,
+  );
+  const { mutate, ...props } = useMutation({
+    mutationFn: (todoId: string) => deleteOne(todoId),
+    onSuccess: () => {
+      addNotification({
+        message: "Todo deleted successfully",
+        type: "success",
+      });
+      client.invalidateQueries({ queryKey: ["todos"] });
+    },
+    onError: () => {
+      addNotification({ message: "Failed to delete todo", type: "error" });
+    },
+    onMutate: async (id: string) => {
+      await client.cancelQueries({ queryKey: ["my-day"] });
+
+      const previous = client.getQueryData<TTodo[]>(["my-day"]);
+
+      client.setQueryData<TTodo[]>(["my-day"], (old) =>
+        old?.filter((todo) => todo.id !== id),
+      );
+
+      return { previous };
+    },
+  });
+
+  return {
+    mutate,
     ...props,
   };
 };

@@ -14,6 +14,7 @@ import { PRIORITY_WEIGHT } from "../../model/todo.constants";
 import { EditTodoModal } from "../EditTodoModal/EditTodoModal";
 import type { TTodo } from "types";
 import { TodoKanbanHeader } from "./TodoKanbanHeader";
+import { TodoKanbanBoardSkeleton } from "./TodoBanbanBoardSkeleton";
 
 type TKanbanColumn = IKanbanColumn & {
   showAssignee: boolean;
@@ -49,8 +50,6 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
     setEditingTodo(todo);
   };
 
-  if (isLoading) return null;
-
   return (
     <>
       <div className={styles.TodoKanbanBoardColumn}>
@@ -58,6 +57,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
           title={title}
           todos={todos}
           handleTodoModalToggle={handleTodoModalToggle}
+          isPostDisabled={isLoading}
         />
         <ul className={styles.TodoKanbanBoardColumnList} ref={ref}>
           {todos?.pages?.map((page) => (

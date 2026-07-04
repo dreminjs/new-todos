@@ -9,7 +9,7 @@ interface ITodoItemViewProps {
   isDragging?: boolean;
   status?: string;
   title?: string;
-  priority?: number;
+  priority?: string;
   deadline?: string;
   isExpired?: boolean;
   ref?: (el: Element) => void;

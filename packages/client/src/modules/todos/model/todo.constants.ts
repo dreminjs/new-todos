@@ -1,5 +1,5 @@
 import type { TTodoPriority, TTodoStatus } from "types";
-import styles from "../ui/TodoKanbanBoard/TodoKanbanBoard.module.css";
+import styles from "../views/TodoItem/TodoItemView.module.css";
 export const TODO_STATUS = {
   TODO: "todo",
   IN_PROGRESS: "in-progress",

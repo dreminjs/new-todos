@@ -34,3 +34,8 @@ export const updateStatus = async (
   console.log("todoId", todoId, "data", data);
   return (await instance.patch(`/todos/${todoId}/update-status`, data)).data;
 };
+
+export const deleteOne = async (todoId: string): Promise<string> => {
+  await instance.delete(`/todos/${todoId}`);
+  return todoId;
+};

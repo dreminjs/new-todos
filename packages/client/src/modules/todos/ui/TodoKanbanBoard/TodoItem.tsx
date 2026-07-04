@@ -35,6 +35,7 @@ export const TodoItem: FC<TProps> = ({
       isDragging={isDragging}
       onClick={onChoose}
       status={status}
+      priority={priority}
     />
   );
 };

@@ -1,11 +1,11 @@
-import { useEffect, type FC } from "react";
+import { type FC } from "react";
 import {
   CustomDatePicker,
   FormField,
   Modal,
   CustomSelect,
 } from "../../../../shared";
-import { useCreateTodo, useUpdateTodo } from "../../api/queries";
+import { useUpdateTodo } from "../../api/queries";
 import { useGetParticipants } from "../../../workspaces";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,7 @@ import {
   TODO_STATUS_OPTIONS,
 } from "../../model/todo.constants";
 import styles from "./EditTodoModal.module.css";
-import { TodoFormBottom } from "./TodoFormBottom";
+import { EditTodoFormBottom } from "./EditFormBottom";
 
 type TEditTodoModalProps = {
   onClose: () => void;
@@ -102,7 +102,6 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
           name={"status"}
           control={control}
         />
-
         <Controller
           render={({ field }) => (
             <CustomSelect
@@ -143,7 +142,6 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
             control={control}
           />
         )}
-
         <Controller
           control={control}
           name={"deadline"}
@@ -155,7 +153,11 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
             />
           )}
         />
-        <TodoFormBottom onClose={onClose} isLoading={rest.isPending} />
+        <EditTodoFormBottom
+          todoId={todoId}
+          onClose={onClose}
+          isEditLoading={rest.isPending}
+        />
       </form>
     </Modal>
   );

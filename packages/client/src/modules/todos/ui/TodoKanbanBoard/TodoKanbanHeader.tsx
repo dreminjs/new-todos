@@ -3,29 +3,36 @@ import styles from "./TodoKanbanBoard.module.css";
 
 interface ITodoKanbanHeader {
   title: string;
-  todos: { pages: Array<{ items: Array<TTodo> }> };
-  handleTodoModalToggle: () => void;
+  todos?: { pages: Array<{ items: Array<TTodo> }> };
+  handleTodoModalToggle?: () => void;
+  isPostDisabled: boolean;
 }
 
 export const TodoKanbanHeader = ({
   title,
   todos,
   handleTodoModalToggle,
+  isPostDisabled,
 }: ITodoKanbanHeader) => {
   return (
     <h3 className={styles.TodoKanbanBoardHeading}>
       <span>
         <span className={styles.TodoKanbanBoardStatus}>{title}</span>
-        <span className={styles.TodoKanbanBoardCount}>
-          {todos.pages.reduce((acc, page) => acc + page.items.length, 0)}
-        </span>
+        {todos && (
+          <span className={styles.TodoKanbanBoardCount}>
+            {todos?.pages.reduce((acc, page) => acc + page.items.length, 0)}
+          </span>
+        )}
       </span>
-      <button
-        onClick={handleTodoModalToggle}
-        className={styles.TodoKanbanBoardPlus}
-      >
-        +
-      </button>
+      {handleTodoModalToggle && (
+        <button
+          onClick={handleTodoModalToggle}
+          className={styles.TodoKanbanBoardPlus}
+          disabled={isPostDisabled}
+        >
+          +
+        </button>
+      )}
     </h3>
   );
 };

@@ -20,7 +20,7 @@ import {
   TODO_STATUS_OPTIONS,
 } from "../../model/todo.constants";
 import styles from "./AddTodoModal.module.css";
-import { TodoFormBottom } from "./TodoFormBottom";
+import { TodoFormBottom } from "../TodoFormBottom/TodoFormBottom";
 
 type TAddTodoModalProps = {
   onClose: () => void;
@@ -145,7 +145,11 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
             />
           )}
         />
-        <TodoFormBottom onClose={props.onClose} isLoading={rest.isPending} />
+        <TodoFormBottom
+          className={styles.todoFormBottom}
+          onClose={props.onClose}
+          isLoading={rest.isPending}
+        />
       </form>
     </Modal>
   );
