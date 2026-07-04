@@ -31,7 +31,6 @@ export const updateStatus = async (
   todoId: string,
   data: TUpdateTodoStatus,
 ): Promise<TTodo> => {
-  console.log("todoId", todoId, "data", data);
   return (await instance.patch(`/todos/${todoId}/update-status`, data)).data;
 };
 

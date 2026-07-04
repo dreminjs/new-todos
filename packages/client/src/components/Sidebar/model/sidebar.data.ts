@@ -30,7 +30,7 @@ export const sidebarMenuData = [
   {
     icon: AllTasksIcon,
     label: "All tasks",
-    to: "/todos/all-tasks",
+    to: "/todos/all",
   },
 ] as const;
 
