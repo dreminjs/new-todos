@@ -9,7 +9,7 @@ export const MyDayPage = () => {
         deadline={format(new Date(), "yyyy-MM-dd")}
         showAssignee={false}
         isMyToday={true}
-        limit={60}
+        limit={10}
       />
     </>
   );

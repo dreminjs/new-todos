@@ -3,7 +3,7 @@ import { TodoKanbanBoard } from "../ui/TodoKanbanBoard/TodoKandbanBoard";
 
 const TodosGroupPage = () => {
   const { groupId } = useParams();
-  return <TodoKanbanBoard todoGroupId={groupId} limit={60} />;
+  return <TodoKanbanBoard todoGroupId={groupId} limit={5} />;
 };
 
 export default TodosGroupPage;

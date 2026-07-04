@@ -1,6 +1,6 @@
 import styles from "./EditTodoModal.module.css";
 import type { FC } from "react";
-import { TodoFormBottom } from "../TodoFormBottom/TodoFormBottom";
+import { FormBottom } from "../../../../shared/";
 import { Button } from "@chakra-ui/react";
 import { useDeleteTodo } from "../../api/queries";
 
@@ -29,7 +29,7 @@ export const EditTodoFormBottom: FC<IEditTodoFormBottomProps> = ({
       >
         Delete
       </Button>
-      <TodoFormBottom onClose={onClose} isLoading={isEditLoading} />
+      <FormBottom onClose={onClose} isLoading={isEditLoading} />
     </div>
   );
 };

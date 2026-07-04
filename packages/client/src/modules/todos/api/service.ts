@@ -18,11 +18,12 @@ export const updateOne = async (
 export const findAll = async (
   query: TFindAllQuery,
   endpoint?: string,
+  nextCursor?: string,
 ): Promise<IItemsResponse<TTodo>> => {
   const { data } = await instance.get(
     "todos" + (endpoint ? `/${endpoint}` : ""),
     {
-      params: query,
+      params: { ...query, cursor: nextCursor },
     },
   );
   return data;

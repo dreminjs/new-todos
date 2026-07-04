@@ -4,6 +4,7 @@ import {
   FormField,
   Modal,
   CustomSelect,
+  FormBottom,
 } from "../../../../shared";
 import { useCreateTodo } from "../../api/queries";
 import { useGetParticipants } from "../../../workspaces";
@@ -16,7 +17,6 @@ import {
   TODO_STATUS_OPTIONS,
 } from "../../model/todo.constants";
 import styles from "./AddTodoModal.module.css";
-import { TodoFormBottom } from "../TodoFormBottom/TodoFormBottom";
 import {
   buildTodoFormSchema,
   type TCreateTodoForm,
@@ -33,7 +33,6 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
   showAssignee,
   ...props
 }) => {
-  // console.log(props.todoGroupId);
   const formSchema = useMemo(
     () => buildTodoFormSchema(props.planned),
     [props.planned],
@@ -155,7 +154,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
             />
           )}
         />
-        <TodoFormBottom
+        <FormBottom
           className={styles.todoFormBottom}
           onClose={props.onClose}
           isLoading={rest.isPending}

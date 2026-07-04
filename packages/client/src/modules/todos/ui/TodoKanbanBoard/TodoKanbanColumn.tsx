@@ -1,4 +1,4 @@
-import { Fragment, useState, type FC } from "react";
+import { Fragment, useCallback, useRef, useState, type FC } from "react";
 import type {
   ICreateTodoContext,
   IKanbanColumn,
@@ -11,9 +11,9 @@ import { useDroppable } from "@dnd-kit/react";
 import { PRIORITY_WEIGHT } from "../../model/todo.constants";
 import { EditTodoModal } from "../EditTodoModal/EditTodoModal";
 import { TodoKanbanHeader } from "./TodoKanbanHeader";
+import { useOnInView } from "react-intersection-observer";
 import type { TTodo } from "types";
 import styles from "./TodoKanbanBoard.module.css";
-
 type TKanbanColumn = IKanbanColumn & {
   showAssignee: boolean;
   endpoint?: string;
@@ -26,16 +26,31 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
   endpoint,
   ...props
 }) => {
-  const { ref } = useDroppable({
+  const { ref: droppableRef } = useDroppable({
     id: props.status,
   });
 
-  const { data: todos, isLoading } = useGetTodos(
+  const {
+    data: todos,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetTodos(
     {
       ...props,
       status: props.status,
     },
     endpoint,
+  );
+  const trackingRef = useOnInView(
+    (inView, entry) => {
+      if (inView && hasNextPage) {
+        fetchNextPage();
+      }
+    },
+    {
+      rootMargin: "200px",
+    },
   );
 
   const [editingTodo, setEditingTodo] = useState<TTodo>(null);
@@ -57,7 +72,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
           handleTodoModalToggle={handleTodoModalToggle}
           isPostDisabled={isLoading}
         />
-        <ul className={styles.TodoKanbanBoardColumnList} ref={ref}>
+        <ul className={styles.TodoKanbanBoardColumnList} ref={droppableRef}>
           {todos?.pages?.map((page) => (
             <Fragment key={`draggable-${page.nextCursor}-${props.status}`}>
               {page.items
@@ -75,6 +90,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
                     {...item}
                   />
                 ))}
+              <li ref={trackingRef} aria-hidden="true" />
             </Fragment>
           ))}
         </ul>

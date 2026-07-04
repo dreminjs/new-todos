@@ -5,7 +5,6 @@ import {
   Portal,
   Heading,
   Separator,
-  Button,
 } from "@chakra-ui/react";
 import styles from "./Modal.module.css";
 

@@ -1,5 +1,5 @@
 import { TodoKanbanBoard } from "../ui/TodoKanbanBoard/TodoKandbanBoard";
 
 export const AllTodosPage = () => {
-  return <TodoKanbanBoard limit={60} />;
+  return <TodoKanbanBoard limit={10} />;
 };

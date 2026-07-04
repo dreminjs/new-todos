@@ -3,3 +3,5 @@ export * from "./ui/Modal/Modal";
 export * from "./ui/FormField/FormField";
 export * from "./ui/CustomSelect/CustomSelect";
 export * from "./ui/CustomDatePicker/CustomDatePicker";
+export * from "./ui/Button/Button";
+export * from "./ui/FormBottom/FormBottom";
