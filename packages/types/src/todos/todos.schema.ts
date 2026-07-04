@@ -34,6 +34,7 @@ export const findTodosSchema = z.object({
   assignedUserId: z.string().optional(),
   priority: prioritySchema.optional(),
   status: statusSchema,
+  todoGroupId: z.string().uuid().optional(),
   planned: boolean.optional(),
   assignedMe: boolean.optional(),
   isMyToday: boolean.optional(),

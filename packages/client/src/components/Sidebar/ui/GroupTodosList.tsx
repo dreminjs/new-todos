@@ -17,7 +17,7 @@ export const GroupTodosList = () => {
       </h3>
       <ul>
         {data.map((el) => (
-          <SidebarMenuItem label={el.name} />
+          <SidebarMenuItem label={el.name} to={`/todos/group/${el.id}`} />
         ))}
       </ul>
     </div>

@@ -33,6 +33,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
   showAssignee,
   ...props
 }) => {
+  // console.log(props.todoGroupId);
   const formSchema = useMemo(
     () => buildTodoFormSchema(props.planned),
     [props.planned],

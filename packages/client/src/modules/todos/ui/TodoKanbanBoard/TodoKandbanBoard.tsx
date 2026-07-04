@@ -1,17 +1,18 @@
 import { DragDropProvider, DragOverlay } from "@dnd-kit/react";
 import { type FC } from "react";
 import { TodoKanbanColumn } from "./TodoKanbanColumn";
-import styles from "./TodoKanbanBoard.module.css";
 import type {
   ICreateTodoContext,
   TFindAllQuery,
 } from "../../model/todo.interface";
 import { useUpdateTodoStatus } from "../../api/queries";
-import type { TTodo } from "types";
 import { TodoItem } from "./TodoItem";
+import type { TTodo } from "types";
+import styles from "./TodoKanbanBoard.module.css";
 type TTodoKanbanBoardProps = Omit<TFindAllQuery, "status"> & {
   showAssignee?: boolean;
   endpoint?: string;
+  todoGroupId?: string;
 } & Omit<ICreateTodoContext, "status">;
 export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
   showAssignee,

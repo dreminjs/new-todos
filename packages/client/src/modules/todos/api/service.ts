@@ -3,6 +3,7 @@ import { instance } from "../../../shared/api/api.instance";
 import type { TCreateTodo, TFindAllQuery } from "../model/todo.interface";
 
 export const createOne = async (data: TCreateTodo): Promise<TTodo> => {
+  console.log(data);
   return (await instance.post("/todos", data)).data;
 };
 
