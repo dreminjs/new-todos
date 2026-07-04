@@ -10,7 +10,7 @@ import { useUpdateTodoStatus } from "../../api/queries";
 import type { TTodo } from "types";
 import { TodoItem } from "./TodoItem";
 type TTodoKanbanBoardProps = Omit<TFindAllQuery, "status"> & {
-  showAssignee: boolean;
+  showAssignee?: boolean;
   endpoint?: string;
 } & Omit<ICreateTodoContext, "status">;
 export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
@@ -19,13 +19,11 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
   ...props
 }) => {
   const { setActiveTodo, handleDragEnd, activeTodo } = useUpdateTodoStatus();
-
   return (
     <>
       <DragDropProvider
         onDragStart={(e) => {
           const data = e.operation.source?.data;
-          console.log(e);
           setActiveTodo({
             id: data?.id,
             title: data?.title,

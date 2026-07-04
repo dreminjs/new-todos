@@ -1,26 +1,24 @@
-import { Fragment, useEffect, useState, type FC } from "react";
+import { Fragment, useState, type FC } from "react";
 import type {
   ICreateTodoContext,
   IKanbanColumn,
   TFindAllQuery,
 } from "../../model/todo.interface";
 import { TodoItem } from "./TodoItem";
-import styles from "./TodoKanbanBoard.module.css";
 import { AddTodoModal } from "../AddTodoModal/AddTodoModal";
 import { useGetTodos } from "../../api/queries";
-import { Skeleton } from "@chakra-ui/react";
 import { useDroppable } from "@dnd-kit/react";
 import { PRIORITY_WEIGHT } from "../../model/todo.constants";
 import { EditTodoModal } from "../EditTodoModal/EditTodoModal";
-import type { TTodo } from "types";
 import { TodoKanbanHeader } from "./TodoKanbanHeader";
-import { TodoKanbanBoardSkeleton } from "./TodoBanbanBoardSkeleton";
+import type { TTodo } from "types";
+import styles from "./TodoKanbanBoard.module.css";
 
 type TKanbanColumn = IKanbanColumn & {
   showAssignee: boolean;
   endpoint?: string;
 } & ICreateTodoContext &
-  Omit<TFindAllQuery, "priority">;
+  TFindAllQuery;
 
 export const TodoKanbanColumn: FC<TKanbanColumn> = ({
   title,
@@ -89,6 +87,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
         todoGroupId={props.todoGroupId}
         workspaceId={props.workspaceId}
         status={props.status}
+        priority={props.priority}
       />
       {editingTodo?.id && (
         <EditTodoModal

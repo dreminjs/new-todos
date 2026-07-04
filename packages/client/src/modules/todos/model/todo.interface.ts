@@ -19,8 +19,9 @@ export interface ICreateTodoContext {
   workspaceId?: TTodo["workspaceId"];
   todoGroupId?: TTodo["todoGroupId"];
   status: TTodoStatus;
+  priority?: TTodo["priority"];
 }
 
-export type TCreateTodoContext = keyof ICreateTodoContext;
+export type CreateTodoContextKeys = keyof ICreateTodoContext;
 
-export type TFindAllQuery = Omit<z.infer<typeof findTodosSchema>, "priority">;
+export type TFindAllQuery = z.infer<typeof findTodosSchema>;

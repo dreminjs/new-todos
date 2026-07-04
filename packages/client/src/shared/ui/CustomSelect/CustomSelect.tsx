@@ -21,6 +21,7 @@ interface ISelectProps<T> {
   color?: string;
   value?: string;
   onChange?: (value: string) => void;
+  disabled?: boolean;
 }
 
 export function CustomSelect<T>({
@@ -32,9 +33,10 @@ export function CustomSelect<T>({
   onChange,
   label,
   value,
+  disabled,
 }: ISelectProps<T>) {
   const collection = createListCollection({ items: options });
-
+  console.log(disabled);
   return (
     <Field.Root invalid={!!error} className={className}>
       <Field.Label fontSize="md">{label}</Field.Label>
@@ -54,6 +56,7 @@ export function CustomSelect<T>({
             borderColor="colorPalette.muted"
             bg="colorPalette.subtle"
             color="colorPalette.fg"
+            disabled={disabled}
           >
             <Select.ValueText placeholder={placeholder} />
           </Select.Trigger>

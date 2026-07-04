@@ -43,6 +43,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
     resolver: zodResolver(todoFormSchema),
     defaultValues: {
       status: props.status,
+      priority: props.priority,
     },
   });
 
@@ -52,12 +53,13 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
       workspaceId: props.workspaceId,
       isMyToday: props.isMyToday,
       todoGroupId: props.todoGroupId,
+      priority: props.priority,
     },
     reset,
   );
 
   const { data } = useGetParticipants({ enable: showAssignee });
-
+  console.log(props.priority);
   return (
     <Modal title="Add Todo" {...props}>
       <form onSubmit={handleSubmit(mutate)} className={styles.addTodoForm}>
@@ -104,6 +106,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
               options={TODO_PRIORITY_OPTIONS}
               className={styles.selectPriority}
               placeholder="Priority"
+              disabled={Boolean(props.priority)}
               color={
                 watch("priority") && COLOR_TODO_PRIORITY[watch("priority")]
               }
