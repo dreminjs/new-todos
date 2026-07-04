@@ -42,6 +42,9 @@ export function CustomDatePicker({
               <DatePicker.Trigger>
                 <LuCalendar />
               </DatePicker.Trigger>
+              <DatePicker.Trigger>
+                <DatePicker.ClearTrigger />
+              </DatePicker.Trigger>
             </DatePicker.IndicatorGroup>
           </DatePicker.Control>
           <Portal>

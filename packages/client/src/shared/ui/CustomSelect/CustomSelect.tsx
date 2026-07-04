@@ -36,7 +36,6 @@ export function CustomSelect<T>({
   disabled,
 }: ISelectProps<T>) {
   const collection = createListCollection({ items: options });
-  console.log(disabled);
   return (
     <Field.Root invalid={!!error} className={className}>
       <Field.Label fontSize="md">{label}</Field.Label>
