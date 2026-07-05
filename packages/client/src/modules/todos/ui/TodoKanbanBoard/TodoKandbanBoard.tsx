@@ -9,11 +9,13 @@ import { useUpdateTodoStatus } from "../../api/queries";
 import { TodoItem } from "./TodoItem";
 import type { TTodo } from "types";
 import styles from "./TodoKanbanBoard.module.css";
-type TTodoKanbanBoardProps = Omit<TFindAllQuery, "status"> & {
+import { toDate } from "../../../../shared/model/date.helper";
+type TTodoKanbanBoardProps = Omit<TFindAllQuery, "status" | "deadline"> & {
   showAssignee?: boolean;
   endpoint?: string;
   todoGroupId?: string;
-} & Omit<ICreateTodoContext, "status">;
+  deadline?: string;
+} & Omit<ICreateTodoContext, "status" | "deadline">;
 export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
   showAssignee,
   endpoint,
@@ -36,32 +38,36 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
       >
         <ul className={styles.TodoKanbanBoardList}>
           <TodoKanbanColumn
+            {...props}
             endpoint={endpoint}
             showAssignee={showAssignee}
             title={"PENDING"}
             status="PENDING"
-            {...props}
+            deadline={toDate(props.deadline)}
           />
           <TodoKanbanColumn
+            {...props}
             endpoint={endpoint}
             showAssignee={showAssignee}
             title={"IN PROGRESS"}
             status={"IN_PROGRESS"}
-            {...props}
+            deadline={toDate(props.deadline)}
           />
           <TodoKanbanColumn
+            {...props}
             endpoint={endpoint}
             showAssignee={showAssignee}
             title={"COMPLETED"}
             status={"COMPLETED"}
-            {...props}
+            deadline={toDate(props.deadline)}
           />
           <TodoKanbanColumn
+            {...props}
             endpoint={endpoint}
             showAssignee={showAssignee}
             title={"CANCELLED"}
             status={"CANCELLED"}
-            {...props}
+            deadline={toDate(props.deadline)}
           />
         </ul>
         <DragOverlay>

@@ -1,9 +1,10 @@
 import { useDraggable } from "@dnd-kit/react";
 import { formatToLocalYYYYMMDD } from "../../../../shared/model/date.helper";
 import { TodoItemView } from "../../views/TodoItem";
-import type { TTodo } from "types";
+import type { TExtendedTodo } from "types";
 import type { FC } from "react";
-type TProps = TTodo & { isOverlay?: boolean; onChoose?: () => void };
+import { format } from "date-fns/format";
+type TProps = TExtendedTodo & { isOverlay?: boolean; onChoose?: () => void };
 export const TodoItem: FC<TProps> = ({
   title,
   id,
@@ -25,9 +26,14 @@ export const TodoItem: FC<TProps> = ({
   const isExpired =
     new Date(props.deadline) < new Date(formatToLocalYYYYMMDD(new Date()));
 
+  const formattedDeadline = props.deadline
+    ? format(new Date(props.deadline), "MMM d")
+    : undefined;
+
   return (
     <TodoItemView
-      deadline={props.deadline}
+      isMyToday={props.isMyToday}
+      deadline={formattedDeadline}
       isExpired={isExpired}
       isOverlay={props.isOverlay}
       title={title}
@@ -36,6 +42,9 @@ export const TodoItem: FC<TProps> = ({
       onClick={onChoose}
       status={status}
       priority={priority}
+      todoGroup={props.todoGroup}
+      workspace={props.workspace}
+      isDescriptionVisible={Boolean(props.description)}
     />
   );
 };

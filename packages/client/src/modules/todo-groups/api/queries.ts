@@ -1,5 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { findGroups, createOne, updateOne, deleteOne } from "./service";
+import {
+  findGroups,
+  createOne,
+  updateOne,
+  deleteOne,
+  findOne,
+} from "./service";
 import { useNotificationStore } from "../../notifications/model/notification.store";
 import type { TCreateTodoGroup } from "types";
 
@@ -79,6 +85,9 @@ export const useUpdateTodoGroup = (todoId: string) => {
       client.invalidateQueries({
         queryKey: ["todo-groups"],
       });
+      client.invalidateQueries({
+        queryKey: ["todos"],
+      });
     },
     onError: () => {
       addNotification({
@@ -86,5 +95,12 @@ export const useUpdateTodoGroup = (todoId: string) => {
         message: "Failed to update todo group",
       });
     },
+  });
+};
+
+export const useGetTodoGroup = (id: string) => {
+  return useQuery({
+    queryKey: ["todo-groups", id],
+    queryFn: () => findOne(id),
   });
 };

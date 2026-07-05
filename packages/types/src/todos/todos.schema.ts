@@ -1,4 +1,6 @@
 import * as z from "zod";
+import { workspaceSchema } from "../workspace/workspace.schema.js";
+import { todoGroupSchema } from "../todo-groups/todo-groups.schema.js";
 
 export const statusSchema = z.enum([
   "PENDING",
@@ -9,24 +11,31 @@ export const statusSchema = z.enum([
 
 export const prioritySchema = z.enum(["LOW", "MEDIUM", "HIGH"]);
 
-const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
-
-const boolean = z.coerce.boolean();
-
+const date = z.coerce.date();
 export const todoSchema = z.object({
   id: z.string().uuid(),
   title: z.string().min(2),
-  description: z.string().optional(),
-  priority: prioritySchema.optional(),
+  description: z.string(),
+  priority: prioritySchema.optional().nullable(),
   status: statusSchema.nullable(),
-  completed: boolean.default(false),
-  isMyToday: boolean.optional(),
+  isMyToday: z.boolean(),
   createdAt: date,
+  updatedAt: date,
   userId: z.string().uuid(),
-  workspaceId: z.string().uuid().optional(),
-  todoGroupId: z.string().uuid().optional(),
-  deadline: date.optional(),
+  workspaceId: z.string().uuid().nullable().optional(),
+  todoGroupId: z.string().uuid().nullable().optional(),
+  deadline: date.nullable().optional(),
 });
+
+export const extendedTodoSchema = todoSchema
+  .omit({
+    workspaceId: true,
+    todoGroupId: true,
+  })
+  .extend({
+    workspace: workspaceSchema.nullable(),
+    todoGroup: todoGroupSchema.nullable(),
+  });
 
 export const findTodosSchema = z.object({
   deadline: date.optional(),
@@ -35,9 +44,9 @@ export const findTodosSchema = z.object({
   priority: prioritySchema.optional(),
   status: statusSchema,
   todoGroupId: z.string().uuid().optional(),
-  planned: boolean.optional(),
-  assignedMe: boolean.optional(),
-  isMyToday: boolean.optional(),
+  planned: z.coerce.boolean().optional(),
+  assignedMe: z.coerce.boolean().optional(),
+  isMyToday: z.coerce.boolean().optional(),
   cursor: z.string().uuid().optional(),
   limit: z.coerce.number(),
 });

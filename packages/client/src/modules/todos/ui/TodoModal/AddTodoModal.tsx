@@ -1,42 +1,43 @@
-import { type FC } from "react";
+import { useEffect, useMemo, type FC } from "react";
 import {
   CustomDatePicker,
   FormField,
   Modal,
   CustomSelect,
+  FormBottom,
+  CustomCheckbox,
 } from "../../../../shared";
-import { useUpdateTodo } from "../../api/queries";
+import { useCreateTodo } from "../../api/queries";
 import { useGetParticipants } from "../../../workspaces";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { todoFormSchema } from "../../model/todo.schema";
-import type {
-  ICreateTodoContext,
-  TCreateTodo,
-} from "../../model/todo.interface";
+import type { ICreateTodoContext } from "../../model/todo.interface";
 import {
   COLOR_TODO_PRIORITY,
   TODO_PRIORITY_OPTIONS,
   TODO_STATUS_OPTIONS,
 } from "../../model/todo.constants";
-import styles from "./EditTodoModal.module.css";
-import { EditTodoFormBottom } from "./EditFormBottom";
+import styles from "./TodoModal.module.css";
+import {
+  buildTodoFormSchema,
+  type TCreateTodoForm,
+} from "../../model/buildTodo.schema";
 
-type TEditTodoModalProps = {
+type TAddTodoModalProps = {
   onClose: () => void;
   isOpen: boolean;
   showAssignee: boolean;
-  todoId: string;
-} & TCreateTodo &
-  ICreateTodoContext;
+  planned: boolean;
+} & ICreateTodoContext;
 
-export const EditTodoModal: FC<TEditTodoModalProps> = ({
-  isOpen,
+export const AddTodoModal: FC<TAddTodoModalProps> = ({
   showAssignee,
-  onClose,
-  todoId,
   ...props
 }) => {
+  const formSchema = useMemo(
+    () => buildTodoFormSchema(props.planned),
+    [props.planned],
+  );
   const {
     register,
     control,
@@ -44,24 +45,20 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
     watch,
     handleSubmit,
     reset,
-  } = useForm<TCreateTodo>({
-    resolver: zodResolver(todoFormSchema),
+  } = useForm<TCreateTodoForm>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       status: props.status,
-      title: props.title,
-      description: props.description,
       priority: props.priority,
-      deadline: props.deadline,
     },
   });
 
-  const { mutate, ...rest } = useUpdateTodo(
+  const { mutate, ...rest } = useCreateTodo(
     {
-      todoId,
       status: props.status,
       workspaceId: props.workspaceId,
-      isMyToday: props.isMyToday,
       todoGroupId: props.todoGroupId,
+      priority: props.priority,
     },
     reset,
   );
@@ -69,16 +66,16 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
   const { data } = useGetParticipants({ enable: showAssignee });
 
   return (
-    <Modal onClose={onClose} isOpen={isOpen} title="Edit Todo">
-      <form onSubmit={handleSubmit(mutate)} className={styles.editTodoForm}>
-        <FormField<TCreateTodo>
+    <Modal title="Add Todo" {...props}>
+      <form onSubmit={handleSubmit(mutate)} className={styles.todoForm}>
+        <FormField<TCreateTodoForm>
           name={"title"}
           register={register}
           error={errors.title?.message}
           label={"Title"}
           className={styles.fieldTitle}
         />
-        <FormField<TCreateTodo>
+        <FormField<TCreateTodoForm>
           name={"description"}
           register={register}
           error={errors.description?.message}
@@ -86,6 +83,20 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
           isTextarea
           className={styles.fieldDescription}
         />
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <CustomCheckbox
+              onChange={field.onChange}
+              value={field.value}
+              className={styles.toggleIsMyDayCheckbox}
+              variant={"outline"}
+              title="Is my day"
+            />
+          )}
+          name={"isMyToday"}
+        />
+
         <Controller
           render={({ field }) => (
             <CustomSelect
@@ -102,6 +113,7 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
           name={"status"}
           control={control}
         />
+
         <Controller
           render={({ field }) => (
             <CustomSelect
@@ -113,6 +125,7 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
               options={TODO_PRIORITY_OPTIONS}
               className={styles.selectPriority}
               placeholder="Priority"
+              disabled={Boolean(props.priority)}
               color={
                 watch("priority") && COLOR_TODO_PRIORITY[watch("priority")]
               }
@@ -142,6 +155,7 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
             control={control}
           />
         )}
+
         <Controller
           control={control}
           name={"deadline"}
@@ -150,13 +164,15 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
               label="Deadline"
               value={field.value}
               onChange={field.onChange}
+              error={errors.deadline?.message}
             />
           )}
         />
-        <EditTodoFormBottom
-          todoId={todoId}
-          onClose={onClose}
-          isEditLoading={rest.isPending}
+
+        <FormBottom
+          className={styles.todoFormBottom}
+          onClose={props.onClose}
+          isLoading={rest.isPending}
         />
       </form>
     </Modal>

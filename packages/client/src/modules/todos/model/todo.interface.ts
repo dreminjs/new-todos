@@ -15,7 +15,6 @@ export interface IStatus {
 export type TCreateTodo = z.infer<typeof todoFormSchema>;
 
 export interface ICreateTodoContext {
-  isMyToday?: TTodo["isMyToday"];
   workspaceId?: TTodo["workspaceId"];
   todoGroupId?: TTodo["todoGroupId"];
   status: TTodoStatus;

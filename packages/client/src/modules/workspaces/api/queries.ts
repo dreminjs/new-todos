@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { findParticipants } from "./services";
+import { findManyMyWorkspaces, findParticipants } from "./services";
 
 interface UseGetParticipantsProps {
   enable: boolean;
@@ -14,5 +14,12 @@ export const useGetParticipants = ({
     queryKey: ["participants"],
     queryFn: findParticipants.bind(null, workspaceId),
     enabled: enable,
+  });
+};
+
+export const useGetMyWorkspaces = () => {
+  return useQuery({
+    queryKey: ["my-workspaces"],
+    queryFn: findManyMyWorkspaces,
   });
 };

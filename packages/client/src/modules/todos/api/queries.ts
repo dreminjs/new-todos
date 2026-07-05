@@ -76,7 +76,6 @@ export const useUpdateTodoStatus = () => {
   const queryClient = useQueryClient();
   const [activeTodo, setActiveTodo] = useState<TTodo | null>(null);
   const handleDragEnd = (e: DragEndEvent) => {
-    console.log(e);
     const todoId = e.operation.source?.id.toString().split("_")[1] as string;
     const newStatus = e.operation.target?.id as TTodoStatus;
 

@@ -59,3 +59,9 @@
 .TodoItemExpired {
   color: #ba1a1a;
 }
+
+.TodoItemBottomInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

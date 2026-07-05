@@ -12,6 +12,7 @@ interface IDatePickerProps {
   onChange: (value: Date) => void;
   error?: string;
   label: string;
+  className?: string;
 }
 
 export function CustomDatePicker({
@@ -19,11 +20,13 @@ export function CustomDatePicker({
   onChange,
   error,
   label,
+  className,
 }: IDatePickerProps) {
   return (
     <>
       <Field.Root invalid={!!error}>
         <DatePicker.Root
+          className={className}
           min={parseDate(formatToLocalYYYYMMDD(new Date()))}
           value={value ? [parseDate(formatToUTCYYYYMMDD(value))] : []}
           onValueChange={(e) => {

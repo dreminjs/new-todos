@@ -5,11 +5,11 @@ import type {
   TFindAllQuery,
 } from "../../model/todo.interface";
 import { TodoItem } from "./TodoItem";
-import { AddTodoModal } from "../AddTodoModal/AddTodoModal";
+import { AddTodoModal } from "../TodoModal/AddTodoModal";
 import { useGetTodos } from "../../api/queries";
 import { useDroppable } from "@dnd-kit/react";
 import { PRIORITY_WEIGHT } from "../../model/todo.constants";
-import { EditTodoModal } from "../EditTodoModal/EditTodoModal";
+import { EditTodoModal } from "../TodoModal/EditTodoModal";
 import { TodoKanbanHeader } from "./TodoKanbanHeader";
 import { useOnInView } from "react-intersection-observer";
 import type { TTodo } from "types";
@@ -43,7 +43,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
     endpoint,
   );
   const trackingRef = useOnInView(
-    (inView, entry) => {
+    (inView) => {
       if (inView && hasNextPage) {
         fetchNextPage();
       }
@@ -98,7 +98,6 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
       <AddTodoModal
         planned={props.planned}
         showAssignee={showAssignee}
-        isMyToday={props.isMyToday}
         todoGroupId={props.todoGroupId}
         workspaceId={props.workspaceId}
         status={props.status}
@@ -108,6 +107,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
       />
       {editingTodo?.id && (
         <EditTodoModal
+          isMyToday={editingTodo.isMyToday}
           todoId={editingTodo.id}
           onClose={handleSetEditTodo.bind(null, null)}
           isOpen={Boolean(editingTodo)}

@@ -11,3 +11,10 @@ export const formatToLocalYYYYMMDD = (date: Date) => {
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
+
+export const toDate = (
+  value: string | Date | undefined | null,
+): Date | undefined => {
+  if (!value) return undefined;
+  return value instanceof Date ? value : new Date(value);
+};

@@ -8,10 +8,9 @@ export const todoFormSchema = todoSchema
     priority: prioritySchema.optional().nullable(),
   })
   .omit({
-    completed: true,
-    isMyToday: true,
     createdAt: true,
     id: true,
     todoGroupId: true,
     workspaceId: true,
+    updatedAt: true,
   });

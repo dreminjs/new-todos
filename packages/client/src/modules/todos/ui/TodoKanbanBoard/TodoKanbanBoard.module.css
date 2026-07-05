@@ -1,8 +1,10 @@
 .TodoKanbanBoardList {
+  flex: 1;
   display: flex;
-  gap: 32px;
-  width: 100%;
-  height: 100%;
+  flex-wrap: nowrap;
+  gap: 12px;
+  overflow-x: auto;
+  min-height: 0;
 }
 
 .TodoKanbanBoardColumnList {
@@ -12,7 +14,6 @@
   gap: 12px;
   overflow-y: scroll;
   padding-right: 10px;
-  /*height: 100vh;*/
 }
 
 .TodoKanbanBoardHeading {
@@ -23,11 +24,11 @@
 }
 
 .TodoKanbanBoardColumn {
-  width: 320px;
+  flex: 0 0 420px;
+  min-width: 420px;
   display: flex;
   flex-direction: column;
 }
-
 .TodoKanbanBoardStatus {
   color: #191c1e;
   font-weight: 600;
@@ -50,4 +51,36 @@
 
 .TodoKanbanBoardPlus {
   font-size: 24px;
+}
+
+.TodoKanbanBoardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 0px 0px 10px 0px;
+  h3 {
+    font-size: 24px;
+  }
+  path {
+    fill: black;
+  }
+}
+
+.TodoKanbanBoardHeaderTitleContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.InputGroupTodoListTitleContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 1400px) {
+  .TodoKanbanBoardColumn {
+    min-width: 340px;
+  }
 }

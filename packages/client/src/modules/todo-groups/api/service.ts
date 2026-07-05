@@ -23,3 +23,7 @@ export const updateOne = async (
 ): Promise<TTodoGroup> => {
   return (await instance.put(`${URL}/${id}`, data)).data;
 };
+
+export const findOne = async (id: string): Promise<TTodoGroup | null> => {
+  return (await instance.get(`${URL}/${id}`)).data;
+};

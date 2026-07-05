@@ -43,4 +43,4 @@ export const sidebarMenuBottomData = [
     label: "Logout",
     icon: LogoutIcon,
   },
-];
+] as const;

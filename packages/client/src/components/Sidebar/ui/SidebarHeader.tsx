@@ -4,7 +4,7 @@ import { Link } from "react-router";
 
 export const SidebarHeader = () => {
   return (
-    <header className={styles.sidebarHeader}>
+    <header>
       <Link className={styles.sidebarHeaderLink} to="/home">
         <LogoIcon height={32} width={32} />
         <span className={styles.sidebarHeaderLinkContent}>

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  extendedTodoSchema,
   findTodosSchema,
   prioritySchema,
   statusSchema,
@@ -20,3 +21,4 @@ export interface ITodoKanbanBoard {
 export type TTodoStatus = z.infer<typeof statusSchema>;
 export type TTodoPriority = z.infer<typeof prioritySchema>;
 export type TUpdateTodoStatus = z.infer<typeof updateTodoStatusSchema>;
+export type TExtendedTodo = z.infer<typeof extendedTodoSchema>;
