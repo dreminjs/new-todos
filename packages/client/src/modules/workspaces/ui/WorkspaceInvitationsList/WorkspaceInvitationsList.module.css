@@ -1,0 +1,19 @@
+.workspaceInvitationListItem {
+  padding: 28px 24px;
+  border: 1px solid #191c1e;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  h3 {
+    font-size: 20px;
+    color: #191c1e;
+    font-weight: 600;
+    line-height: 28px;
+  }
+}
+
+.workspaceInvitationListItemActions {
+  display: flex;
+  gap: 12px;
+}

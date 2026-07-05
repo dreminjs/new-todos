@@ -14,9 +14,6 @@ export const GroupTodosList = () => {
   const handleToggleCreateTodoGroup = () => {
     setIsCreateTodoGroupOpen((prev) => !prev);
   };
-  if (!data?.length) {
-    return null;
-  }
 
   return (
     <>
@@ -30,7 +27,7 @@ export const GroupTodosList = () => {
         }
       >
         <ul>
-          {data.map((el) => (
+          {data?.map((el) => (
             <SidebarMenuItem label={el.name} to={`/todos/group/${el.id}`} />
           ))}
         </ul>

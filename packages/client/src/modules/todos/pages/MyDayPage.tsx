@@ -9,12 +9,11 @@ export const MyDayPage = () => {
     <KanbanPageWrapper>
       <SystemTodoKanbanBoardHeader
         icon={<SunIcon height={30} width={30} />}
-        title="Important Todos"
+        title="My day"
       />
       <TodoKanbanBoard
         endpoint="my-day"
         deadline={format(new Date(), "yyyy-MM-dd")}
-        showAssignee={false}
         isMyToday={true}
         limit={10}
       />

@@ -1,5 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
-import { findManyMyWorkspaces, findParticipants } from "./services";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  acceptInvitation,
+  createOne,
+  findManyMyWorkspaceInvitations,
+  findManyMyWorkspaces,
+  findMembership,
+  findParticipants,
+  inviteMember,
+  rejectInvitation,
+} from "./services";
+import { useNavigate } from "react-router";
+import { useNotificationStore } from "../../notifications/model/notification.store";
+import type { TWorkspaceInvitationForm } from "../model/workspace.types";
 
 interface UseGetParticipantsProps {
   enable: boolean;
@@ -19,7 +31,145 @@ export const useGetParticipants = ({
 
 export const useGetMyWorkspaces = () => {
   return useQuery({
-    queryKey: ["my-workspaces"],
+    queryKey: ["workspaces"],
     queryFn: findManyMyWorkspaces,
   });
+};
+
+export const useCreateWorkspace = () => {
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification,
+  );
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createOne,
+    onSuccess: (data) => {
+      addNotification({
+        message: "Workspace created successfully",
+        type: "success",
+      });
+      navigate(`/workspaces/${data.id}  `);
+      queryClient.invalidateQueries({
+        queryKey: ["workspaces"],
+      });
+    },
+    onError: () => {
+      addNotification({
+        message: "Failed to create workspace",
+        type: "error",
+      });
+    },
+  });
+};
+
+export const useGetMembershipResult = (workspaceId: string) => {
+  return useQuery({
+    queryKey: ["membership", workspaceId],
+    queryFn: findMembership.bind(null, workspaceId),
+    enabled: !!workspaceId,
+  });
+};
+
+export const useInviteMember = (workspaceId: string) => {
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification,
+  );
+  const { mutate, ...rest } = useMutation({
+    mutationFn: inviteMember,
+    onSuccess: () => {
+      addNotification({
+        message: "Member invited successfully",
+        type: "success",
+      });
+    },
+    onError: () => {
+      addNotification({
+        message: "Failed to invite member",
+        type: "error",
+      });
+    },
+  });
+
+  const handleInviteMember = (data: TWorkspaceInvitationForm) => {
+    mutate({ ...data, workspaceId });
+  };
+
+  return { mutate: handleInviteMember, ...rest };
+};
+
+export const useGetMyWorkspaceInvitations = () => {
+  return useQuery({
+    queryKey: ["workspaces", "invitations"],
+    queryFn: findManyMyWorkspaceInvitations,
+  });
+};
+
+export const useAcceptInvitation = () => {
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification,
+  );
+  const client = useQueryClient();
+  const { mutate, ...rest } = useMutation({
+    mutationFn: acceptInvitation,
+    onSuccess: () => {
+      addNotification({
+        message: "Invitation accepted successfully",
+        type: "success",
+      });
+      client.invalidateQueries({
+        queryKey: ["workspaces", "invitations"],
+      });
+      client.invalidateQueries({
+        queryKey: ["workspaces"],
+      });
+    },
+    onError: () => {
+      addNotification({
+        message: "Failed to accept invitation",
+        type: "error",
+      });
+    },
+  });
+
+  const handleAcceptInvitation = (invitationId: string) => {
+    mutate({ invitationId });
+  };
+
+  return { mutate: handleAcceptInvitation, ...rest };
+};
+
+export const useRejectInvitation = () => {
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification,
+  );
+  const client = useQueryClient();
+
+  const { mutate, ...rest } = useMutation({
+    mutationFn: rejectInvitation,
+    onSuccess: () => {
+      addNotification({
+        message: "Invitation rejected successfully",
+        type: "success",
+      });
+      client.invalidateQueries({
+        queryKey: ["workspaces", "invitations"],
+      });
+      client.invalidateQueries({
+        queryKey: ["workspaces"],
+      });
+    },
+    onError: (data) => {
+      addNotification({
+        message: "Failed to reject invitation: " + data?.message,
+        type: "error",
+      });
+    },
+  });
+
+  const handleRejectInvitation = (invitationId: string) => {
+    mutate({ invitationId });
+  };
+
+  return { mutate: handleRejectInvitation, ...rest };
 };

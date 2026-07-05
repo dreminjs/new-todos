@@ -29,7 +29,7 @@
 }
 
 .sidebarMenu {
-  margin-bottom: 32px;
+  /*margin-bottom: 32px;*/
 }
 
 .sidebarMenuItem {
@@ -67,6 +67,7 @@
 .sidebarBody {
   display: flex;
   flex-direction: column;
+  gap: 15px;
   overflow-y: auto;
   padding-right: 15px;
   flex: 1;
