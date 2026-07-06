@@ -97,13 +97,19 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
       <AddTodoModal
         planned={props.queryFilters?.planned}
         showAssignee={showAssignee}
-        todoGroupId={props.todoGroupId}
-        workspaceId={props.workspaceId}
-        status={props.status}
-        priority={props.priority}
         onClose={handleTodoModalToggle}
         isOpen={todoModalOpen}
-        isMyToday={props.isMyToday || false}
+        queryFilters={{
+          ...props.queryFilters,
+          status: props.status,
+        }}
+        todoContext={{
+          status: props.status,
+          workspaceId: props.workspaceId,
+          todoGroupId: props.todoGroupId,
+          priority: props.priority,
+          isMyToday: props.isMyToday,
+        }}
       />
       {editingTodo?.id && (
         <EditTodoModal

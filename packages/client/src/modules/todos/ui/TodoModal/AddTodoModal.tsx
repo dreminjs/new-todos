@@ -11,7 +11,10 @@ import { useCreateTodo } from "../../api/queries";
 import { useGetParticipants } from "../../../workspaces";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { ICreateTodoContext } from "../../model/todo.interface";
+import type {
+  ICreateTodoContext,
+  TFindAllQuery,
+} from "../../model/todo.interface";
 import {
   COLOR_TODO_PRIORITY,
   TODO_PRIORITY_OPTIONS,
@@ -28,7 +31,9 @@ type TAddTodoModalProps = {
   isOpen: boolean;
   showAssignee: boolean;
   planned: boolean;
-} & ICreateTodoContext;
+  queryFilters: TFindAllQuery;
+  todoContext?: ICreateTodoContext;
+};
 
 export const AddTodoModal: FC<TAddTodoModalProps> = ({
   showAssignee,
@@ -53,27 +58,19 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
   } = useForm<TCreateTodoForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      status: props.status,
-      priority: props.priority,
-      isMyToday: props.isMyToday,
+      status: props.todoContext?.status,
+      priority: props.todoContext?.priority,
+      isMyToday: props.todoContext?.isMyToday,
     },
   });
 
-  const { mutate, ...rest } = useCreateTodo(
-    {
-      status: props.status,
-      workspaceId: props.workspaceId,
-      todoGroupId: props.todoGroupId,
-      priority: props.priority,
-    },
-    handleSuccess,
-  );
+  const { mutate, ...rest } = useCreateTodo({
+    queryKeyFilters: props.queryFilters,
+    todoContext: props.todoContext,
+    cb: handleSuccess,
+  });
 
   const { data } = useGetParticipants({ enable: showAssignee });
-
-  // useEffect(() => {
-  //   console.log(errors);
-  // }, [errors]);
 
   return (
     <Modal title="Add Todo" {...props}>
@@ -138,7 +135,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
               options={TODO_PRIORITY_OPTIONS}
               className={styles.selectPriority}
               placeholder="Priority"
-              disabled={Boolean(props.priority)}
+              disabled={Boolean(props.todoContext?.priority)}
               color={
                 watch("priority") && COLOR_TODO_PRIORITY[watch("priority")]
               }

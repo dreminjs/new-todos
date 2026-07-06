@@ -27,45 +27,122 @@ import type {
 import type { DragEndEvent } from "@dnd-kit/react";
 import { useState } from "react";
 import { getTodosQueryKey } from "../model/todo.helper";
+import type { TCreateTodoForm } from "../model/buildTodo.schema";
 
-export const useCreateTodo = (dto: ICreateTodoContext, cb: () => void) => {
+export const useCreateTodo = ({
+  queryKeyFilters,
+  todoContext,
+  cb,
+}: {
+  queryKeyFilters: TFindAllQuery;
+  todoContext: ICreateTodoContext;
+  cb: () => void;
+}) => {
   const addNotification = useNotificationStore(
     (state) => state.addNotification,
   );
   const client = useQueryClient();
+  const queryKey = getTodosQueryKey(queryKeyFilters);
+
   const { mutate, ...rest } = useMutation({
     mutationFn: (data: TCreateTodo & ICreateTodoContext) => createOne(data),
-    onSuccess: () => {
+
+    onMutate: async (newTodo) => {
+      await client.cancelQueries({ queryKey });
+
+      const previousData =
+        client.getQueryData<InfiniteData<IItemsResponse<TTodo>>>(queryKey);
+
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        queryKey,
+        (old) => {
+          if (!old) return old;
+
+          const [firstPage, ...restPages] = old.pages;
+
+          return {
+            ...old,
+            pages: [
+              {
+                ...firstPage,
+                items: [
+                  {
+                    ...newTodo,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                  } as TTodo,
+                  ...firstPage.items,
+                ],
+                total: firstPage.total + 1,
+              },
+              ...restPages,
+            ],
+          };
+        },
+      );
+
+      return { previousData };
+    },
+
+    onSuccess: (serverTodo) => {
       addNotification({
         message: "Todo created successfully",
         type: "success",
       });
-      client.invalidateQueries({ queryKey: ["todos"] });
+
+      console.log(serverTodo);
+
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        queryKey,
+        (old) => {
+          console.log(old);
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.map((todo) =>
+                todo.id === serverTodo.id ? serverTodo : todo,
+              ),
+            })),
+          };
+        },
+      );
+
       cb();
     },
-    onError: () => {
+
+    onError: (_err, _newTodo, context) => {
       addNotification({
         message: "Failed to create todo",
         type: "error",
       });
+
+      if (context?.previousData) {
+        client.setQueryData(queryKey, context.previousData);
+      }
+
       cb();
     },
   });
 
-  const handleCreateTodo = (data: TCreateTodo) => {
-    mutate({ ...dto, ...data });
+  const handleMutate = (data: TCreateTodoForm) => {
+    mutate({ ...data, ...todoContext });
   };
 
-  return { ...rest, mutate: handleCreateTodo };
+  return {
+    mutate: handleMutate,
+    ...rest,
+  };
 };
 
 export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
-  console.log(getTodosQueryKey(query), "get todos");
   return useInfiniteQuery({
     queryKey: getTodosQueryKey(query),
     queryFn: ({ pageParam }) => findAll(query, endpoint, pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
+    refetchOnWindowFocus: false,
   });
 };
 
