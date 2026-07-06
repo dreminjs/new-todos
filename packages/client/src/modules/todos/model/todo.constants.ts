@@ -1,5 +1,6 @@
 import type { TTodoPriority, TTodoStatus } from "types";
 import styles from "../views/TodoItem/TodoItemView.module.css";
+import type { TFindAllQuery } from "./todo.interface";
 export const TODO_STATUS = {
   TODO: "todo",
   IN_PROGRESS: "in-progress",
@@ -42,3 +43,17 @@ export const TODO_PRIORITY_OPTIONS = [
   { value: "MEDIUM", label: "Medium" },
   { value: "HIGH", label: "High" },
 ] as { value: TTodoPriority; label: string }[];
+
+export const TODOS_QUERY_FIELDS = [
+  "status",
+  "limit",
+  "deadline",
+  "workspaceId",
+  "assignedUserId",
+  "priority",
+  "todoGroupId",
+  "planned",
+  "assignedMe",
+  "isMyToday",
+  "cursor",
+] as const;

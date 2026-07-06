@@ -14,6 +14,7 @@ import { todoFormSchema } from "../../model/todo.schema";
 import type {
   ICreateTodoContext,
   TCreateTodo,
+  TFindAllQuery,
 } from "../../model/todo.interface";
 import {
   COLOR_TODO_PRIORITY,
@@ -28,8 +29,9 @@ type TEditTodoModalProps = {
   isOpen: boolean;
   showAssignee: boolean;
   todoId: string;
-} & TCreateTodo &
-  ICreateTodoContext;
+  queryFilters: TFindAllQuery;
+  dto: TCreateTodo & ICreateTodoContext;
+};
 
 export const EditTodoModal: FC<TEditTodoModalProps> = ({
   isOpen,
@@ -48,21 +50,21 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
   } = useForm<TCreateTodo>({
     resolver: zodResolver(todoFormSchema),
     defaultValues: {
-      status: props.status,
-      title: props.title,
-      description: props.description,
-      priority: props.priority,
-      deadline: props.deadline,
-      isMyToday: props.isMyToday,
+      status: props.dto.status,
+      title: props.dto.title,
+      description: props.dto.description,
+      priority: props.dto.priority,
+      deadline: props.dto.deadline,
+      isMyToday: props.dto.isMyToday,
     },
   });
 
   const { mutate, ...rest } = useUpdateTodo(
     {
       todoId,
-      status: props.status,
-      workspaceId: props.workspaceId,
-      todoGroupId: props.todoGroupId,
+      status: props.dto.status,
+      workspaceId: props.dto.workspaceId,
+      todoGroupId: props.dto.todoGroupId,
     },
     reset,
   );
@@ -173,6 +175,7 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
           todoId={todoId}
           onClose={onClose}
           isEditLoading={rest.isPending}
+          queryFilters={props.queryFilters}
         />
       </form>
     </Modal>

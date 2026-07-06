@@ -13,9 +13,12 @@ export const MyDayPage = () => {
       />
       <TodoKanbanBoard
         endpoint="my-day"
-        deadline={format(new Date(), "yyyy-MM-dd")}
         isMyToday={true}
-        limit={10}
+        queryFilters={{
+          isMyToday: true,
+          limit: 10,
+          deadline: new Date(format(new Date(), "yyyy-MM-dd")),
+        }}
       />
     </KanbanPageWrapper>
   );

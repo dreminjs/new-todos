@@ -19,6 +19,7 @@ export interface ICreateTodoContext {
   todoGroupId?: TTodo["todoGroupId"];
   status: TTodoStatus;
   priority?: TTodo["priority"];
+  isMyToday?: TTodo["isMyToday"];
 }
 
 export type CreateTodoContextKeys = keyof ICreateTodoContext;

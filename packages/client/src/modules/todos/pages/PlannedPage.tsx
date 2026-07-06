@@ -10,7 +10,12 @@ const PlannedPage = () => {
         icon={<PlannedIcon height={30} width={30} />}
         title="Planned Todos"
       />
-      <TodoKanbanBoard planned limit={10} />
+      <TodoKanbanBoard
+        queryFilters={{
+          planned: true,
+          limit: 10,
+        }}
+      />
     </KanbanPageWrapper>
   );
 };

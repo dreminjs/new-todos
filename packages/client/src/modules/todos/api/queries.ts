@@ -26,11 +26,9 @@ import type {
 } from "types";
 import type { DragEndEvent } from "@dnd-kit/react";
 import { useState } from "react";
+import { getTodosQueryKey } from "../model/todo.helper";
 
-export const useCreateTodo = (
-  dto: ICreateTodoContext,
-  reset: UseFormReset<TCreateTodo>,
-) => {
+export const useCreateTodo = (dto: ICreateTodoContext, cb: () => void) => {
   const addNotification = useNotificationStore(
     (state) => state.addNotification,
   );
@@ -43,14 +41,14 @@ export const useCreateTodo = (
         type: "success",
       });
       client.invalidateQueries({ queryKey: ["todos"] });
-      reset();
+      cb();
     },
     onError: () => {
       addNotification({
         message: "Failed to create todo",
         type: "error",
       });
-      reset();
+      cb();
     },
   });
 
@@ -62,11 +60,10 @@ export const useCreateTodo = (
 };
 
 export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
+  console.log(getTodosQueryKey(query), "get todos");
   return useInfiniteQuery({
-    queryKey: ["todos", query],
-    queryFn: ({ pageParam }) => {
-      return findAll(query, endpoint, pageParam);
-    },
+    queryKey: getTodosQueryKey(query),
+    queryFn: ({ pageParam }) => findAll(query, endpoint, pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -171,38 +168,40 @@ export const useUpdateTodo = (
   };
 };
 
-export const useDeleteTodo = () => {
+export const useDeleteTodo = (dto: TFindAllQuery) => {
   const client = useQueryClient();
   const addNotification = useNotificationStore(
     (state) => state.addNotification,
   );
   const { mutate, ...props } = useMutation({
     mutationFn: (todoId: string) => deleteOne(todoId),
-    onSuccess: () => {
+    onSuccess: (_data, todoId) => {
       addNotification({
         message: "Todo deleted successfully",
         type: "success",
       });
-      client.invalidateQueries({ queryKey: ["todos"] });
+
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        getTodosQueryKey(dto),
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((todo) => todo.id !== todoId),
+            })),
+            total:
+              oldData.pages.reduce((acc, page) => acc + page.items.length, 0) -
+              1,
+          };
+        },
+      );
     },
     onError: () => {
       addNotification({ message: "Failed to delete todo", type: "error" });
     },
-    onMutate: async (id: string) => {
-      await client.cancelQueries({ queryKey: ["my-day"] });
-
-      const previous = client.getQueryData<TTodo[]>(["my-day"]);
-
-      client.setQueryData<TTodo[]>(["my-day"], (old) =>
-        old?.filter((todo) => todo.id !== id),
-      );
-
-      return { previous };
-    },
   });
 
-  return {
-    mutate,
-    ...props,
-  };
+  return { mutate, ...props };
 };

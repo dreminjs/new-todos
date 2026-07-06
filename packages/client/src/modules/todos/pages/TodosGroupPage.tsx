@@ -9,7 +9,7 @@ const TodosGroupPage = () => {
   const { groupId } = useParams();
   const { data: todoGroup, isPending } = useGetTodoGroup(groupId!);
 
-  if (isPending && todoGroup) return <GlobalLoadingSpinner />;
+  if (isPending && !todoGroup) return <GlobalLoadingSpinner />;
 
   return (
     <KanbanPageWrapper>
@@ -17,7 +17,12 @@ const TodosGroupPage = () => {
         name={todoGroup?.name}
         todoGroupId={groupId}
       />
-      <TodoKanbanBoard todoGroupId={groupId} limit={10} />
+      <TodoKanbanBoard
+        queryFilters={{
+          todoGroupId: groupId,
+          limit: 10,
+        }}
+      />
     </KanbanPageWrapper>
   );
 };

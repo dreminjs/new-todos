@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useRef, useState, type FC } from "react";
+import { Fragment, useState, type FC } from "react";
 import type {
   ICreateTodoContext,
   IKanbanColumn,
@@ -17,8 +17,8 @@ import styles from "./TodoKanbanBoard.module.css";
 type TKanbanColumn = IKanbanColumn & {
   showAssignee: boolean;
   endpoint?: string;
-} & ICreateTodoContext &
-  TFindAllQuery;
+  queryFilters: Omit<TFindAllQuery, "status" | "deadline">;
+} & ICreateTodoContext;
 
 export const TodoKanbanColumn: FC<TKanbanColumn> = ({
   title,
@@ -29,7 +29,6 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
   const { ref: droppableRef } = useDroppable({
     id: props.status,
   });
-
   const {
     data: todos,
     isLoading,
@@ -37,7 +36,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
     fetchNextPage,
   } = useGetTodos(
     {
-      ...props,
+      ...props.queryFilters,
       status: props.status,
     },
     endpoint,
@@ -96,7 +95,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
         </ul>
       </div>
       <AddTodoModal
-        planned={props.planned}
+        planned={props.queryFilters?.planned}
         showAssignee={showAssignee}
         todoGroupId={props.todoGroupId}
         workspaceId={props.workspaceId}
@@ -104,23 +103,29 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
         priority={props.priority}
         onClose={handleTodoModalToggle}
         isOpen={todoModalOpen}
+        isMyToday={props.isMyToday || false}
       />
       {editingTodo?.id && (
         <EditTodoModal
-          isMyToday={editingTodo.isMyToday}
           todoId={editingTodo.id}
           onClose={handleSetEditTodo.bind(null, null)}
           isOpen={Boolean(editingTodo)}
           showAssignee={showAssignee}
-          status={editingTodo?.status}
-          title={editingTodo?.title}
-          description={editingTodo?.description}
-          priority={editingTodo?.priority}
-          deadline={
-            editingTodo?.deadline != null
-              ? new Date(editingTodo?.deadline)
-              : null
-          }
+          dto={{
+            status: editingTodo.status,
+            title: editingTodo.title,
+            description: editingTodo.description,
+            priority: editingTodo.priority,
+            isMyToday: editingTodo.isMyToday,
+            deadline:
+              editingTodo?.deadline != null
+                ? new Date(editingTodo?.deadline)
+                : null,
+          }}
+          queryFilters={{
+            ...props.queryFilters,
+            status: props.status,
+          }}
         />
       )}
     </>

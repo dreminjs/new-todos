@@ -9,7 +9,7 @@ export const AllTodosPage = () => {
         icon={<AllTasksIcon height={30} width={30} />}
         title="All Todos"
       />
-      <TodoKanbanBoard limit={10} />
+      <TodoKanbanBoard queryFilters={{ limit: 10 }} />
     </KanbanPageWrapper>
   );
 };

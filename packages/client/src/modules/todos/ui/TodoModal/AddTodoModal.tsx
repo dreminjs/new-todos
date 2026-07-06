@@ -38,6 +38,11 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
     () => buildTodoFormSchema(props.planned),
     [props.planned],
   );
+
+  const handleSuccess = () => {
+    props.onClose();
+    reset();
+  };
   const {
     register,
     control,
@@ -50,6 +55,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
     defaultValues: {
       status: props.status,
       priority: props.priority,
+      isMyToday: props.isMyToday,
     },
   });
 
@@ -60,10 +66,14 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
       todoGroupId: props.todoGroupId,
       priority: props.priority,
     },
-    reset,
+    handleSuccess,
   );
 
   const { data } = useGetParticipants({ enable: showAssignee });
+
+  // useEffect(() => {
+  //   console.log(errors);
+  // }, [errors]);
 
   return (
     <Modal title="Add Todo" {...props}>
@@ -85,16 +95,19 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
         />
         <Controller
           control={control}
-          render={({ field }) => (
-            <CustomCheckbox
-              onChange={field.onChange}
-              value={field.value}
-              className={styles.toggleIsMyDayCheckbox}
-              variant={"outline"}
-              title="Is my day"
-            />
-          )}
           name={"isMyToday"}
+          render={({ field }) => {
+            console.log(field.value);
+            return (
+              <CustomCheckbox
+                onChange={field.onChange}
+                value={field.value}
+                className={styles.toggleIsMyDayCheckbox}
+                variant={"outline"}
+                title="Is my day"
+              />
+            );
+          }}
         />
 
         <Controller

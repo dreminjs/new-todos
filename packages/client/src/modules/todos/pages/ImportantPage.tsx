@@ -10,7 +10,10 @@ export const ImportantPage = () => {
         icon={<StarIcon height={30} width={30} />}
         title="Important Todos"
       />
-      <TodoKanbanBoard priority="HIGH" limit={10} />
+      <TodoKanbanBoard
+        priority="HIGH"
+        queryFilters={{ limit: 10, priority: "HIGH" }}
+      />
     </KanbanPageWrapper>
   );
 };

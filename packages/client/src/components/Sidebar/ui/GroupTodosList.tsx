@@ -28,7 +28,11 @@ export const GroupTodosList = () => {
       >
         <ul>
           {data?.map((el) => (
-            <SidebarMenuItem label={el.name} to={`/todos/group/${el.id}`} />
+            <SidebarMenuItem
+              key={el.id}
+              label={el.name}
+              to={`/todos/group/${el.id}`}
+            />
           ))}
         </ul>
       </CustomAccordion>

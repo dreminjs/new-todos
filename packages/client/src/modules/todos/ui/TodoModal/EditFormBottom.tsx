@@ -3,22 +3,27 @@ import type { FC } from "react";
 import { FormBottom } from "../../../../shared";
 import { Button } from "@chakra-ui/react";
 import { useDeleteTodo } from "../../api/queries";
+import type { TFindAllQuery } from "../../model/todo.interface";
 
-interface IEditTodoFormBottomProps {
+type TEditTodoFormBottomProps = {
   onClose: () => void;
   isEditLoading: boolean;
   todoId: string;
-}
+  queryFilters: TFindAllQuery;
+};
 
-export const EditTodoFormBottom: FC<IEditTodoFormBottomProps> = ({
+export const EditTodoFormBottom: FC<TEditTodoFormBottomProps> = ({
   onClose,
   isEditLoading,
   todoId,
+  queryFilters,
 }) => {
-  const { mutate } = useDeleteTodo();
+  const { mutate } = useDeleteTodo({
+    ...queryFilters,
+  });
 
   const handleDeleteTodo = () => {
-    mutate(todoId, { onSuccess: onClose });
+    mutate(todoId, { onSuccess: onClose, onError: onClose });
   };
   return (
     <div className={styles.editTodoFormBottom}>
