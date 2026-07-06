@@ -21,7 +21,8 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
   queryFilters,
   ...props
 }) => {
-  const { setActiveTodo, handleDragEnd, activeTodo } = useUpdateTodoStatus();
+  const { setActiveTodo, handleDragEnd, activeTodo } =
+    useUpdateTodoStatus(queryFilters);
   return (
     <>
       <DragDropProvider

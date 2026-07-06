@@ -3,6 +3,7 @@ import {
   useMutation,
   useQueryClient,
   type InfiniteData,
+  type QueryKey,
 } from "@tanstack/react-query";
 import {
   createOne,
@@ -48,6 +49,7 @@ export const useCreateTodo = ({
     mutationFn: (data: TCreateTodo & ICreateTodoContext) => createOne(data),
 
     onMutate: async (newTodo) => {
+      console.log(newTodo);
       await client.cancelQueries({ queryKey });
 
       const previousData =
@@ -89,8 +91,6 @@ export const useCreateTodo = ({
         message: "Todo created successfully",
         type: "success",
       });
-
-      console.log(serverTodo);
 
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         queryKey,
@@ -137,6 +137,7 @@ export const useCreateTodo = ({
 };
 
 export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
+  console.log({ query: getTodosQueryKey(query), status: query.status });
   return useInfiniteQuery({
     queryKey: getTodosQueryKey(query),
     queryFn: ({ pageParam }) => findAll(query, endpoint, pageParam),
@@ -146,56 +147,100 @@ export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
   });
 };
 
-export const useUpdateTodoStatus = () => {
+export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
   const queryClient = useQueryClient();
   const [activeTodo, setActiveTodo] = useState<TTodo | null>(null);
+
   const handleDragEnd = (e: DragEndEvent) => {
     const todoId = e.operation.source?.id.toString().split("_")[1] as string;
     const newStatus = e.operation.target?.id as TTodoStatus;
-
-    mutate({ todoId: todoId, dto: { status: newStatus } });
+    mutate({ todoId, newStatus });
   };
-  const { mutate } = useMutation({
-    mutationFn: ({ todoId, dto }: { todoId: string; dto: TUpdateTodoStatus }) =>
-      updateStatus(todoId, dto),
 
-    onMutate: async ({ todoId, dto }) => {
+  const { mutate } = useMutation({
+    mutationFn: ({
+      todoId,
+      newStatus,
+    }: {
+      todoId: string;
+      newStatus: TTodoStatus;
+    }) => updateStatus(todoId, { status: newStatus }),
+
+    onMutate: async ({ todoId, newStatus }) => {
       await queryClient.cancelQueries({ queryKey: ["todos"] });
 
-      const previousData = queryClient.getQueriesData({ queryKey: ["todos"] });
+      const previousData = queryClient.getQueriesData<
+        InfiniteData<IItemsResponse<TTodo>>
+      >({ queryKey: ["todos"] });
 
-      queryClient.setQueriesData(
-        { queryKey: ["todos"] },
-        (old: InfiniteData<IItemsResponse<TTodo>> | undefined) => {
+      let movedTodo: TTodo | undefined;
+      let sourceQueryKey: QueryKey | undefined;
+
+      for (const [key, data] of previousData) {
+        if (!data) continue;
+        for (const page of data.pages) {
+          const found = page.items.find((t) => t.id === todoId);
+          if (found) {
+            movedTodo = found;
+            sourceQueryKey = key;
+            break;
+          }
+        }
+        if (movedTodo) break;
+      }
+
+      if (!movedTodo || !sourceQueryKey) {
+        return { previousData };
+      }
+
+      const targetQueryKey = getTodosQueryKey({
+        ...query,
+        status: newStatus,
+      } as TFindAllQuery);
+
+      queryClient.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        sourceQueryKey,
+        (old) => {
           if (!old) return old;
           return {
             ...old,
             pages: old.pages.map((page) => ({
               ...page,
-              items: page.items.map((todo) =>
-                todo.id === todoId ? { ...todo, status: dto.status } : todo,
-              ),
+              items: page.items.filter((t) => t.id !== todoId),
+              total: page.total - 1,
             })),
+          };
+        },
+      );
+
+      queryClient.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        targetQueryKey,
+        (old) => {
+          if (!old) return old;
+          const [firstPage, ...restPages] = old.pages;
+          return {
+            ...old,
+            pages: [
+              {
+                ...firstPage,
+                items: [
+                  { ...movedTodo, status: newStatus } as TTodo,
+                  ...firstPage.items,
+                ],
+                total: firstPage.total + 1,
+              },
+              ...restPages,
+            ],
           };
         },
       );
 
       return { previousData };
     },
-
-    onError: (_err, _vars, context) => {
-      context?.previousData.forEach(([queryKey, data]) => {
-        queryClient.setQueryData(queryKey, data);
-      });
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-    },
   });
 
   return {
-    updateStatus,
+    mutate,
     handleDragEnd,
     activeTodo,
     setActiveTodo,

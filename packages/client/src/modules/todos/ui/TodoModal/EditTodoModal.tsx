@@ -60,12 +60,7 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
   });
 
   const { mutate, ...rest } = useUpdateTodo(
-    {
-      todoId,
-      status: props.dto.status,
-      workspaceId: props.dto.workspaceId,
-      todoGroupId: props.dto.todoGroupId,
-    },
+    { ...props.queryFilters, todoId },
     reset,
   );
 
