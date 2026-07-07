@@ -11,7 +11,9 @@ export const ImportantPage = () => {
         title="Important Todos"
       />
       <TodoKanbanBoard
-        priority="HIGH"
+        dtoContext={{
+          priority: "HIGH",
+        }}
         queryFilters={{ limit: 10, priority: "HIGH" }}
       />
     </KanbanPageWrapper>

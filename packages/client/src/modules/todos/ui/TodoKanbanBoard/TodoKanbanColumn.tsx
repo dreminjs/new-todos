@@ -1,4 +1,4 @@
-import { Fragment, useState, type FC } from "react";
+import { Fragment, useEffect, useState, type FC } from "react";
 import type {
   ICreateTodoContext,
   IKanbanColumn,
@@ -17,30 +17,27 @@ import styles from "./TodoKanbanBoard.module.css";
 type TKanbanColumn = IKanbanColumn & {
   showAssignee: boolean;
   endpoint?: string;
-  queryFilters: Omit<TFindAllQuery, "status" | "deadline">;
-} & ICreateTodoContext;
+  queryFilters: Omit<TFindAllQuery, "deadline">;
+  dtoContext: ICreateTodoContext;
+};
 
 export const TodoKanbanColumn: FC<TKanbanColumn> = ({
   title,
   showAssignee,
   endpoint,
-  ...props
+  queryFilters,
+  dtoContext,
 }) => {
+  console.log({ queryFilters, dtoContext });
   const { ref: droppableRef } = useDroppable({
-    id: props.status,
+    id: queryFilters.status,
   });
   const {
     data: todos,
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useGetTodos(
-    {
-      ...props.queryFilters,
-      status: props.status,
-    },
-    endpoint,
-  );
+  } = useGetTodos(queryFilters, endpoint);
   const trackingRef = useOnInView(
     (inView) => {
       if (inView && hasNextPage) {
@@ -62,6 +59,10 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
     setEditingTodo(todo);
   };
 
+  useEffect(() => {
+    console.log(editingTodo);
+  }, [editingTodo]);
+
   return (
     <>
       <div className={styles.TodoKanbanBoardColumn}>
@@ -73,7 +74,9 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
         />
         <ul className={styles.TodoKanbanBoardColumnList} ref={droppableRef}>
           {todos?.pages?.map((page) => (
-            <Fragment key={`draggable-${page.nextCursor}-${props.status}`}>
+            <Fragment
+              key={`draggable-${page.nextCursor}-${queryFilters.status}`}
+            >
               {page.items
                 .sort((a, b) => {
                   const weightA =
@@ -85,7 +88,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
                 .map((item) => (
                   <TodoItem
                     onChoose={handleSetEditTodo.bind(null, item)}
-                    key={`draggable-${item.id}-${props.status}`}
+                    key={`draggable-${item.id}-${queryFilters.status}`}
                     {...item}
                   />
                 ))}
@@ -94,44 +97,31 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
           ))}
         </ul>
       </div>
-      <AddTodoModal
-        planned={props.queryFilters?.planned}
-        showAssignee={showAssignee}
-        onClose={handleTodoModalToggle}
-        isOpen={todoModalOpen}
-        queryFilters={{
-          ...props.queryFilters,
-          status: props.status,
-        }}
-        todoContext={{
-          status: props.status,
-          workspaceId: props.workspaceId,
-          todoGroupId: props.todoGroupId,
-          priority: props.priority,
-          isMyToday: props.isMyToday,
-        }}
-      />
+      {todoModalOpen && (
+        <AddTodoModal
+          planned={queryFilters?.planned}
+          showAssignee={showAssignee}
+          onClose={handleTodoModalToggle}
+          isOpen={todoModalOpen}
+          queryFilters={queryFilters}
+          todoContext={dtoContext}
+        />
+      )}
+
       {editingTodo?.id && (
         <EditTodoModal
-          todoId={editingTodo.id}
           onClose={handleSetEditTodo.bind(null, null)}
           isOpen={Boolean(editingTodo)}
           showAssignee={showAssignee}
           dto={{
+            ...editingTodo,
             status: editingTodo.status,
-            title: editingTodo.title,
-            description: editingTodo.description,
-            priority: editingTodo.priority,
-            isMyToday: editingTodo.isMyToday,
             deadline:
               editingTodo?.deadline != null
                 ? new Date(editingTodo?.deadline)
                 : null,
           }}
-          queryFilters={{
-            ...props.queryFilters,
-            status: props.status,
-          }}
+          queryFilters={queryFilters}
         />
       )}
     </>

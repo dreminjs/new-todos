@@ -13,13 +13,14 @@ type TTodoKanbanBoardProps = {
   showAssignee?: boolean;
   endpoint?: string;
   todoGroupId?: string;
-  queryFilters?: Omit<TFindAllQuery, "status">;
-} & Omit<ICreateTodoContext, "status" | "deadline">;
+  queryFilters?: TFindAllQuery;
+  dtoContext?: Omit<ICreateTodoContext, "deadline" | "status">;
+};
 export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
   showAssignee,
   endpoint,
   queryFilters,
-  ...props
+  dtoContext,
 }) => {
   const { setActiveTodo, handleDragEnd, activeTodo } =
     useUpdateTodoStatus(queryFilters);
@@ -42,37 +43,29 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
             endpoint={endpoint}
             showAssignee={showAssignee}
             title={"PENDING"}
-            status="PENDING"
-            queryFilters={queryFilters}
-            priority={props.priority}
-            isMyToday={props.isMyToday}
+            dtoContext={{ ...dtoContext, status: "PENDING" }}
+            queryFilters={{ ...queryFilters, status: "PENDING" }}
           />
           <TodoKanbanColumn
             endpoint={endpoint}
             showAssignee={showAssignee}
             title={"IN PROGRESS"}
-            status={"IN_PROGRESS"}
-            queryFilters={queryFilters}
-            priority={props.priority}
-            isMyToday={props.isMyToday}
+            dtoContext={{ ...dtoContext, status: "IN_PROGRESS" }}
+            queryFilters={{ ...queryFilters, status: "IN_PROGRESS" }}
           />
           <TodoKanbanColumn
             endpoint={endpoint}
             showAssignee={showAssignee}
             title={"COMPLETED"}
-            status={"COMPLETED"}
-            queryFilters={queryFilters}
-            priority={props.priority}
-            isMyToday={props.isMyToday}
+            queryFilters={{ ...queryFilters, status: "COMPLETED" }}
+            dtoContext={{ ...dtoContext, status: "COMPLETED" }}
           />
           <TodoKanbanColumn
             endpoint={endpoint}
             showAssignee={showAssignee}
             title={"CANCELLED"}
-            status={"CANCELLED"}
-            queryFilters={queryFilters}
-            priority={props.priority}
-            isMyToday={props.isMyToday}
+            queryFilters={{ ...queryFilters, status: "CANCELLED" }}
+            dtoContext={{ ...dtoContext, status: "CANCELLED" }}
           />
         </ul>
         <DragOverlay>

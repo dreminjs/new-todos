@@ -21,14 +21,13 @@ import {
   TODO_PRIORITY_OPTIONS,
   TODO_STATUS_OPTIONS,
 } from "../../model/todo.constants";
-import styles from "./TodoModal.module.css";
 import { EditTodoFormBottom } from "./EditFormBottom";
+import styles from "./TodoModal.module.css";
 
 type TEditTodoModalProps = {
   onClose: () => void;
   isOpen: boolean;
   showAssignee: boolean;
-  todoId: string;
   queryFilters: TFindAllQuery;
   dto: TCreateTodo & ICreateTodoContext;
 };
@@ -37,8 +36,8 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
   isOpen,
   showAssignee,
   onClose,
-  todoId,
-  ...props
+  queryFilters,
+  dto,
 }) => {
   const {
     register,
@@ -50,17 +49,20 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
   } = useForm<TCreateTodo>({
     resolver: zodResolver(todoFormSchema),
     defaultValues: {
-      status: props.dto.status,
-      title: props.dto.title,
-      description: props.dto.description,
-      priority: props.dto.priority,
-      deadline: props.dto.deadline,
-      isMyToday: props.dto.isMyToday,
+      status: dto.status,
+      title: dto.title,
+      description: dto.description,
+      priority: dto.priority,
+      deadline: dto.deadline,
+      isMyToday: dto.isMyToday,
     },
   });
 
   const { mutate, ...rest } = useUpdateTodo(
-    { dto: { ...props.dto, id: todoId }, queryFilters: props.queryFilters },
+    {
+      dto,
+      queryFilters,
+    },
     () => {
       reset();
       onClose();
@@ -170,10 +172,10 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
           )}
         />
         <EditTodoFormBottom
-          todoId={todoId}
+          todoId={dto.id}
           onClose={onClose}
           isEditLoading={rest.isPending}
-          queryFilters={props.queryFilters}
+          queryFilters={queryFilters}
         />
       </form>
     </Modal>

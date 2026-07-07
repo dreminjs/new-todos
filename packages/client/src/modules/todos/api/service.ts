@@ -11,7 +11,7 @@ export const updateOne = async (
   data: TCreateTodo,
   id: string,
 ): Promise<TTodo> => {
-  return (await instance.put(`/todos/${id}`, { ...data, id: id })).data;
+  return (await instance.put(`/todos/${id}`, { ...data, id })).data;
 };
 
 export const findAll = async (

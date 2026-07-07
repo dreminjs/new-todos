@@ -13,11 +13,13 @@ export const MyDayPage = () => {
       />
       <TodoKanbanBoard
         endpoint="my-day"
-        isMyToday={true}
         queryFilters={{
           isMyToday: true,
           limit: 10,
           deadline: new Date(format(new Date(), "yyyy-MM-dd")),
+        }}
+        dtoContext={{
+          isMyToday: true,
         }}
       />
     </KanbanPageWrapper>

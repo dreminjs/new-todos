@@ -13,22 +13,15 @@ import {
   deleteOne,
 } from "./service";
 import { useNotificationStore } from "../../notifications/model/notification.store";
+import { useState } from "react";
+import { getTodosQueryKey } from "../model/todo.helper";
 import type {
   ICreateTodoContext,
   TCreateTodo,
   TFindAllQuery,
 } from "../model/todo.interface";
-import type { UseFormReset } from "react-hook-form";
-import type {
-  IItemsResponse,
-  TExtendedTodo,
-  TTodo,
-  TTodoStatus,
-  TUpdateTodoStatus,
-} from "types";
+import type { IItemsResponse, TExtendedTodo, TTodo, TTodoStatus } from "types";
 import type { DragEndEvent } from "@dnd-kit/react";
-import { useState } from "react";
-import { getTodosQueryKey } from "../model/todo.helper";
 import type { TCreateTodoForm } from "../model/buildTodo.schema";
 
 export const useCreateTodo = ({
@@ -50,7 +43,7 @@ export const useCreateTodo = ({
     mutationFn: (data: TCreateTodo & ICreateTodoContext) => createOne(data),
 
     onMutate: async (newTodo) => {
-      console.log(newTodo);
+      console.log({ newTodo });
       await client.cancelQueries({ queryKey });
 
       const previousData =
@@ -96,7 +89,6 @@ export const useCreateTodo = ({
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         queryKey,
         (old) => {
-          console.log(old);
           if (!old) return old;
           return {
             ...old,
@@ -128,7 +120,7 @@ export const useCreateTodo = ({
   });
 
   const handleMutate = (data: TCreateTodoForm) => {
-    mutate({ ...data, ...todoContext });
+    mutate({ ...data, ...todoContext, id: crypto.randomUUID() });
   };
 
   return {
@@ -138,7 +130,6 @@ export const useCreateTodo = ({
 };
 
 export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
-  console.log({ query: getTodosQueryKey(query), status: query.status });
   return useInfiniteQuery({
     queryKey: getTodosQueryKey(query),
     queryFn: ({ pageParam }) => findAll(query, endpoint, pageParam),
@@ -253,7 +244,7 @@ export const useUpdateTodo = (
     dto,
     queryFilters,
   }: {
-    dto: ICreateTodoContext & { id: string };
+    dto: ICreateTodoContext;
     queryFilters: TFindAllQuery;
   },
   cb: () => void,

@@ -22,6 +22,9 @@ const TodosGroupPage = () => {
           todoGroupId: groupId,
           limit: 10,
         }}
+        dtoContext={{
+          todoGroupId: groupId,
+        }}
       />
     </KanbanPageWrapper>
   );
