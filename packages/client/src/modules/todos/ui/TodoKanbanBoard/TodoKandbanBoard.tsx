@@ -1,5 +1,4 @@
 import { DragDropProvider, DragOverlay } from "@dnd-kit/react";
-import { type FC } from "react";
 import { TodoKanbanColumn } from "./TodoKanbanColumn";
 import type {
   ICreateTodoContext,
@@ -7,6 +6,7 @@ import type {
 } from "../../model/todo.interface";
 import { useUpdateTodoStatus } from "../../api/queries";
 import { TodoItem } from "./TodoItem";
+import { type FC } from "react";
 import type { TTodo } from "types";
 import styles from "./TodoKanbanBoard.module.css";
 type TTodoKanbanBoardProps = {

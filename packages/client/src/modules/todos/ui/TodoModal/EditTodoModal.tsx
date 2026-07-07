@@ -60,8 +60,11 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
   });
 
   const { mutate, ...rest } = useUpdateTodo(
-    { ...props.queryFilters, todoId },
-    reset,
+    { dto: { ...props.dto, id: todoId }, queryFilters: props.queryFilters },
+    () => {
+      reset();
+      onClose();
+    },
   );
 
   const { data } = useGetParticipants({ enable: showAssignee });

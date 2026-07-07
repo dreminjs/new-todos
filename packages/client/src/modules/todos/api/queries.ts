@@ -21,6 +21,7 @@ import type {
 import type { UseFormReset } from "react-hook-form";
 import type {
   IItemsResponse,
+  TExtendedTodo,
   TTodo,
   TTodoStatus,
   TUpdateTodoStatus,
@@ -148,7 +149,7 @@ export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
 };
 
 export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
-  const queryClient = useQueryClient();
+  const client = useQueryClient();
   const [activeTodo, setActiveTodo] = useState<TTodo | null>(null);
 
   const handleDragEnd = (e: DragEndEvent) => {
@@ -167,9 +168,9 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
     }) => updateStatus(todoId, { status: newStatus }),
 
     onMutate: async ({ todoId, newStatus }) => {
-      await queryClient.cancelQueries({ queryKey: ["todos"] });
+      await client.cancelQueries({ queryKey: ["todos"] });
 
-      const previousData = queryClient.getQueriesData<
+      const previousData = client.getQueriesData<
         InfiniteData<IItemsResponse<TTodo>>
       >({ queryKey: ["todos"] });
 
@@ -198,7 +199,7 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
         status: newStatus,
       } as TFindAllQuery);
 
-      queryClient.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         sourceQueryKey,
         (old) => {
           if (!old) return old;
@@ -213,7 +214,7 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
         },
       );
 
-      queryClient.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         targetQueryKey,
         (old) => {
           if (!old) return old;
@@ -248,15 +249,21 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
 };
 
 export const useUpdateTodo = (
-  dto: ICreateTodoContext & { todoId: string },
-  reset: UseFormReset<TCreateTodo>,
+  {
+    dto,
+    queryFilters,
+  }: {
+    dto: ICreateTodoContext & { id: string };
+    queryFilters: TFindAllQuery;
+  },
+  cb: () => void,
 ) => {
   const addNotification = useNotificationStore(
     (state) => state.addNotification,
   );
   const client = useQueryClient();
 
-  const todoId = dto.todoId;
+  const todoId = dto.id;
   const { mutate, ...props } = useMutation({
     mutationFn: (dto: TCreateTodo) => updateOne(dto, todoId),
     onSuccess: () => {
@@ -264,21 +271,30 @@ export const useUpdateTodo = (
         message: "Todo updated successfully",
         type: "success",
       });
-      client.invalidateQueries({ queryKey: ["todos", { status: dto.status }] });
-      const previousData = client.getQueryData([
-        "todos",
-        { status: dto.status },
-      ]);
-      if (previousData) {
-        client.setQueryData(["todos", { status: dto.status }], previousData);
-      }
-      return {
-        previousData: previousData,
-      };
+      cb();
     },
     onError: () => {
       addNotification({ message: "Failed to update todo", type: "error" });
-      reset();
+      cb();
+    },
+    onMutate: (newTodo: TExtendedTodo) => {
+      console.log({ newTodo });
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        getTodosQueryKey(queryFilters),
+        (old) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items
+                .filter((item) => item.id !== todoId)
+                .concat({ ...newTodo, id: newTodo.id }),
+            })),
+          };
+        },
+      );
     },
   });
   const handleUpdateTodo = (data: TCreateTodo) => {
