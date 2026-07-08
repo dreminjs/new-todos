@@ -1,32 +1,41 @@
 import { useForm } from "react-hook-form";
 import { FormBottom, FormField, Modal } from "../../../../shared";
-import { createTodoGroupSchema, type TCreateTodoGroup } from "types";
+import {
+  createTodoGroupSchema,
+  type TCreateTodoGroup,
+  type TTodoGroup,
+} from "types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateTodoGroup } from "../../api/queries";
-import type { FC } from "react";
+import { useEffect, type FC } from "react";
 import styles from "./CreateTodoGroupModal.module.css";
+import type { TCreateTodoGroupForm } from "../../model/todo-group.dto";
+import { createTodoGroupFormSchema } from "../../model/todo-group.schema";
 
 interface ICreateTodoGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
+  todoGroupContext: Omit<TTodoGroup, "name">;
 }
 
 export const CreateTodoGroupModal: FC<ICreateTodoGroupModalProps> = ({
   isOpen,
   onClose,
+  todoGroupContext,
 }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TCreateTodoGroup>({
-    resolver: zodResolver(createTodoGroupSchema),
+  } = useForm<TCreateTodoGroupForm>({
+    resolver: zodResolver(createTodoGroupFormSchema),
   });
 
   const { mutate, isPending } = useCreateTodoGroup();
-  const handleCreateTodoGroup = (data: TCreateTodoGroup) => {
-    mutate(data, { onSuccess: onClose });
+  const handleCreateTodoGroup = (data: TCreateTodoGroupForm) => {
+    mutate({ ...data, ...todoGroupContext }, { onSuccess: onClose });
   };
+
   return (
     <Modal title="Create New Group Todo" isOpen={isOpen} onClose={onClose}>
       <form

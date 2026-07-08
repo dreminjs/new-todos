@@ -10,6 +10,7 @@ export const SidebarBottom = () => {
           key={index}
           icon={<Icon width={22} height={22} />}
           label={label}
+          to={"/label"}
         />
       ))}
     </ul>

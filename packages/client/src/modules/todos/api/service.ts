@@ -1,10 +1,15 @@
 import type { IItemsResponse, TTodo, TUpdateTodoStatus } from "types";
 import { instance } from "../../../shared/api/api.instance";
-import type { TCreateTodo, TFindAllQuery } from "../model/todo.interface";
+import type {
+  ICreateTodoContext,
+  TCreateTodo,
+  TFindAllQuery,
+} from "../model/todo.interface";
 
-export const createOne = async (data: TCreateTodo): Promise<TTodo> => {
-  return (await instance.post("/todos", { ...data, id: crypto.randomUUID() }))
-    .data;
+export const createOne = async (
+  data: TCreateTodo & ICreateTodoContext,
+): Promise<TTodo> => {
+  return (await instance.post("/todos", { ...data, id: data.id })).data;
 };
 
 export const updateOne = async (

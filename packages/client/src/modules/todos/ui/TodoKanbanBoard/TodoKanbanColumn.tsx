@@ -28,7 +28,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
   queryFilters,
   dtoContext,
 }) => {
-  console.log({ queryFilters, dtoContext });
+  // console.log({ queryFilters, dtoContext });
   const { ref: droppableRef } = useDroppable({
     id: queryFilters.status,
   });

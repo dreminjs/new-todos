@@ -7,7 +7,7 @@ import {
   findOne,
 } from "./service";
 import { useNotificationStore } from "../../notifications/model/notification.store";
-import type { TCreateTodoGroup } from "types";
+import type { TCreateTodoGroup, TTodoGroup } from "types";
 
 export const useGetTodoGroups = () => {
   return useQuery({
@@ -22,14 +22,11 @@ export const useCreateTodoGroup = () => {
   );
   const client = useQueryClient();
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: TCreateTodoGroup) => createOne(data),
+    mutationFn: (data: TTodoGroup) => createOne(data),
     onSuccess: () => {
       addNotification({
         type: "success",
         message: "Todo group created successfully",
-      });
-      client.invalidateQueries({
-        queryKey: ["todo-groups"],
       });
     },
     onError: () => {
@@ -37,6 +34,12 @@ export const useCreateTodoGroup = () => {
         type: "error",
         message: "Failed to create todo group",
       });
+    },
+    onMutate: (newTodoGroup) => {
+      client.setQueryData<TTodoGroup[]>(["todo-groups"], (oldData) => [
+        ...oldData,
+        newTodoGroup,
+      ]);
     },
   });
 
@@ -56,9 +59,11 @@ export const useDeleteTodoGroup = () => {
         type: "success",
         message: "Todo group deleted successfully",
       });
-      client.invalidateQueries({
-        queryKey: ["todo-groups"],
-      });
+    },
+    onMutate: (deletedTodoId) => {
+      client.setQueryData<TTodoGroup[]>(["todo-groups"], (oldData) =>
+        oldData.filter((todoGroup) => todoGroup.id !== deletedTodoId),
+      );
     },
     onError: () => {
       addNotification({
@@ -73,7 +78,7 @@ export const useUpdateTodoGroup = (todoId: string) => {
   const addNotification = useNotificationStore(
     (state) => state.addNotification,
   );
-  const client = useQueryClient();
+  // const client = useQueryClient();
 
   return useMutation({
     mutationFn: (data: TCreateTodoGroup) => updateOne(todoId, data),
@@ -82,12 +87,9 @@ export const useUpdateTodoGroup = (todoId: string) => {
         type: "success",
         message: "Todo group updated successfully",
       });
-      client.invalidateQueries({
-        queryKey: ["todo-groups"],
-      });
-      client.invalidateQueries({
-        queryKey: ["todos"],
-      });
+    },
+    onMutate: (newTodoGroup) => {
+      console.log(newTodoGroup);
     },
     onError: () => {
       addNotification({
