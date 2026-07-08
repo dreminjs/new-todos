@@ -7,15 +7,18 @@ import {
 } from "types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateTodoGroup } from "../../api/queries";
-import { useEffect, type FC } from "react";
-import styles from "./CreateTodoGroupModal.module.css";
-import type { TCreateTodoGroupForm } from "../../model/todo-group.dto";
+import { type FC } from "react";
+import type {
+  TCreateTodoGroupContext,
+  TCreateTodoGroupForm,
+} from "../../model/todo-group.dto";
 import { createTodoGroupFormSchema } from "../../model/todo-group.schema";
+import styles from "./CreateTodoGroupModal.module.css";
 
 interface ICreateTodoGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
-  todoGroupContext: Omit<TTodoGroup, "name">;
+  todoGroupContext: TCreateTodoGroupContext;
 }
 
 export const CreateTodoGroupModal: FC<ICreateTodoGroupModalProps> = ({

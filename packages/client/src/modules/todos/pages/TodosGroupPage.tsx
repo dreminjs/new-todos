@@ -14,8 +14,9 @@ const TodosGroupPage = () => {
   return (
     <KanbanPageWrapper>
       <TodoGroupKanbanBoardHeader
-        name={todoGroup?.name}
-        todoGroupId={groupId}
+        name={todoGroup.name}
+        id={todoGroup.id}
+        userId={todoGroup.userId}
       />
       <TodoKanbanBoard
         queryFilters={{

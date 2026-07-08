@@ -5,5 +5,8 @@ export const createTodoGroupSchema = z.object({
   id: z.string(),
   userId: z.string(),
 });
+export const updateTodoGroupSchema = createTodoGroupSchema.pick({
+  name: true,
+});
 
 export const todoGroupSchema = createTodoGroupSchema;

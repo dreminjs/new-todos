@@ -2,15 +2,13 @@ import { useState, type FC } from "react";
 import styles from "./TodoKanbanBoard.module.css";
 import { InputGroupTodoListTitle } from "./InputGroupTodoListTitle";
 import { DeleteTodoGroupButton } from "./DeleteTodoGroupButton";
+import type { TCreateTodoGroup } from "types";
 
-interface TodoGroupKanbanBoardHeaderProps {
-  todoGroupId: string;
-  name: string;
-}
+type TodoGroupKanbanBoardHeaderProps = TCreateTodoGroup;
 
-export const TodoGroupKanbanBoardHeader: FC<
-  TodoGroupKanbanBoardHeaderProps
-> = ({ todoGroupId, name }) => {
+export const TodoGroupKanbanBoardHeader: FC<TodoGroupKanbanBoardHeaderProps> = (
+  dto,
+) => {
   const [isTyping, setIsTyping] = useState(false);
   const handleToggleTyping = () => {
     setIsTyping((prev) => !prev);
@@ -20,16 +18,12 @@ export const TodoGroupKanbanBoardHeader: FC<
     <header className={styles.TodoKanbanBoardHeader}>
       <h3>
         {isTyping ? (
-          <InputGroupTodoListTitle
-            name={name}
-            groupId={todoGroupId}
-            onClose={handleToggleTyping}
-          />
+          <InputGroupTodoListTitle onClose={handleToggleTyping} dto={dto} />
         ) : (
-          <button onClick={handleToggleTyping}>{name}</button>
+          <button onClick={handleToggleTyping}>{dto.name}</button>
         )}
       </h3>
-      <DeleteTodoGroupButton todoGroupId={todoGroupId} />
+      <DeleteTodoGroupButton todoGroupId={dto.id} />
     </header>
   );
 };

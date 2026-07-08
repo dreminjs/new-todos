@@ -8,6 +8,10 @@ import {
 } from "./service";
 import { useNotificationStore } from "../../notifications/model/notification.store";
 import type { TCreateTodoGroup, TTodoGroup } from "types";
+import type {
+  TCreateTodoGroupContext,
+  TCreateTodoGroupForm,
+} from "../model/todo-group.dto";
 
 export const useGetTodoGroups = () => {
   return useQuery({
@@ -74,14 +78,14 @@ export const useDeleteTodoGroup = () => {
   });
 };
 
-export const useUpdateTodoGroup = (todoId: string) => {
+export const useUpdateTodoGroup = (dtoContext: TCreateTodoGroupContext) => {
   const addNotification = useNotificationStore(
     (state) => state.addNotification,
   );
-  // const client = useQueryClient();
+  const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: (data: TCreateTodoGroup) => updateOne(todoId, data),
+  const { mutate, ...props } = useMutation({
+    mutationFn: (data: TCreateTodoGroup) => updateOne(data),
     onSuccess: () => {
       addNotification({
         type: "success",
@@ -89,7 +93,10 @@ export const useUpdateTodoGroup = (todoId: string) => {
       });
     },
     onMutate: (newTodoGroup) => {
-      console.log(newTodoGroup);
+      client.setQueryData<TTodoGroup>(
+        ["todo-groups", newTodoGroup.id],
+        newTodoGroup,
+      );
     },
     onError: () => {
       addNotification({
@@ -98,6 +105,11 @@ export const useUpdateTodoGroup = (todoId: string) => {
       });
     },
   });
+
+  const handleSubmit = (dto: TCreateTodoGroupForm, cb: () => void) => {
+    mutate({ ...dto, ...dtoContext }, { onSuccess: cb });
+  };
+  return { mutate: handleSubmit, ...props };
 };
 
 export const useGetTodoGroup = (id: string) => {

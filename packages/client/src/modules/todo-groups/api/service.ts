@@ -18,10 +18,9 @@ export const deleteOne = async (id: string): Promise<void> => {
 };
 
 export const updateOne = async (
-  id: string,
   data: TCreateTodoGroup,
 ): Promise<TTodoGroup> => {
-  return (await instance.put(`${URL}/${id}`, data)).data;
+  return (await instance.put(`${URL}/${data.id}`, { name: data.name })).data;
 };
 
 export const findOne = async (id: string): Promise<TTodoGroup | null> => {
