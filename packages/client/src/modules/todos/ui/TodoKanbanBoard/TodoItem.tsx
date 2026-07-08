@@ -4,7 +4,15 @@ import { TodoItemView } from "../../views/TodoItem";
 import type { TExtendedTodo } from "types";
 import type { FC } from "react";
 import { format } from "date-fns/format";
-type TProps = TExtendedTodo & { isOverlay?: boolean; onChoose?: () => void };
+import styles from "./TodoKanbanBoard.module.css";
+import clsx from "clsx";
+import { useIsMutating } from "@tanstack/react-query";
+
+type TProps = TExtendedTodo & {
+  isOverlay?: boolean;
+  onChoose?: () => void;
+  isLoading: boolean;
+};
 export const TodoItem: FC<TProps> = ({
   title,
   id,
@@ -30,6 +38,11 @@ export const TodoItem: FC<TProps> = ({
     ? format(new Date(props.deadline), "MMM d")
     : undefined;
 
+  const isCreatingLoading =
+    useIsMutating({ mutationKey: ["todo", "create"] }) > 0;
+  const isUpdateingLoading =
+    useIsMutating({ mutationKey: ["todo", "update", id] }) > 0;
+
   return (
     <TodoItemView
       isMyToday={props.isMyToday}
@@ -45,6 +58,9 @@ export const TodoItem: FC<TProps> = ({
       todoGroup={props.todoGroup}
       workspace={props.workspace}
       isDescriptionVisible={Boolean(props.description)}
+      className={clsx(
+        isCreatingLoading || (isUpdateingLoading && styles.todoItemLoading),
+      )}
     />
   );
 };

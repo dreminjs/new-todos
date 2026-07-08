@@ -41,9 +41,10 @@ export const useCreateTodo = ({
 
   const { mutate, ...rest } = useMutation({
     mutationFn: (data: TCreateTodo & ICreateTodoContext) => createOne(data),
-
+    mutationKey: ["todo", "create"],
     onMutate: async (newTodo) => {
-      console.log({ newTodo });
+      cb();
+
       await client.cancelQueries({ queryKey });
 
       const previousData =
@@ -102,7 +103,6 @@ export const useCreateTodo = ({
         },
       );
 
-      cb();
     },
 
     onError: (_err, _newTodo, context) => {
@@ -326,12 +326,12 @@ export const useUpdateTodo = (
   const todoId = dto.id;
   const { mutate, ...props } = useMutation({
     mutationFn: (dto: TCreateTodo) => updateOne(dto, todoId),
+    mutationKey: ["todo", "update", todoId],
     onSuccess: (newTodo) => {
       addNotification({
         message: "Todo updated successfully",
         type: "success",
       });
-      cb();
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         getTodosQueryKey(queryFilters),
         (old) => {
@@ -355,9 +355,10 @@ export const useUpdateTodo = (
       const previous = client.getQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         getTodosQueryKey(queryFilters),
       );
-      return previous;
+      return { previous };
     },
     onMutate: (newTodo: TExtendedTodo) => {
+      cb();
       client.cancelQueries({
         queryKey: getTodosQueryKey(queryFilters),
       });
@@ -389,7 +390,7 @@ export const useUpdateTodo = (
   };
 };
 
-export const useDeleteTodo = (dto: TFindAllQuery) => {
+export const useDeleteTodo = (dto: TFindAllQuery, cb: () => void) => {
   const client = useQueryClient();
   const addNotification = useNotificationStore(
     (state) => state.addNotification,
@@ -422,7 +423,13 @@ export const useDeleteTodo = (dto: TFindAllQuery) => {
     onError: () => {
       addNotification({ message: "Failed to delete todo", type: "error" });
     },
+    onMutate: cb
   });
 
-  return { mutate, ...props };
+  const handleMutate = (todoId: string) => {
+mutate(todoId)
+
+  }
+
+  return { mutate:handleMutate, ...props };
 };

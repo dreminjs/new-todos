@@ -29,6 +29,7 @@ interface ITodoItemViewProps {
   workspace: TWorkspace | null;
   isMyToday: boolean;
   isDescriptionVisible: boolean;
+  className?: string;
 }
 
 export const TodoItemView: FC<ITodoItemViewProps> = ({
@@ -45,10 +46,11 @@ export const TodoItemView: FC<ITodoItemViewProps> = ({
   workspace,
   isMyToday,
   isDescriptionVisible,
+  className,
 }) => {
   return (
     <>
-      <li className={clsx(styles.TodoItem)}>
+      <li className={clsx(styles.TodoItem, className)}>
         <button
           onClick={onClick}
           ref={isOverlay ? undefined : ref}

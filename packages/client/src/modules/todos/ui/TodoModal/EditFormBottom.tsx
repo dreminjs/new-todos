@@ -18,12 +18,15 @@ export const EditTodoFormBottom: FC<TEditTodoFormBottomProps> = ({
   todoId,
   queryFilters,
 }) => {
-  const { mutate } = useDeleteTodo({
-    ...queryFilters,
-  });
+  const { mutate } = useDeleteTodo(
+    {
+      ...queryFilters,
+    },
+    onClose,
+  );
 
   const handleDeleteTodo = () => {
-    mutate(todoId, { onSuccess: onClose, onError: onClose });
+    mutate(todoId);
   };
   return (
     <div className={styles.editTodoFormBottom}>
