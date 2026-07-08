@@ -229,6 +229,75 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
 
       return { previousData };
     },
+    onSuccess: async (newTodo) => {
+      const previousData = client.getQueriesData<
+        InfiniteData<IItemsResponse<TTodo>>
+      >({ queryKey: ["todos"] });
+
+      let movedTodo: TTodo | undefined;
+      let sourceQueryKey: QueryKey | undefined;
+
+      for (const [key, data] of previousData) {
+        if (!data) continue;
+        for (const page of data.pages) {
+          const found = page.items.find((t) => t.id === newTodo.id);
+          if (found) {
+            movedTodo = found;
+            sourceQueryKey = key;
+            break;
+          }
+        }
+        if (movedTodo) break;
+      }
+
+      if (!movedTodo || !sourceQueryKey) {
+        return { previousData };
+      }
+
+      const targetQueryKey = getTodosQueryKey({
+        ...query,
+        status: newTodo.status,
+      } as TFindAllQuery);
+
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        sourceQueryKey,
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((t) => t.id !== newTodo.id),
+              total: page.total - 1,
+            })),
+          };
+        },
+      );
+
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        targetQueryKey,
+        (old) => {
+          if (!old) return old;
+          const [firstPage, ...restPages] = old.pages;
+          return {
+            ...old,
+            pages: [
+              {
+                ...firstPage,
+                items: [
+                  { ...movedTodo, status: newTodo.status } as TTodo,
+                  ...firstPage.items,
+                ],
+                total: firstPage.total + 1,
+              },
+              ...restPages,
+            ],
+          };
+        },
+      );
+
+      return { previousData };
+    },
   });
 
   return {
@@ -257,19 +326,42 @@ export const useUpdateTodo = (
   const todoId = dto.id;
   const { mutate, ...props } = useMutation({
     mutationFn: (dto: TCreateTodo) => updateOne(dto, todoId),
-    onSuccess: () => {
+    onSuccess: (newTodo) => {
       addNotification({
         message: "Todo updated successfully",
         type: "success",
       });
       cb();
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        getTodosQueryKey(queryFilters),
+        (old) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items
+                .filter((item) => item.id !== todoId)
+                .concat({ ...newTodo, id: newTodo.id }),
+            })),
+          };
+        },
+      );
     },
     onError: () => {
       addNotification({ message: "Failed to update todo", type: "error" });
       cb();
+      const previous = client.getQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        getTodosQueryKey(queryFilters),
+      );
+      return previous;
     },
     onMutate: (newTodo: TExtendedTodo) => {
-      console.log({ newTodo });
+      client.cancelQueries({
+        queryKey: getTodosQueryKey(queryFilters),
+      });
+
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         getTodosQueryKey(queryFilters),
         (old) => {

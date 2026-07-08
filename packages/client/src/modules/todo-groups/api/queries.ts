@@ -86,19 +86,35 @@ export const useUpdateTodoGroup = (dtoContext: TCreateTodoGroupContext) => {
 
   const { mutate, ...props } = useMutation({
     mutationFn: (data: TCreateTodoGroup) => updateOne(data),
-    onSuccess: () => {
+    onSuccess: (newTodoGroup) => {
       addNotification({
         type: "success",
         message: "Todo group updated successfully",
       });
+      client.setQueryData(["todo-groups", newTodoGroup.id], () => ({
+        ...newTodoGroup,
+      }));
     },
-    onMutate: (newTodoGroup) => {
-      client.setQueryData<TTodoGroup>(
-        ["todo-groups", newTodoGroup.id],
-        newTodoGroup,
-      );
+    onMutate: async (newTodoGroup) => {
+      await client.cancelQueries({
+        queryKey: ["todo-groups", newTodoGroup.id],
+      });
+      const previous = client.getQueryData<TTodoGroup>([
+        "todo-groups",
+        newTodoGroup.id,
+      ]);
+      client.setQueryData<TTodoGroup>(["todo-groups", newTodoGroup.id], () => ({
+        ...newTodoGroup,
+      }));
+      return { previous };
     },
-    onError: () => {
+    onError: (_err, _newTodoGroup, context) => {
+      if (context?.previous) {
+        client.setQueryData(
+          ["todo-groups", context.previous.id],
+          context.previous,
+        );
+      }
       addNotification({
         type: "error",
         message: "Failed to update todo group",
