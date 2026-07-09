@@ -13,7 +13,7 @@ import {
   deleteOne,
 } from "./service";
 import { useNotificationStore } from "../../notifications/model/notification.store";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { getTodosQueryKey } from "../model/todo.helper";
 import type {
   ICreateTodoContext,
@@ -102,7 +102,6 @@ export const useCreateTodo = ({
           };
         },
       );
-
     },
 
     onError: (_err, _newTodo, context) => {
@@ -141,25 +140,37 @@ export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
 
 export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
   const client = useQueryClient();
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [activeTodo, setActiveTodo] = useState<TTodo | null>(null);
 
   const handleDragEnd = (e: DragEndEvent) => {
     const todoId = e.operation.source?.id.toString().split("_")[1] as string;
     const newStatus = e.operation.target?.id as TTodoStatus;
-    mutate({ todoId, newStatus });
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    mutate({ todoId, newStatus, abortController: abortControllerRef.current });
   };
 
   const { mutate } = useMutation({
     mutationFn: ({
       todoId,
       newStatus,
+      abortController,
     }: {
       todoId: string;
       newStatus: TTodoStatus;
-    }) => updateStatus(todoId, { status: newStatus }),
+      abortController: AbortController;
+    }) =>
+      updateStatus(
+        todoId,
+        { status: newStatus },
+        abortController,
+      ),
 
     onMutate: async ({ todoId, newStatus }) => {
       await client.cancelQueries({ queryKey: ["todos"] });
+
 
       const previousData = client.getQueriesData<
         InfiniteData<IItemsResponse<TTodo>>
@@ -390,13 +401,18 @@ export const useUpdateTodo = (
   };
 };
 
-export const useDeleteTodo = (dto: TFindAllQuery, cb: () => void) => {
+export const useDeleteTodo = (
+  queryFilters: TFindAllQuery,
+  todoId: string,
+  cb: () => void,
+) => {
   const client = useQueryClient();
   const addNotification = useNotificationStore(
     (state) => state.addNotification,
   );
   const { mutate, ...props } = useMutation({
     mutationFn: (todoId: string) => deleteOne(todoId),
+    mutationKey: ["todo", "delete", todoId],
     onSuccess: (_data, todoId) => {
       addNotification({
         message: "Todo deleted successfully",
@@ -420,16 +436,32 @@ export const useDeleteTodo = (dto: TFindAllQuery, cb: () => void) => {
         },
       );
     },
-    onError: () => {
+    onError: (_err, _todoId, context) => {
       addNotification({ message: "Failed to delete todo", type: "error" });
+      // if (context.previous) {
+      //   client.setQueryData(getTodosQueryKey(queryFilters), context.previousData);
+      // }
     },
-    onMutate: cb
+    onMutate: (todoId) => {
+      cb();
+      client.cancelQueries({
+        queryKey: ["todos"],
+      });
+
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        getTodosQueryKey(queryFilters),
+        (old) => {
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((el) => el.id !== todoId),
+            })),
+          };
+        },
+      );
+    },
   });
 
-  const handleMutate = (todoId: string) => {
-mutate(todoId)
-
-  }
-
-  return { mutate:handleMutate, ...props };
+  return { mutate, ...props };
 };

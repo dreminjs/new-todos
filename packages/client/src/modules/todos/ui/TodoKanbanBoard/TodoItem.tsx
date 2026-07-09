@@ -42,6 +42,12 @@ export const TodoItem: FC<TProps> = ({
     useIsMutating({ mutationKey: ["todo", "create"] }) > 0;
   const isUpdateingLoading =
     useIsMutating({ mutationKey: ["todo", "update", id] }) > 0;
+  const isDeleteLoading = useIsMutating({
+    mutationKey: ["todo", "delete", id],
+  });
+  const isUpdateStatusLoading = useIsMutating({
+    mutationKey: ["todo", "update"],
+  });
 
   return (
     <TodoItemView
@@ -59,7 +65,10 @@ export const TodoItem: FC<TProps> = ({
       workspace={props.workspace}
       isDescriptionVisible={Boolean(props.description)}
       className={clsx(
-        isCreatingLoading || (isUpdateingLoading && styles.todoItemLoading),
+        isCreatingLoading ||
+          isDeleteLoading ||
+          isUpdateStatusLoading ||
+          (isUpdateingLoading && styles.todoItemLoading),
       )}
     />
   );
