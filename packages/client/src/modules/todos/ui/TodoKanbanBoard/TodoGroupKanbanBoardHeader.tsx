@@ -10,17 +10,13 @@ import clsx from "clsx";
 type TodoGroupKanbanBoardHeaderProps = TCreateTodoGroup;
 
 export const TodoGroupKanbanBoardHeader: FC<TodoGroupKanbanBoardHeaderProps> = (
-  dto,
+  props,
 ) => {
-  const { mutate, isPending } = useUpdateTodoGroup({
-    userId: dto.userId,
-    id: dto.id,
-  });
+  const { mutate, isPending } = useUpdateTodoGroup(props);
   const [isTyping, setIsTyping] = useState(false);
   const onSubmit = (data: TCreateTodoGroupForm) => {
     mutate(data);
     setIsTyping(false);
-
   };
   const handleToggleTyping = () => {
     setIsTyping((prev) => !prev);
@@ -32,22 +28,20 @@ export const TodoGroupKanbanBoardHeader: FC<TodoGroupKanbanBoardHeaderProps> = (
         {isTyping ? (
           <InputGroupTodoListTitle
             onClose={handleToggleTyping}
-            dto={dto}
             onMutate={onSubmit}
+            dto={props}
           />
         ) : (
           <button
-            className={clsx(
-              isPending && styles.groupNameLoading,
-              )}
+            className={clsx(isPending && styles.groupNameLoading)}
             disabled={isPending}
             onClick={handleToggleTyping}
           >
-            {dto.name}
+            {props.name}
           </button>
         )}
       </h3>
-      <DeleteTodoGroupButton todoGroupId={dto.id} />
+      <DeleteTodoGroupButton todoGroupId={props.id} />
     </header>
   );
 };

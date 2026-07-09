@@ -9,6 +9,8 @@ import { TodoItem } from "./TodoItem";
 import { type FC } from "react";
 import type { TTodo } from "types";
 import styles from "./TodoKanbanBoard.module.css";
+import { useIsOnline } from "../../../../hooks/useIsOnline";
+import clsx from "clsx";
 type TTodoKanbanBoardProps = {
   showAssignee?: boolean;
   endpoint?: string;
@@ -24,6 +26,7 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
 }) => {
   const { setActiveTodo, handleDragEnd, activeTodo } =
     useUpdateTodoStatus(queryFilters);
+  const isOnline = useIsOnline();
   return (
     <>
       <DragDropProvider
@@ -38,7 +41,7 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
         }}
         onDragEnd={handleDragEnd}
       >
-        <ul className={styles.TodoKanbanBoardList}>
+        <ul className={clsx(styles.TodoKanbanBoardList, !isOnline && styles.TodoKanbanBoardListOffline)}>
           <TodoKanbanColumn
             endpoint={endpoint}
             showAssignee={showAssignee}

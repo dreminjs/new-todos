@@ -57,16 +57,10 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
     },
   });
 
-  const { mutate, ...rest } = useUpdateTodo(
-    {
-      dto,
-      queryFilters,
-    },
-    () => {
-      reset();
-      onClose();
-    },
-  );
+  const { mutate, ...rest } = useUpdateTodo(dto, () => {
+    reset();
+    onClose();
+  });
 
   const { data } = useGetParticipants({ enable: showAssignee });
 

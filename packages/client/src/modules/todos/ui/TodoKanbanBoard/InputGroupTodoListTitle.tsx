@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { Button, FormField } from "../../../../shared";
-import { useUpdateTodoGroup } from "../../../todo-groups";
 import { useRef, type FC } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type TCreateTodoGroup } from "types";
@@ -33,7 +32,7 @@ export const InputGroupTodoListTitle: FC<InputGroupTodoListTitleProps> = ({
   });
 
   const onSubmit = (data: TCreateTodoGroupForm) => {
-    onMutate({ name: data.name });
+    onMutate(data);
   };
 
   return (

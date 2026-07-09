@@ -58,10 +58,6 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
     setEditingTodo(todo);
   };
 
-  useEffect(() => {
-    console.log(editingTodo);
-  }, [editingTodo]);
-
   return (
     <>
       <div className={styles.TodoKanbanBoardColumn}>

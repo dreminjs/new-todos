@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type InfiniteData,
+} from "@tanstack/react-query";
 import {
   findGroups,
   createOne,
@@ -7,11 +12,19 @@ import {
   findOne,
 } from "./service";
 import { useNotificationStore } from "../../notifications/model/notification.store";
-import type { TCreateTodoGroup, TTodoGroup } from "types";
+import type {
+  IItemsResponse,
+  TCreateTodoGroup,
+  TExtendedTodo,
+  TTodo,
+  TTodoGroup,
+} from "types";
 import type {
   TCreateTodoGroupContext,
   TCreateTodoGroupForm,
 } from "../model/todo-group.dto";
+import type { TFindAllQuery } from "../../todos/model/todo.interface";
+import { getTodosQueryKey } from "../../todos/model/todo.helper";
 
 export const useGetTodoGroups = () => {
   return useQuery({
@@ -69,6 +82,7 @@ export const useDeleteTodoGroup = () => {
         oldData.filter((todoGroup) => todoGroup.id !== deletedTodoId),
       );
     },
+
     onError: () => {
       addNotification({
         type: "error",
@@ -83,21 +97,36 @@ export const useUpdateTodoGroup = (dtoContext: TCreateTodoGroupContext) => {
     (state) => state.addNotification,
   );
   const client = useQueryClient();
-
   const { mutate, ...props } = useMutation({
-    mutationFn: (data: TCreateTodoGroup) => updateOne(data),
+    mutationFn: (data: TCreateTodoGroup) => {
+      return updateOne(data);
+    },
+    mutationKey: ["todo-groups", dtoContext.id],
     onSuccess: (newTodoGroup) => {
       addNotification({
         type: "success",
         message: "Todo group updated successfully",
       });
-      client.setQueryData(["todo-groups", newTodoGroup.id], () => ({
-        ...newTodoGroup,
-      }));
+      client.setQueryData(["todo-groups", newTodoGroup.id], () => newTodoGroup);
+      client.setQueriesData<InfiniteData<IItemsResponse<TExtendedTodo>>>(
+        { queryKey: ["todos"] },
+        (old) => {
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) => ({
+                ...item,
+                todoGroup: newTodoGroup,
+              })),
+            })),
+          };
+        },
+      );
     },
     onMutate: async (newTodoGroup) => {
       await client.cancelQueries({
-        queryKey: ["todo-groups", newTodoGroup.id],
+        queryKey: ["todo-groups"],
       });
       const previous = client.getQueryData<TTodoGroup>([
         "todo-groups",
@@ -108,7 +137,7 @@ export const useUpdateTodoGroup = (dtoContext: TCreateTodoGroupContext) => {
       }));
       return { previous };
     },
-    onError: (_err, _newTodoGroup, context) => {
+    onError: (err, _newTodoGroup, context) => {
       if (context?.previous) {
         client.setQueryData(
           ["todo-groups", context.previous.id],
@@ -123,7 +152,10 @@ export const useUpdateTodoGroup = (dtoContext: TCreateTodoGroupContext) => {
   });
 
   const handleSubmit = (dto: TCreateTodoGroupForm, cb?: () => void) => {
-    mutate({ ...dto, ...dtoContext }, { onSuccess: cb });
+    mutate(
+      { name: dto.name, userId: dtoContext.userId, id: dtoContext.id },
+      { onSuccess: cb },
+    );
   };
   return { mutate: handleSubmit, ...props };
 };

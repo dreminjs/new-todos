@@ -85,7 +85,10 @@
 
 .groupNameLoading {
     opacity: 0.5;
+}
 
+.TodoKanbanBoardListOffline {
+    opacity: 0.5;
 }
 
 @media (max-width: 1400px) {

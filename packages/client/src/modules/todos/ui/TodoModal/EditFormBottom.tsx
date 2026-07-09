@@ -18,12 +18,7 @@ export const EditTodoFormBottom: FC<TEditTodoFormBottomProps> = ({
   todoId,
   queryFilters,
 }) => {
-  const { mutate } = useDeleteTodo(
-    {
-      ...queryFilters,
-    },
-    onClose,
-  );
+  const { mutate } = useDeleteTodo(queryFilters, onClose);
 
   const handleDeleteTodo = () => {
     mutate(todoId);

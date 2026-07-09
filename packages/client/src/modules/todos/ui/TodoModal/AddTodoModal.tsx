@@ -72,10 +72,6 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
 
   const { data } = useGetParticipants({ enable: showAssignee });
 
-  useEffect(() => {
-    console.log(errors)
-  }, [Object.values(errors)]);
-
   return (
     <Modal title="Add Todo" {...props}>
       <form onSubmit={handleSubmit(mutate)} className={styles.todoForm}>

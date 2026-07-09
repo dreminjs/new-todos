@@ -6,12 +6,13 @@ import type { FC } from "react";
 import { format } from "date-fns/format";
 import styles from "./TodoKanbanBoard.module.css";
 import clsx from "clsx";
-import { useIsMutating } from "@tanstack/react-query";
+import { useIsTodoMutating } from "../../model/hooks/useIsTodoMutating";
+import { useIsOnline } from "../../../../hooks/useIsOnline";
 
 type TProps = TExtendedTodo & {
   isOverlay?: boolean;
   onChoose?: () => void;
-  isLoading: boolean;
+  isLoading?: boolean;
 };
 export const TodoItem: FC<TProps> = ({
   title,
@@ -21,16 +22,20 @@ export const TodoItem: FC<TProps> = ({
   onChoose,
   ...props
 }) => {
-  const { ref, isDragging } = useDraggable({
-    id: `draggable_${id}`,
-    data: {
-      status,
-      title,
-      id,
-      priority,
-      ...props,
-    },
-  });
+
+  const isOnline = useIsOnline()
+
+    const { ref, isDragging } = useDraggable({
+      id: `draggable_${id}`,
+      disabled: !isOnline,
+      data: {
+        status,
+        title,
+        id,
+        priority,
+        ...props,
+      },
+    });
   const isExpired =
     new Date(props.deadline) < new Date(formatToLocalYYYYMMDD(new Date()));
 
@@ -38,19 +43,10 @@ export const TodoItem: FC<TProps> = ({
     ? format(new Date(props.deadline), "MMM d")
     : undefined;
 
-  const isCreatingLoading =
-    useIsMutating({ mutationKey: ["todo", "create"] }) > 0;
-  const isUpdatingLoading =
-    useIsMutating({ mutationKey: ["todo", "update", id] }) > 0;
-  const isDeleteLoading = useIsMutating({
-    mutationKey: ["todo", "delete"],
+  const isMutating = useIsTodoMutating({
+    todoId: id,
+    todoGroupId: props.todoGroup?.id,
   });
-  const isUpdateStatusLoading = useIsMutating({
-    mutationKey: ["todo", "update", "status"],
-  });
-
-  const isMutating =
-    isCreatingLoading || isUpdatingLoading || isUpdateStatusLoading || isDeleteLoading
 
   return (
     <TodoItemView
@@ -66,10 +62,8 @@ export const TodoItem: FC<TProps> = ({
       priority={priority}
       todoGroup={props.todoGroup}
       workspace={props.workspace}
+      className={clsx(isMutating && styles.todoItemLoading)}
       isDescriptionVisible={Boolean(props.description)}
-      className={clsx(
-        isMutating && styles.todoItemLoading
-      )}
     />
   );
 };

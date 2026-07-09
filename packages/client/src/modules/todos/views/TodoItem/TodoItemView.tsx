@@ -1,15 +1,9 @@
 import type { FC } from "react";
 import clsx from "clsx";
-import { format } from "date-fns";
 import {
   LuTimerOff,
   LuCalendar,
   LuSun,
-  LuSquareBottomDashedScissors,
-  LuText,
-  LuTextCursor,
-  LuTextQuote,
-  LuTextSelect,
   LuBookText,
 } from "react-icons/lu";
 import styles from "./TodoItemView.module.css";
