@@ -22,12 +22,11 @@ export const EditTodoFormBottom: FC<TEditTodoFormBottomProps> = ({
     {
       ...queryFilters,
     },
-    todoId,
     onClose,
   );
 
   const handleDeleteTodo = () => {
-    mutate();
+    mutate(todoId);
   };
   return (
     <div className={styles.editTodoFormBottom}>

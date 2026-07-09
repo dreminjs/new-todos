@@ -17,7 +17,13 @@ export const updateOne = async (
   id: string,
   abortController: AbortController,
 ): Promise<TTodo> => {
-  return (await instance.put(`/todos/${id}`, { ...data, id }, { signal: abortController.signal })).data;
+  return (
+    await instance.put(
+      `/todos/${id}`,
+      { ...data, id },
+      { signal: abortController.signal },
+    )
+  ).data;
 };
 
 export const findAll = async (
@@ -38,9 +44,12 @@ export const updateStatus = async (
   todoId: string,
   data: TUpdateTodoStatus,
   abortController: AbortController,
-
 ): Promise<TTodo> => {
-  return (await instance.patch(`/todos/${todoId}/update-status`, data, { signal: abortController.signal })).data;
+  return (
+    await instance.patch(`/todos/${todoId}/update-status`, data, {
+      signal: abortController.signal,
+    })
+  ).data;
 };
 
 export const deleteOne = async (todoId: string): Promise<string> => {
