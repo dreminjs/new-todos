@@ -19,7 +19,6 @@ import type {
 import {
   COLOR_TODO_PRIORITY,
   TODO_PRIORITY_OPTIONS,
-  TODO_STATUS_OPTIONS,
 } from "../../model/todo.constants";
 import { EditTodoFormBottom } from "./EditFormBottom";
 import styles from "./TodoModal.module.css";
