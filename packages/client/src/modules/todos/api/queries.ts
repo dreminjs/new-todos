@@ -314,7 +314,11 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
   };
 };
 
-export const useUpdateTodo = (dto: ICreateTodoContext, cb: () => void) => {
+export const useUpdateTodo = (
+  dto: ICreateTodoContext,
+  queryFilter: TFindAllQuery,
+  cb: () => void,
+) => {
   const addNotification = useNotificationStore(
     (state) => state.addNotification,
   );
@@ -336,13 +340,10 @@ export const useUpdateTodo = (dto: ICreateTodoContext, cb: () => void) => {
         message: "Todo updated successfully",
         type: "success",
       });
-      client.setQueriesData<InfiniteData<IItemsResponse<TTodo>>>(
-        {
-          queryKey: ["todos"],
-        },
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        getTodosQueryKey(queryFilter),
         (old) => {
           if (!old) return old;
-
           return {
             ...old,
             pages: old.pages.map((page) => ({
@@ -368,13 +369,10 @@ export const useUpdateTodo = (dto: ICreateTodoContext, cb: () => void) => {
     onMutate: (newTodo: TExtendedTodo) => {
       cb();
 
-      client.setQueriesData<InfiniteData<IItemsResponse<TTodo>>>(
-        {
-          queryKey: ["todos"],
-        },
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        getTodosQueryKey(queryFilter),
         (old) => {
           if (!old) return old;
-
           return {
             ...old,
             pages: old.pages.map((page) => ({

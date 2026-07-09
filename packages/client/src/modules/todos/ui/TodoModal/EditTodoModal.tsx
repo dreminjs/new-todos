@@ -57,7 +57,7 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
     },
   });
 
-  const { mutate, ...rest } = useUpdateTodo(dto, () => {
+  const { mutate, ...rest } = useUpdateTodo(dto, queryFilters, () => {
     reset();
     onClose();
   });
