@@ -340,6 +340,7 @@ export const useUpdateTodo = (
         message: "Todo updated successfully",
         type: "success",
       });
+      // console.log({ newTodo });
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         getTodosQueryKey(queryFilter),
         (old) => {

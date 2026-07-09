@@ -5,6 +5,7 @@ import type {
 } from "../model/notification.interface";
 import styles from "./Notifiction.module.css";
 import clsx from "clsx";
+import { LuCable, LuCross, LuX } from "react-icons/lu";
 
 type TProps = Omit<INotification, "id"> & {
   onClear: () => void;
@@ -28,6 +29,9 @@ export const NotificationItem: FC<TProps> = ({ message, type, onClear }) => {
   return (
     <li className={clsx(notificationClasses[type], styles.notificationItem)}>
       <span>{message}</span>
+      <button className={styles.notificationItemCloseButton} onClick={onClear}>
+        <LuX />
+      </button>
     </li>
   );
 };

@@ -16,6 +16,14 @@
   z-index: 100000;
 }
 
+.notificationItemCloseButton {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
 .notificationItemSuccess {
   background-color: limegreen;
   border-left: 12px solid #228b22;
