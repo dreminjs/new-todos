@@ -83,6 +83,11 @@
   opacity: 0.5;
 }
 
+.groupNameLoading {
+    opacity: 0.5;
+
+}
+
 @media (max-width: 1400px) {
   .TodoKanbanBoardColumn {
     min-width: 340px;

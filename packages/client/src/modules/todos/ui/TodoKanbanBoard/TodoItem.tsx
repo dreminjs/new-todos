@@ -43,7 +43,7 @@ export const TodoItem: FC<TProps> = ({
   const isUpdatingLoading =
     useIsMutating({ mutationKey: ["todo", "update", id] }) > 0;
   const isDeleteLoading = useIsMutating({
-    mutationKey: ["todo", "delete", id],
+    mutationKey: ["todo", "delete"],
   });
   const isUpdateStatusLoading = useIsMutating({
     mutationKey: ["todo", "update", "status"],
@@ -51,13 +51,7 @@ export const TodoItem: FC<TProps> = ({
 
   const isMutating =
     isCreatingLoading || isUpdatingLoading || isUpdateStatusLoading || isDeleteLoading
-  console.log({
-    isUpdateStatusLoading,
-    isDeleteLoading,
-    isUpdatingLoading,
-    isCreatingLoading,
-    isMutating,
-  });
+
   return (
     <TodoItemView
       isMyToday={props.isMyToday}

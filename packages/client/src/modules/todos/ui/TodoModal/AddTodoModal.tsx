@@ -1,4 +1,4 @@
-import { useMemo, type FC } from "react";
+import { useEffect, useMemo, type FC } from "react";
 import {
   CustomDatePicker,
   FormField,
@@ -60,7 +60,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
     defaultValues: {
       status: props.todoContext?.status,
       priority: props.todoContext?.priority,
-      isMyToday: props.todoContext?.isMyToday,
+      isMyToday: props.todoContext?.isMyToday || false,
     },
   });
 
@@ -71,6 +71,10 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
   });
 
   const { data } = useGetParticipants({ enable: showAssignee });
+
+  useEffect(() => {
+    console.log(errors)
+  }, [Object.values(errors)]);
 
   return (
     <Modal title="Add Todo" {...props}>

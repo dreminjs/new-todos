@@ -122,7 +122,7 @@ export const useUpdateTodoGroup = (dtoContext: TCreateTodoGroupContext) => {
     },
   });
 
-  const handleSubmit = (dto: TCreateTodoGroupForm, cb: () => void) => {
+  const handleSubmit = (dto: TCreateTodoGroupForm, cb?: () => void) => {
     mutate({ ...dto, ...dtoContext }, { onSuccess: cb });
   };
   return { mutate: handleSubmit, ...props };

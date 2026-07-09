@@ -12,35 +12,28 @@ import type { TCreateTodoGroupForm } from "../../../todo-groups/model/todo-group
 interface InputGroupTodoListTitleProps {
   onClose: () => void;
   dto: TCreateTodoGroup;
+  onMutate: (dto: TCreateTodoGroupForm) => void;
 }
 
 export const InputGroupTodoListTitle: FC<InputGroupTodoListTitleProps> = ({
   onClose,
   dto,
+  onMutate,
 }) => {
   const formRef = useRef<HTMLFormElement>(null);
   useOnClickOutside(formRef, onClose);
-  const { mutate } = useUpdateTodoGroup({
-    userId: dto.userId,
-    id: dto.id,
-  });
 
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<TCreateTodoGroupForm>({
     resolver: zodResolver(createTodoGroupFormSchema),
     defaultValues: { name: dto.name },
   });
 
-  const onSubmit = (data: TCreateTodoGroup) => {
-    console.log(data);
-    mutate(data, () => {
-      onClose();
-      reset();
-    });
+  const onSubmit = (data: TCreateTodoGroupForm) => {
+    onMutate({ name: data.name });
   };
 
   return (

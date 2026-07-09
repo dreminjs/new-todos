@@ -175,7 +175,7 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
 
       const previousData = client.getQueriesData<
         InfiniteData<IItemsResponse<TTodo>>
-      >({ queryKey: ["todos"] });
+      >({ queryKey: ["todos"] })
 
       let movedTodo: TTodo | undefined;
       let sourceQueryKey: QueryKey | undefined;
@@ -437,7 +437,7 @@ export const useDeleteTodo = (
         },
       );
     },
-    onError: (_err, _todoId, context) => {
+    onError: (err, todoId, context) => {
       addNotification({ message: "Failed to delete todo", type: "error" });
 
     },
