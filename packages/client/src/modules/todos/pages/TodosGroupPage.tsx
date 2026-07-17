@@ -12,16 +12,7 @@ const TodosGroupPage = () => {
   const {
     data: todoGroup,
     isPending,
-    status,
-    fetchStatus,
   } = useGetTodoGroup(groupId!);
-
-  useEffect(() => {
-    console.log({
-      fetchStatus,
-      status,
-    });
-  }, [fetchStatus, status]);
 
   const queryFilters: TFindAllQuery = { todoGroupId: groupId, limit: 10 };
 

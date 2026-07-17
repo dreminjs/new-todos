@@ -3,9 +3,9 @@ import type {
   INotification,
   TNotificationType,
 } from "../model/notification.interface";
+import { LuX } from "react-icons/lu";
 import styles from "./Notifiction.module.css";
 import clsx from "clsx";
-import { LuCable, LuCross, LuX } from "react-icons/lu";
 
 type TProps = Omit<INotification, "id"> & {
   onClear: () => void;

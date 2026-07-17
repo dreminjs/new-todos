@@ -40,7 +40,13 @@ export const CreateWorkspaceModal: FC<ICreateWorkspaceModalProps> = ({
           register={register}
           name="name"
           error={formState.errors.name?.message}
-          label="Workspace name"
+          label="Name"
+        />
+        <FormField<TCreateWorkspace>
+          register={register}
+          name="description"
+          error={formState.errors.description?.message}
+          label="Description"
         />
         <FormBottom onClose={onClose} isLoading={isPending} />
       </form>

@@ -6,8 +6,10 @@ import {
   createWorkspaceSchema,
   extendedWorkspaceInvitationSchema,
   membershipResultSchema,
+  workspaceInfoSchema,
   workspaceInvitationSchema,
   workspaceRequestSchema,
+  workspaceRoles,
   workspaceSchema,
 } from "./workspace.schema.js";
 
@@ -43,3 +45,7 @@ export type TMembershipResult = z.infer<typeof membershipResultSchema>;
 export type TActionWorkspaceInvitation = z.infer<
   typeof actionWorkspaceInvitationSchema
 >;
+
+export type TWorkspaceInfo = z.infer<typeof workspaceInfoSchema>;
+
+export type TWorkspaceRoles = z.infer<typeof workspaceRoles>;

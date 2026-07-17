@@ -4,11 +4,12 @@ import { WorkspaceHeader } from "../ui/WorkspaceHeader/WorkspaceHeader";
 
 export const WorkspacePage = () => {
   const { workspaceId } = useParams();
+
   const { data } = useGetMembershipResult(workspaceId);
   return (
     <>
       <WorkspaceHeader />
-      {workspaceId}
+
     </>
   );
 };

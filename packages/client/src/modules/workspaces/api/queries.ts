@@ -6,6 +6,7 @@ import {
   findManyMyWorkspaces,
   findMembership,
   findParticipants,
+  findWorkspaceInfo,
   inviteMember,
   rejectInvitation,
 } from "./services";
@@ -101,7 +102,7 @@ export const useInviteMember = (workspaceId: string) => {
 export const useGetMyWorkspaceInvitations = () => {
   return useQuery({
     queryKey: ["workspaces", "invitations"],
-    queryFn: findManyMyWorkspaceInvitations,
+    queryFn: () => findManyMyWorkspaceInvitations(),
   });
 };
 
@@ -172,4 +173,11 @@ export const useRejectInvitation = () => {
   };
 
   return { mutate: handleRejectInvitation, ...rest };
+};
+
+export const useGetWorkspaceInfo = (workspaceId: string) => {
+  return useQuery({
+    queryKey: ["workspaces", workspaceId, "info"],
+    queryFn: () => findWorkspaceInfo(workspaceId),
+  });
 };

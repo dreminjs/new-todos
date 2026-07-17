@@ -6,6 +6,7 @@ import type {
   TExtendedWorkspaceInvitation,
   TMembershipResult,
   TWorkspace,
+  TWorkspaceInfo,
   TWorkspaceInvitation,
 } from "types";
 import { instance } from "../../../shared/api/api.instance";
@@ -54,4 +55,10 @@ export const rejectInvitation = async (
   dto: TActionWorkspaceInvitation,
 ): Promise<void> => {
   await instance.post(`${BASE_URL}/invitation/reject`, dto);
+};
+
+export const findWorkspaceInfo = async (
+  workspaceId: string,
+): Promise<TWorkspaceInfo> => {
+  return (await instance.get(`${BASE_URL}/${workspaceId}/info`)).data;
 };

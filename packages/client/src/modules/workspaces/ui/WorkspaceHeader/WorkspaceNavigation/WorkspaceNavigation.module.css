@@ -1,0 +1,20 @@
+
+
+
+.workspaceNavigation {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.workspaceNavigationItem {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 18px;
+}
+
+.workspaceNavigationItemActive {
+    background-color: #6366F1;
+    color: white;
+}

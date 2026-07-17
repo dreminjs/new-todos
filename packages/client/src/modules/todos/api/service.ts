@@ -9,7 +9,7 @@ import type {
 export const createOne = async (
   data: TCreateTodo & ICreateTodoContext,
 ): Promise<TTodo> => {
-  return (await instance.post("/todos", { ...data, id: data.id })).data;
+  return (await instance.post("/todos/my", { ...data, id: data.id })).data;
 };
 
 export const updateOne = async (

@@ -1,0 +1,48 @@
+
+.workspaceHeader {
+    /*display: flex;*/
+}
+
+
+
+.workspaceHeaderBackButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.workspaceHeaderInfo {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 15px;
+}
+
+.workspaceHeaderInfoInner {
+    padding-left: 15px;
+    border-left: 1px solid black;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.workspaceHeaderInfoInnerRight {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.workspaceHeaderInfoTitle {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.workspaceHeaderInfoDescription {
+    font-size: 14px;
+}
