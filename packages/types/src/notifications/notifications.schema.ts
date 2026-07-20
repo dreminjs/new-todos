@@ -13,4 +13,6 @@ export const notifactionSchema = createNotificationSchema.extend({
   id: z.string(),
   read: z.enum(["true", "false"]).transform((val) => val === "true"),
   createdAt: z.string().datetime(),
+  workspaceInvitationId: z.string().nullable(),
+  chatId: z.string().nullable()
 });

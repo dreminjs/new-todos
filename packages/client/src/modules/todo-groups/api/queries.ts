@@ -11,20 +11,17 @@ import {
   deleteOne,
   findOne,
 } from "./service";
-import { useNotificationStore } from "../../notifications/model/notification.store";
+import { useSystemNotificationStore } from "../../notifications/model/notification.store";
 import type {
   IItemsResponse,
   TCreateTodoGroup,
   TExtendedTodo,
-  TTodo,
   TTodoGroup,
 } from "types";
 import type {
   TCreateTodoGroupContext,
   TCreateTodoGroupForm,
 } from "../model/todo-group.dto";
-import type { TFindAllQuery } from "../../todos/model/todo.interface";
-import { getTodosQueryKey } from "../../todos/model/todo.helper";
 
 export const useGetTodoGroups = () => {
   return useQuery({
@@ -34,7 +31,7 @@ export const useGetTodoGroups = () => {
 };
 
 export const useCreateTodoGroup = () => {
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const client = useQueryClient();
@@ -64,7 +61,7 @@ export const useCreateTodoGroup = () => {
 };
 
 export const useDeleteTodoGroup = () => {
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const client = useQueryClient();
@@ -93,7 +90,7 @@ export const useDeleteTodoGroup = () => {
 };
 
 export const useUpdateTodoGroup = (dtoContext: TCreateTodoGroupContext) => {
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const client = useQueryClient();

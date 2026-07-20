@@ -11,7 +11,7 @@ import {
   rejectInvitation,
 } from "./services";
 import { useNavigate } from "react-router";
-import { useNotificationStore } from "../../notifications/model/notification.store";
+import { useSystemNotificationStore } from "../../notifications/model/notification.store";
 import type { TWorkspaceInvitationForm } from "../model/workspace.types";
 
 interface UseGetParticipantsProps {
@@ -38,7 +38,7 @@ export const useGetMyWorkspaces = () => {
 };
 
 export const useCreateWorkspace = () => {
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const navigate = useNavigate();
@@ -72,8 +72,14 @@ export const useGetMembershipResult = (workspaceId: string) => {
   });
 };
 
-export const useInviteMember = (workspaceId: string) => {
-  const addNotification = useNotificationStore(
+export const useInviteMember = (
+  workspaceId: string,
+  callbacks: {
+    onSuccess?: () => void;
+    onError?: () => void;
+  },
+) => {
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const { mutate, ...rest } = useMutation({
@@ -83,12 +89,14 @@ export const useInviteMember = (workspaceId: string) => {
         message: "Member invited successfully",
         type: "success",
       });
+      callbacks?.onSuccess();
     },
     onError: () => {
       addNotification({
         message: "Failed to invite member",
         type: "error",
       });
+      callbacks?.onError();
     },
   });
 
@@ -107,7 +115,7 @@ export const useGetMyWorkspaceInvitations = () => {
 };
 
 export const useAcceptInvitation = () => {
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const client = useQueryClient();
@@ -141,7 +149,7 @@ export const useAcceptInvitation = () => {
 };
 
 export const useRejectInvitation = () => {
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const client = useQueryClient();

@@ -1,5 +1,5 @@
 import { useDraggable } from "@dnd-kit/react";
-import { formatToLocalYYYYMMDD } from "../../../../shared/model/date.helper";
+import { formatToLocalYYYYMMDD } from "../../../../shared/model/lib/date.helper";
 import { TodoItemView } from "../../views/TodoItem";
 import type { TExtendedTodo } from "types";
 import type { FC } from "react";

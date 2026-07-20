@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { signin, signup } from "./services";
-import { useNotificationStore } from "../../notifications/model/notification.store";
+import { useSystemNotificationStore } from "../../notifications/model/notification.store";
 import { useNavigate } from "react-router";
 import type { AxiosError } from "axios";
 import type { IStandartResponse } from "types";
 
 export const useSignup = () => {
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
 
@@ -33,7 +33,7 @@ export const useSignup = () => {
 };
 
 export const useSignin = () => {
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
 

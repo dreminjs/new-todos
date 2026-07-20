@@ -6,14 +6,16 @@ import { WorkspacesList } from "./WorkspacesList";
 import styles from "./Sidebar.module.css";
 export const SidebarContent = () => {
   return (
-    <div className={styles.sidebarContent}>
-      <SidebarHeader />
-      <div className={styles.sidebarBody}>
-        <SidebarMenu />
-        <GroupTodosList />
-        <WorkspacesList />
+    <>
+      <div className={styles.sidebarContent}>
+        <SidebarHeader />
+        <div className={styles.sidebarBody}>
+          <SidebarMenu />
+          <GroupTodosList />
+          <WorkspacesList />
+        </div>
+        <SidebarBottom />
       </div>
-      <SidebarBottom />
-    </div>
+    </>
   );
 };

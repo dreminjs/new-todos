@@ -10,20 +10,30 @@ interface IWorkspaceNavigationProps {
 export const WorkspaceNavigation: FC<IWorkspaceNavigationProps> = ({
   countOfMembers,
 }) => {
-  const pathname = useLocation().pathname.split("/")[4] ?? "";
+  const pathname = useLocation().pathname.split("/")[3];
+  const workspaceId = useLocation().pathname.split("/")[2];
   return (
     <nav>
       <ul className={styles.workspaceNavigation}>
-        <WorkspaceNavigationItem isActive={pathname === ""} href="">
+        <WorkspaceNavigationItem isActive={pathname === undefined} href={workspaceId}>
           All tasks
         </WorkspaceNavigationItem>
-        <WorkspaceNavigationItem isActive={pathname === "/lists"} href="/lists">
+        <WorkspaceNavigationItem
+          isActive={pathname === `lists`}
+          href={`${workspaceId}/lists`}
+        >
           Lists
         </WorkspaceNavigationItem>
-        <WorkspaceNavigationItem isActive={pathname === "/chats"} href="/chats">
+        <WorkspaceNavigationItem
+          isActive={pathname === `chats`}
+          href={`${workspaceId}/chats`}
+        >
           Chats
         </WorkspaceNavigationItem>
-        <WorkspaceNavigationItem isActive={pathname === "/me"} href="/members">
+        <WorkspaceNavigationItem
+          isActive={pathname === `members`}
+          href={`${workspaceId}/members`}
+        >
           Members ({countOfMembers})
         </WorkspaceNavigationItem>
       </ul>

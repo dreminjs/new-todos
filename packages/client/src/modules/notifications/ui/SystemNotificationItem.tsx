@@ -1,24 +1,24 @@
 import { useEffect, type FC } from "react";
 import type {
-  INotification,
-  TNotificationType,
+  ISystemNotification,
+  TSystemNotificationType,
 } from "../model/notification.interface";
 import { LuX } from "react-icons/lu";
-import styles from "./Notifiction.module.css";
+import styles from "./SystemNotifiction.module.css";
 import clsx from "clsx";
 
-type TProps = Omit<INotification, "id"> & {
+type TProps = Omit<ISystemNotification, "id"> & {
   onClear: () => void;
 };
 
-const notificationClasses: Record<TNotificationType, string> = {
+const notificationClasses: Record<TSystemNotificationType, string> = {
   success: styles.notificationItemSuccess,
   error: styles.notificationItemError,
   info: styles.notificationItemInfo,
   warning: styles.notificationItemWarning,
 };
 
-export const NotificationItem: FC<TProps> = ({ message, type, onClear }) => {
+export const SystemNotificationItem: FC<TProps> = ({ message, type, onClear }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClear();

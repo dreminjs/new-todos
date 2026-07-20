@@ -5,7 +5,7 @@ import styles from "./CustomDatePicker.module.css";
 import {
   formatToLocalYYYYMMDD,
   formatToUTCYYYYMMDD,
-} from "../../model/date.helper";
+} from "../../model/lib/date.helper";
 
 interface IDatePickerProps {
   value: Date;

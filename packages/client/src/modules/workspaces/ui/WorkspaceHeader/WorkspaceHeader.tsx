@@ -4,7 +4,6 @@ import styles from "./WorkspaceHeader.module.css";
 import { WorkspaceInfo } from "./WorkspaceInfo";
 import { WorkspaceNavigation } from "./WorkspaceNavigation/WorkspaceNavigation";
 import { Skeleton } from "@chakra-ui/react";
-import { WorkspaceSettingsButton } from "./WorkspaceSettings/WorkspaceSettingsButton";
 
 export const WorkspaceHeader = () => {
   const { workspaceId } = useParams();
@@ -29,7 +28,6 @@ export const WorkspaceHeader = () => {
       />
       <>
         <WorkspaceNavigation countOfMembers={workspaceInfo.countOfMembers} />
-
       </>
     </header>
   );

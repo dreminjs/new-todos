@@ -1,17 +1,17 @@
 import { Portal } from "@chakra-ui/react";
-import { useNotificationStore } from "../model/notification.store";
-import { NotificationItem } from "./NotificationItem";
-import styles from "./Notifiction.module.css";
-export const NotificationList = () => {
-  const notifications = useNotificationStore((state) => state.notifications);
-  const removeNotification = useNotificationStore(
+import { useSystemNotificationStore } from "../model/notification.store";
+import { SystemNotificationItem } from "./SystemNotificationItem";
+import styles from "./SystemNotifiction.module.css";
+export const SystemNotificationList = () => {
+  const notifications = useSystemNotificationStore((state) => state.notifications);
+  const removeNotification = useSystemNotificationStore(
     (state) => state.removeNotification,
   );
   return (
     <Portal>
       <ul className={styles.notificationList}>
         {notifications.map((notification) => (
-          <NotificationItem
+          <SystemNotificationItem
             key={notification.id}
             message={notification.message}
             type={notification.type}

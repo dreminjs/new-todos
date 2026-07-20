@@ -12,7 +12,7 @@ import {
   updateOne,
   deleteOne,
 } from "./service";
-import { useNotificationStore } from "../../notifications/model/notification.store";
+import { useSystemNotificationStore } from "../../notifications/model/notification.store";
 import { useRef, useState } from "react";
 import { getTodosQueryKey } from "../model/todo.helper";
 import type {
@@ -33,7 +33,7 @@ export const useCreateTodo = ({
   todoContext: ICreateTodoContext;
   cb: () => void;
 }) => {
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const client = useQueryClient();
@@ -319,7 +319,7 @@ export const useUpdateTodo = (
   queryFilter: TFindAllQuery,
   cb: () => void,
 ) => {
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const client = useQueryClient();
@@ -398,7 +398,7 @@ export const useUpdateTodo = (
 
 export const useDeleteTodo = (queryFilters: TFindAllQuery, cb: () => void) => {
   const client = useQueryClient();
-  const addNotification = useNotificationStore(
+  const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const { mutate, ...props } = useMutation({

@@ -5,7 +5,7 @@ import type { TWorkspaceInfo } from "types";
 import type { FC } from "react";
 import { WorkspaceSettingsButton } from "./WorkspaceSettings/WorkspaceSettingsButton";
 
-type TWorkspaceInfoProps = TWorkspaceInfo;
+type TWorkspaceInfoProps = Omit<TWorkspaceInfo, "role">;
 
 export const WorkspaceInfo: FC<TWorkspaceInfoProps> = ({
   title,

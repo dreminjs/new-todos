@@ -1,14 +1,14 @@
-export interface INotification {
+export interface ISystemNotification {
   id: string;
   message: string;
-  type: TNotificationType;
+  type: TSystemNotificationType;
 }
 
-export type TNotificationType = "success" | "error" | "info" | "warning";
-export type TCreateNotificationDto = Omit<INotification, "id">;
+export type TSystemNotificationType = "success" | "error" | "info" | "warning";
+export type TCreateSystemNotificationDto = Omit<ISystemNotification, "id">;
 
-export interface INotificationStore {
-  notifications: INotification[];
-  addNotification: (notification: TCreateNotificationDto) => void;
+export interface ISystemNotificationStore {
+  notifications: ISystemNotification[];
+  addNotification: (notification: TCreateSystemNotificationDto) => void;
   removeNotification: (id: string) => void;
 }

@@ -8,12 +8,14 @@
   justify-content: space-between;
   width: 100%;
   border: 1px solid #6b7280;
+
   border-radius: 6px;
   padding: 9px 0px 9px 17px;
 }
 
 .authFieldInner > input {
   flex-basis: 90%;
+  background-color: transparent !important;
 }
 
 .authFieldInner > button {

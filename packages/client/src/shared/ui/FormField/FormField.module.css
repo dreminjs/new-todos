@@ -2,9 +2,10 @@
   border: 1px solid #6b7280;
   background-color: #f8f9fb;
   padding: 25px 15px;
+  background-color: transparent !important;
 }
 
 .formFieldTextarea {
   border: 1px solid #6b7280;
-  background-color: #f8f9fb;
+  background-color: transparent !important;
 }

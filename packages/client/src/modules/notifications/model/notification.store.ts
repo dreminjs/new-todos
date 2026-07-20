@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import type { INotificationStore } from "./notification.interface";
+import type { ISystemNotificationStore  } from "./notification.interface";
 
-export const useNotificationStore = create<INotificationStore>((set) => ({
+export const useSystemNotificationStore = create<ISystemNotificationStore>((set) => ({
   notifications: [],
   addNotification: (notification) => {
     const id = crypto.randomUUID();

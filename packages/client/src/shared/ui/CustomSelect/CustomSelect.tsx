@@ -8,12 +8,11 @@ import {
 import clsx from "clsx";
 import type { Path, UseFormRegister } from "react-hook-form";
 import styles from "./CustomSelect.module.css";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 
 interface ISelectProps<T> {
   name: Path<T>;
-  register: UseFormRegister<T>;
-  label: string;
+  label?: string;
   options: { value: string; label: string }[];
   className?: string;
   placeholder?: string;
@@ -40,7 +39,7 @@ export function CustomSelect<T>({
     <Field.Root invalid={!!error} className={className}>
       <Field.Label fontSize="md">{label}</Field.Label>
       <Select.Root
-        size="md"
+        size="lg"
         width="240"
         collection={collection}
         className={clsx(styles.select)}
