@@ -29,7 +29,7 @@ export type TExtendedWorkspaceInvitation = z.infer<
   typeof extendedWorkspaceInvitationSchema
 >;
 
-export interface IWorkspaceParticipant {
+export interface IWorkspaceParticipantShortInfo {
   firstName: string;
   lastName: string;
   avatarUrl: string;
@@ -37,7 +37,7 @@ export interface IWorkspaceParticipant {
 }
 
 export interface IWorkspaceParticipantResponse {
-  user: IWorkspaceParticipant;
+  user: IWorkspaceParticipantShortInfo;
 }
 
 export type TMembershipResult = z.infer<typeof membershipResultSchema>;
