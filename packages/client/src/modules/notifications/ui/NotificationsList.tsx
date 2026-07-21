@@ -1,15 +1,20 @@
 import { NotificationItem } from "./NotificationsItem";
 import { useAcceptInvitation, useRejectInvitation } from "../../workspaces";
 import { useGetMyNotifications } from "../api/queries";
+import styles from "./Notifications.module.css";
 
 export const NotificationsList = () => {
   const { mutate: acceptInvitation } = useAcceptInvitation();
   const { mutate: rejectInvitation } = useRejectInvitation();
-  const { data: notifications } = useGetMyNotifications();
-  console.log(notifications)
+  const { data: notifications, isPending } = useGetMyNotifications();
+
+  if (isPending) return <h3>Loading...</h3>;
+
+  if (!notifications) return <h3>No notifications</h3>;
+
   return (
-    <ul>
-      {/*{notifications.map((item) => (
+    <ul className={styles.notificationsList}>
+      {notifications?.map((item) => (
         <NotificationItem
           key={item.id}
           message={item.message}
@@ -17,8 +22,9 @@ export const NotificationsList = () => {
           createdAt={item.createdAt}
           onAccept={acceptInvitation}
           onReject={rejectInvitation}
+          read={item.read}
         />
-      ))}*/}
+      ))}
     </ul>
   );
 };

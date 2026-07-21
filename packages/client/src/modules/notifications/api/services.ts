@@ -4,5 +4,5 @@ import { instance } from "../../../shared/api/api.instance";
 const BASE_URL = "notifications";
 
 export const findMyNotifications = async (): Promise<TNotification[]> => {
-  return (await instance.get(`${BASE_URL}/my`))
+  return (await instance.get(`${BASE_URL}/my`)).data
 };
