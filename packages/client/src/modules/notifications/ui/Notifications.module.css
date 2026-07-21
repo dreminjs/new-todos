@@ -4,3 +4,10 @@
     height: 25px;
     width: 25px;
 }
+
+.notificationItem {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

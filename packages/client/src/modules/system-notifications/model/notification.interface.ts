@@ -2,6 +2,7 @@ export interface ISystemNotification {
   id: string;
   message: string;
   type: TSystemNotificationType;
+  mannualDeleting?: boolean;
 }
 
 export type TSystemNotificationType = "success" | "error" | "info" | "warning";

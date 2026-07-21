@@ -107,13 +107,6 @@ export const useInviteMember = (
   return { mutate: handleInviteMember, ...rest };
 };
 
-export const useGetMyWorkspaceInvitations = () => {
-  return useQuery({
-    queryKey: ["workspaces", "invitations"],
-    queryFn: () => findManyMyWorkspaceInvitations(),
-  });
-};
-
 export const useAcceptInvitation = () => {
   const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
@@ -126,9 +119,9 @@ export const useAcceptInvitation = () => {
         message: "Invitation accepted successfully",
         type: "success",
       });
-      client.invalidateQueries({
-        queryKey: ["workspaces", "invitations"],
-      });
+      // client.invalidateQueries({
+      //   queryKey: ["notifications", "invitations"],
+      // });
       client.invalidateQueries({
         queryKey: ["workspaces"],
       });

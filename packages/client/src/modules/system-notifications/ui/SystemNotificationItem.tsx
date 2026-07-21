@@ -18,13 +18,19 @@ const notificationClasses: Record<TSystemNotificationType, string> = {
   warning: styles.notificationItemWarning,
 };
 
-export const SystemNotificationItem: FC<TProps> = ({ message, type, onClear }) => {
+export const SystemNotificationItem: FC<TProps> = ({
+  message,
+  type,
+  onClear,
+  mannualDeleting,
+}) => {
   useEffect(() => {
+    if (mannualDeleting) return;
     const timer = setTimeout(() => {
       onClear();
     }, 3000);
     return () => clearTimeout(timer);
-  }, [onClear]);
+  }, [onClear, mannualDeleting]);
 
   return (
     <li className={clsx(notificationClasses[type], styles.notificationItem)}>
