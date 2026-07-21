@@ -12,7 +12,7 @@ import {
   updateOne,
   deleteOne,
 } from "./service";
-import { useSystemNotificationStore } from "../../notifications/model/notification.store";
+import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 import { useRef, useState } from "react";
 import { getTodosQueryKey } from "../model/todo.helper";
 import type {

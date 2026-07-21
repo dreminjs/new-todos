@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { signin, signup } from "./services";
-import { useSystemNotificationStore } from "../../notifications/model/notification.store";
+import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 import { useNavigate } from "react-router";
 import type { AxiosError } from "axios";
 import type { IStandartResponse } from "types";

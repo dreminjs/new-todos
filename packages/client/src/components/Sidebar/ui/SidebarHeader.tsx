@@ -1,7 +1,7 @@
 import styles from "./Sidebar.module.css";
 import LogoIcon from "../../../assets/logo.svg?react";
 import { Link } from "react-router";
-import { NotificationButton } from "./Notifications/NotificationButton";
+import { NotificationButton } from "../../../modules/notifications/ui/NotificationButton";
 
 export const SidebarHeader = () => {
 

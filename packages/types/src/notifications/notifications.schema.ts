@@ -1,18 +1,15 @@
 import { z } from "zod";
 
-export const notificationType = z.enum(["CHAT_MESSAGE", "WORKSPACE_INVITE"])
-
+export const notificationType = z.enum(["CHAT_MESSAGE", "WORKSPACE_INVITE"]);
 
 export const createNotificationSchema = z.object({
   message: z.string(),
   userId: z.string(),
-  type: notificationType,
+  workspaceInvitationId: z.string(),
 });
 
 export const notifactionSchema = createNotificationSchema.extend({
   id: z.string(),
-  read: z.enum(["true", "false"]).transform((val) => val === "true"),
-  createdAt: z.string().datetime(),
+  createdAt: z.date(),
   workspaceInvitationId: z.string().nullable(),
-  chatId: z.string().nullable()
 });

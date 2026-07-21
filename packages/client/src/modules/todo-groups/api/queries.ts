@@ -11,7 +11,7 @@ import {
   deleteOne,
   findOne,
 } from "./service";
-import { useSystemNotificationStore } from "../../notifications/model/notification.store";
+import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 import type {
   IItemsResponse,
   TCreateTodoGroup,

@@ -11,7 +11,7 @@ import {
   rejectInvitation,
 } from "./services";
 import { useNavigate } from "react-router";
-import { useSystemNotificationStore } from "../../notifications/model/notification.store";
+import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 import type { TWorkspaceInvitationForm } from "../model/workspace.types";
 
 interface UseGetParticipantsProps {

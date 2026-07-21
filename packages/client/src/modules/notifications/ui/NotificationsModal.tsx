@@ -1,6 +1,6 @@
-import { useEffect, type FC } from "react";
-import { Modal } from "../../../../shared";
-import { useSocket } from "../../../../app/model/useSocket";
+import { type FC } from "react";
+import { Modal } from "../../../shared";
+import { useSocket } from "../../../app/model/useSocket";
 
 interface INotificationsModalProps {
   isOpen: boolean;
@@ -14,9 +14,9 @@ export const NotificationsModal: FC<INotificationsModalProps> = ({
   const socket = useSocket();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal title="Notifications" isOpen={isOpen} onClose={onClose}>
       <div>
-        <h3>Notifactions</h3>
+        children
       </div>
     </Modal>
   );
