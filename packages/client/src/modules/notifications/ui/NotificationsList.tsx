@@ -17,12 +17,15 @@ export const NotificationsList = () => {
       {notifications?.map((item) => (
         <NotificationItem
           key={item.id}
-          message={item.message}
-          id={item.id}
-          createdAt={item.createdAt}
-          onAccept={acceptInvitation}
-          onReject={rejectInvitation}
-          read={item.read}
+          notification={item}
+          onAcceptInvite={acceptInvitation}
+          onRejectInvite={rejectInvitation}
+          onAcceptRequest={function (workspaceRequestId: string): void {
+            throw new Error("Function not implemented.");
+          }}
+          onRejectRequest={function (workspaceRequestId: string): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       ))}
     </ul>

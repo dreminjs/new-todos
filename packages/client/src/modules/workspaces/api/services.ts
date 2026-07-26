@@ -62,3 +62,15 @@ export const findWorkspaceInfo = async (
 ): Promise<TWorkspaceInfo> => {
   return (await instance.get(`${BASE_URL}/${workspaceId}/info`)).data;
 };
+
+// export const acceptRequest = async (
+//   dto: TActionWorkspaceRequest,
+// ): Promise<TWorkspaceRequest> => {
+//   return (await instance.post(`${BASE_URL}/request/accept`, dto)).data;
+// };
+
+// export const rejectRequest = async (
+//   dto: TActionWorkspaceRequest,
+// ): Promise<void> => {
+//   await instance.post(`${BASE_URL}/request/reject`, dto);
+// };

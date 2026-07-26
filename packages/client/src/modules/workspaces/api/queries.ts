@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   acceptInvitation,
   createOne,
-  findManyMyWorkspaceInvitations,
   findManyMyWorkspaces,
   findMembership,
   findParticipants,
@@ -13,6 +12,7 @@ import {
 import { useNavigate } from "react-router";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 import type { TWorkspaceInvitationForm } from "../model/workspace.types";
+import type { TWorkspace } from "types";
 
 interface UseGetParticipantsProps {
   enable: boolean;
@@ -31,7 +31,7 @@ export const useGetParticipants = ({
 };
 
 export const useGetMyWorkspaces = () => {
-  return useQuery({
+  return useQuery<TWorkspace[]>({
     queryKey: ["workspaces"],
     queryFn: findManyMyWorkspaces,
   });
@@ -82,6 +82,8 @@ export const useInviteMember = (
   const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
+  const workspaceInfo = useGetWorkspaceInfo(workspaceId);
+
   const { mutate, ...rest } = useMutation({
     mutationFn: inviteMember,
     onSuccess: () => {
@@ -101,7 +103,7 @@ export const useInviteMember = (
   });
 
   const handleInviteMember = (data: TWorkspaceInvitationForm) => {
-    mutate({ ...data, workspaceId });
+    mutate({ ...data, workspaceId, workspaceName: workspaceInfo.data.title });
   };
 
   return { mutate: handleInviteMember, ...rest };
@@ -119,9 +121,6 @@ export const useAcceptInvitation = () => {
         message: "Invitation accepted successfully",
         type: "success",
       });
-      // client.invalidateQueries({
-      //   queryKey: ["notifications", "invitations"],
-      // });
       client.invalidateQueries({
         queryKey: ["workspaces"],
       });
@@ -149,16 +148,17 @@ export const useRejectInvitation = () => {
 
   const { mutate, ...rest } = useMutation({
     mutationFn: rejectInvitation,
+    onMutate: ({ invitationId }) => {
+      client.setQueryData<TWorkspace[]>(["workspaces"], (old) => {
+        if (!old) return old;
+
+        return old.filter((workspace) => workspace.id !== invitationId);
+      });
+    },
     onSuccess: () => {
       addNotification({
         message: "Invitation rejected successfully",
         type: "success",
-      });
-      client.invalidateQueries({
-        queryKey: ["workspaces", "invitations"],
-      });
-      client.invalidateQueries({
-        queryKey: ["workspaces"],
       });
     },
     onError: (data) => {
@@ -182,3 +182,9 @@ export const useGetWorkspaceInfo = (workspaceId: string) => {
     queryFn: () => findWorkspaceInfo(workspaceId),
   });
 };
+
+// export const useAcceptRequest = () => {
+
+
+//   return
+// }

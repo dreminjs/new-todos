@@ -1,6 +1,7 @@
 import * as z from "zod";
 import {
   actionWorkspaceInvitationSchema,
+  actionWorkspaceRequestSchema,
   createWorkspaceInvitationSchema,
   createWorkspaceRequestSchema,
   createWorkspaceSchema,
@@ -8,6 +9,7 @@ import {
   membershipResultSchema,
   workspaceInfoSchema,
   workspaceInvitationSchema,
+  workspaceParticipantSchema,
   workspaceRequestSchema,
   workspaceRoles,
   workspaceSchema,
@@ -49,3 +51,9 @@ export type TActionWorkspaceInvitation = z.infer<
 export type TWorkspaceInfo = z.infer<typeof workspaceInfoSchema>;
 
 export type TWorkspaceRoles = z.infer<typeof workspaceRoles>;
+
+export type TActionWorkspaceRequest = z.infer<
+  typeof actionWorkspaceRequestSchema
+>;
+
+export type TWorkspaceParticipant = z.infer<typeof workspaceParticipantSchema>;

@@ -18,6 +18,7 @@ export const createWorkspaceRequestSchema = z.object({
 
 export const createWorkspaceInvitationSchema = z.object({
   workspaceId: z.string(),
+  workspaceName: z.string(),
   email: z.email(),
   status: workspaceRoles,
 });
@@ -65,6 +66,10 @@ export const actionWorkspaceInvitationSchema = z.object({
   invitationId: z.string(),
 });
 
+export const actionWorkspaceRequestSchema = z.object({
+  requestId: z.string(),
+});
+
 export const workspaceInfoSchema = z.object({
   title: z.string(),
   description: z.string(),
@@ -72,3 +77,10 @@ export const workspaceInfoSchema = z.object({
   countOfMembers: z.number(),
   role: workspaceRoles,
 });
+
+export const workspaceParticipantSchema = z.object({
+  id: z.string(),
+  workspaceId: z.string(),
+  userId: z.string(),
+  role: workspaceRoles.nullable()
+})
