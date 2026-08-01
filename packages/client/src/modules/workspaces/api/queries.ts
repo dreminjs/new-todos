@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   acceptInvitation,
+  // acceptRequest,
   createOne,
   findManyMyWorkspaces,
   findMembership,
@@ -11,8 +12,17 @@ import {
 } from "./services";
 import { useNavigate } from "react-router";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
-import type { TWorkspaceInvitationForm } from "../model/workspace.types";
-import type { TWorkspace } from "types";
+import type {
+  // TActionRequestParams,
+  TCreateWorkspaceContext,
+  TWorkspaceInvitationForm,
+} from "../model/workspace.types";
+import type {
+  TActionWorkspaceInvitation,
+  TCreateWorkspace,
+  TWorkspace,
+} from "types";
+import { useGetMe } from "../../users";
 
 interface UseGetParticipantsProps {
   enable: boolean;
@@ -32,7 +42,7 @@ export const useGetParticipants = ({
 
 export const useGetMyWorkspaces = () => {
   return useQuery<TWorkspace[]>({
-    queryKey: ["workspaces"],
+    queryKey: ["workspaces", "my"],
     queryFn: findManyMyWorkspaces,
   });
 };
@@ -43,18 +53,48 @@ export const useCreateWorkspace = () => {
   );
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  return useMutation({
+  const currentUserId = useGetMe("id").data;
+
+  return useMutation<
+    TWorkspace,
+    Error,
+    TCreateWorkspace,
+    TCreateWorkspaceContext
+  >({
     mutationFn: createOne,
-    onSuccess: (data) => {
+    onSuccess: (data, _variables, context) => {
       addNotification({
         message: "Workspace created successfully",
         type: "success",
       });
-      navigate(`/workspaces/${data.id}  `);
-      queryClient.invalidateQueries({
-        queryKey: ["workspaces"],
+      navigate(`/workspaces/${data.id}`);
+
+      queryClient.setQueryData<TWorkspace[]>(["workspaces", "my"], (old) => {
+        if (!old) return old;
+        return old.map((ws) => (ws.id === context?.optimisticId ? data : ws));
       });
     },
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ["workspaces", "my"] });
+
+      const previousWorkspaces = queryClient.getQueryData<TWorkspace[]>([
+        "workspaces",
+        "my",
+      ]);
+
+      const optimisticWorkspace: TWorkspace = {
+        ...variables,
+        id: crypto.randomUUID(),
+        ownerId: currentUserId,
+      };
+
+      queryClient.setQueryData<TWorkspace[]>(["workspaces", "my"], (old) =>
+        old ? [...old, optimisticWorkspace] : old,
+      );
+
+      return { previousWorkspaces, optimisticId: optimisticWorkspace.id };
+    },
+
     onError: () => {
       addNotification({
         message: "Failed to create workspace",
@@ -133,8 +173,8 @@ export const useAcceptInvitation = () => {
     },
   });
 
-  const handleAcceptInvitation = (invitationId: string) => {
-    mutate({ invitationId });
+  const handleAcceptInvitation = (dto: TActionWorkspaceInvitation) => {
+    mutate(dto);
   };
 
   return { mutate: handleAcceptInvitation, ...rest };
@@ -148,11 +188,9 @@ export const useRejectInvitation = () => {
 
   const { mutate, ...rest } = useMutation({
     mutationFn: rejectInvitation,
-    onMutate: ({ invitationId }) => {
-      client.setQueryData<TWorkspace[]>(["workspaces"], (old) => {
-        if (!old) return old;
-
-        return old.filter((workspace) => workspace.id !== invitationId);
+    onMutate: () => {
+      client.invalidateQueries({
+        queryKey: ["workspaces"],
       });
     },
     onSuccess: () => {
@@ -169,8 +207,10 @@ export const useRejectInvitation = () => {
     },
   });
 
-  const handleRejectInvitation = (invitationId: string) => {
-    mutate({ invitationId });
+  const handleRejectInvitation = (
+    dto: Omit<TActionWorkspaceInvitation, "workspaceId">,
+  ) => {
+    mutate(dto);
   };
 
   return { mutate: handleRejectInvitation, ...rest };
@@ -184,7 +224,15 @@ export const useGetWorkspaceInfo = (workspaceId: string) => {
 };
 
 // export const useAcceptRequest = () => {
-
-
-//   return
-// }
+//   const addNotification = useSystemNotificationStore(
+//     (state) => state.addNotification,
+//   );
+//   const client = useQueryClient();
+//   return useMutation({
+//     mutationFn: (params: TActionRequestParams) =>
+//       acceptRequest({
+//         workspaceId: params.workspaceId,
+//         requestId: params.requestId,
+//       }),
+//   });
+// };

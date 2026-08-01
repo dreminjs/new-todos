@@ -2,7 +2,7 @@ import type {
   IWorkspaceParticipantResponse,
   TActionWorkspaceInvitation,
   TCreateWorkspace,
-  TCreateWorkspaceInvitation,
+  TCreateWorkspaceInvitationBody,
   TExtendedWorkspaceInvitation,
   TMembershipResult,
   TWorkspace,
@@ -34,9 +34,9 @@ export const findMembership = async (
 };
 
 export const inviteMember = async (
-  dto: TCreateWorkspaceInvitation,
+  dto: TCreateWorkspaceInvitationBody & { workspaceId: string },
 ): Promise<void> => {
-  await instance.post(`${BASE_URL}/invitation`, dto);
+  await instance.post(`${BASE_URL}/${dto.workspaceId}/invitation`, dto);
 };
 
 export const findManyMyWorkspaceInvitations = async (): Promise<
@@ -46,31 +46,33 @@ export const findManyMyWorkspaceInvitations = async (): Promise<
 };
 
 export const acceptInvitation = async (
-  dto: TActionWorkspaceInvitation,
+  dto: Omit<TActionWorkspaceInvitation, "workspaceId">,
 ): Promise<TWorkspaceInvitation> => {
-  return (await instance.post(`${BASE_URL}/invitation/accept`, dto)).data;
+  return (
+    await instance.post(`${BASE_URL}/invitation/${dto.invitationId}/accept`)
+  ).data;
 };
 
 export const rejectInvitation = async (
-  dto: TActionWorkspaceInvitation,
+  dto: Omit<TActionWorkspaceInvitation, "workspaceId">,
 ): Promise<void> => {
-  await instance.post(`${BASE_URL}/invitation/reject`, dto);
+  await instance.delete(`${BASE_URL}/invitation/${dto.invitationId}/reject`);
 };
+
+// export const acceptRequest = async (
+//   dto: TActionWorkspaceRequest,
+// ): Promise<TWorkspaceParticipant> => {
+//   return await instance.post(`${BASE_URL}/request/${dto.requestId}/accept`);
+// };
+
+// export const rejectRequest = async (
+//   dto: Omit<TActionWorkspaceInvitation, "workspaceId">,
+// ): Promise<void> => {
+//   return await instance.post(`${BASE_URL}/request/${dto.invitationId}/reject`);
+// };
 
 export const findWorkspaceInfo = async (
   workspaceId: string,
 ): Promise<TWorkspaceInfo> => {
   return (await instance.get(`${BASE_URL}/${workspaceId}/info`)).data;
 };
-
-// export const acceptRequest = async (
-//   dto: TActionWorkspaceRequest,
-// ): Promise<TWorkspaceRequest> => {
-//   return (await instance.post(`${BASE_URL}/request/accept`, dto)).data;
-// };
-
-// export const rejectRequest = async (
-//   dto: TActionWorkspaceRequest,
-// ): Promise<void> => {
-//   await instance.post(`${BASE_URL}/request/reject`, dto);
-// };

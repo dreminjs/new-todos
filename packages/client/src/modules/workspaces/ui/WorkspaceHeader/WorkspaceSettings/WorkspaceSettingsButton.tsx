@@ -18,7 +18,6 @@ export const WorkspaceSettingsButton = () => {
           <Menu.Positioner>
             <Menu.Content>
               <Menu.Item value="new-txt">Leave</Menu.Item>
-
             </Menu.Content>
           </Menu.Positioner>
         </Portal>

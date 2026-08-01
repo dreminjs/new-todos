@@ -2,8 +2,7 @@ import * as z from "zod";
 import {
   actionWorkspaceInvitationSchema,
   actionWorkspaceRequestSchema,
-  createWorkspaceInvitationSchema,
-  createWorkspaceRequestSchema,
+  createWorkspaceInvitationSchemaBody,
   createWorkspaceSchema,
   extendedWorkspaceInvitationSchema,
   membershipResultSchema,
@@ -11,18 +10,16 @@ import {
   workspaceInvitationSchema,
   workspaceParticipantSchema,
   workspaceRequestSchema,
-  workspaceRoles,
+  workspaceStatuses,
   workspaceSchema,
 } from "./workspace.schema.js";
 
 export type TWorkspace = z.infer<typeof workspaceSchema>;
 export type TCreateWorkspace = z.infer<typeof createWorkspaceSchema>;
-export type TCreateWorkspaceInvitation = z.infer<
-  typeof createWorkspaceInvitationSchema
->;
-export type TCreateWorkspaceRequest = z.infer<
-  typeof createWorkspaceRequestSchema
->;
+export type TCreateWorkspaceInvitationBody = z.infer<
+  typeof createWorkspaceInvitationSchemaBody
+  >;
+
 export type TWorkspaceRequest = z.infer<typeof workspaceRequestSchema>;
 
 export type TWorkspaceInvitation = z.infer<typeof workspaceInvitationSchema>;
@@ -50,7 +47,7 @@ export type TActionWorkspaceInvitation = z.infer<
 
 export type TWorkspaceInfo = z.infer<typeof workspaceInfoSchema>;
 
-export type TWorkspaceRoles = z.infer<typeof workspaceRoles>;
+export type TWorkspaceRoles = z.infer<typeof workspaceStatuses>;
 
 export type TActionWorkspaceRequest = z.infer<
   typeof actionWorkspaceRequestSchema

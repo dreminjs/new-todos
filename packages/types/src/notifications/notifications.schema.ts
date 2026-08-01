@@ -7,6 +7,7 @@ export const createNotificationSchema = z.object({
   userId: z.string(),
   workspaceRequestId: z.string().nullable(),
   workspaceInvitationId: z.string().nullable(),
+  workspaceId: z.string().nullable()
 });
 
 export const notifactionSchema = createNotificationSchema.extend({

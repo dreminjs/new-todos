@@ -1,7 +1,6 @@
-import { createWorkspaceInvitationSchema } from "types";
+import { createWorkspaceInvitationSchemaBody } from "types";
 
 export const workspaceInvitationFormSchema =
-  createWorkspaceInvitationSchema.omit({
-    workspaceId: true,
-    workspaceName: true
+  createWorkspaceInvitationSchemaBody.omit({
+    workspaceName: true,
   });

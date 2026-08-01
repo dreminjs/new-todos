@@ -23,10 +23,10 @@ export const CreateWorkspaceModal: FC<ICreateWorkspaceModalProps> = ({
 
   const handleCreateWorkspace = (data: TCreateWorkspace) => {
     mutate(data, {
-      onSuccess: () => {
+      onSettled: () => {
         reset();
         onClose();
-      },
+      }
     });
   };
 

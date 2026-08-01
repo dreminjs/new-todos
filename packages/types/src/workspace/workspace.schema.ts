@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { todoCountInfoSchema } from "../todos/todo-count-info.schema.js";
-export const workspaceRoles = z.enum(["OWNER", "MEMBER", "ADMIN"]);
+export const workspaceStatuses = z.enum(["OWNER", "MEMBER", "ADMIN"]);
 
 export const createWorkspaceSchema = z.object({
   name: z.string(),
@@ -10,20 +10,22 @@ export const createWorkspaceSchema = z.object({
 export const workspaceSchema = createWorkspaceSchema.extend({
   id: z.string(),
   ownerId: z.string(),
+  code: z
+    .string()
+    .length(8)
+    .regex(/^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{8}$/, {
+      message: "Invalid workspace code format",
+    }),
 });
 
-export const createWorkspaceRequestSchema = z.object({
-  workspaceId: z.string(),
-});
-
-export const createWorkspaceInvitationSchema = z.object({
-  workspaceId: z.string(),
+export const createWorkspaceInvitationSchemaBody = z.object({
   workspaceName: z.string(),
   email: z.email(),
-  status: workspaceRoles,
+  status: workspaceStatuses,
 });
 
-export const createWorkspaceParticipantSchema = createWorkspaceInvitationSchema;
+export const createWorkspaceParticipantSchema =
+  createWorkspaceInvitationSchemaBody;
 
 export const workspaceInvitationSchema = z.object({
   id: z.string(),
@@ -50,10 +52,11 @@ export const extendedWorkspaceInvitationSchema = workspaceInvitationSchema
     }),
   });
 
-export const workspaceRequestSchema = createWorkspaceRequestSchema.extend({
+export const workspaceRequestSchema = z.object({
   id: z.string(),
   userId: z.string(),
   createdAt: z.date(),
+  workspaceId: z.string(),
 });
 
 export const membershipResultSchema = z.object({
@@ -64,10 +67,12 @@ export const membershipResultSchema = z.object({
 
 export const actionWorkspaceInvitationSchema = z.object({
   invitationId: z.string(),
+  workspaceId: z.string(),
 });
 
 export const actionWorkspaceRequestSchema = z.object({
   requestId: z.string(),
+  workspaceId: z.string(),
 });
 
 export const workspaceInfoSchema = z.object({
@@ -75,12 +80,12 @@ export const workspaceInfoSchema = z.object({
   description: z.string(),
   todo: todoCountInfoSchema,
   countOfMembers: z.number(),
-  role: workspaceRoles,
+  role: workspaceStatuses,
 });
 
 export const workspaceParticipantSchema = z.object({
   id: z.string(),
   workspaceId: z.string(),
   userId: z.string(),
-  role: workspaceRoles.nullable()
-})
+  status: workspaceStatuses.nullable(),
+});
