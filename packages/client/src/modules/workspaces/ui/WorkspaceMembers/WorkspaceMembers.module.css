@@ -1,0 +1,13 @@
+.workspaceMembersListItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  border: 1px solid black;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+
+}
+
+.workspaceMembersList {
+}

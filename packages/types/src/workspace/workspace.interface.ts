@@ -10,7 +10,7 @@ import {
   workspaceInvitationSchema,
   workspaceParticipantSchema,
   workspaceRequestSchema,
-  workspaceStatuses,
+  workspaceRoles,
   workspaceSchema,
 } from "./workspace.schema.js";
 
@@ -18,7 +18,7 @@ export type TWorkspace = z.infer<typeof workspaceSchema>;
 export type TCreateWorkspace = z.infer<typeof createWorkspaceSchema>;
 export type TCreateWorkspaceInvitationBody = z.infer<
   typeof createWorkspaceInvitationSchemaBody
-  >;
+>;
 
 export type TWorkspaceRequest = z.infer<typeof workspaceRequestSchema>;
 
@@ -35,8 +35,10 @@ export interface IWorkspaceParticipantShortInfo {
   id: string;
 }
 
-export interface IWorkspaceParticipantResponse {
+export interface IExtendedWorkspaceParticipant {
   user: IWorkspaceParticipantShortInfo;
+  role: TWorkspaceRoles;
+  id: string
 }
 
 export type TMembershipResult = z.infer<typeof membershipResultSchema>;
@@ -47,7 +49,7 @@ export type TActionWorkspaceInvitation = z.infer<
 
 export type TWorkspaceInfo = z.infer<typeof workspaceInfoSchema>;
 
-export type TWorkspaceRoles = z.infer<typeof workspaceStatuses>;
+export type TWorkspaceRoles = z.infer<typeof workspaceRoles>;
 
 export type TActionWorkspaceRequest = z.infer<
   typeof actionWorkspaceRequestSchema

@@ -6,6 +6,7 @@ import {
   findManyMyWorkspaces,
   findMembership,
   findParticipants,
+  findParticipantsByWorkspaceId,
   findWorkspaceInfo,
   inviteMember,
   rejectInvitation,
@@ -86,6 +87,7 @@ export const useCreateWorkspace = () => {
         ...variables,
         id: crypto.randomUUID(),
         ownerId: currentUserId,
+        code: crypto.randomUUID(),
       };
 
       queryClient.setQueryData<TWorkspace[]>(["workspaces", "my"], (old) =>
@@ -236,3 +238,10 @@ export const useGetWorkspaceInfo = (workspaceId: string) => {
 //       }),
 //   });
 // };
+
+export const useGetParticipantsByWorkspaceId = (workspaceId: string) => {
+  return useQuery({
+    queryFn: () => findParticipantsByWorkspaceId(workspaceId),
+    queryKey: ["workspaces", workspaceId, "participants"],
+  });
+};

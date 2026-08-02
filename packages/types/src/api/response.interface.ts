@@ -4,6 +4,6 @@ export interface IStandartResponse {
 
 export interface IItemsResponse<T> {
   items: T[];
-  total: number;
   nextCursor: string | null;
+  hasNextPage: boolean
 }

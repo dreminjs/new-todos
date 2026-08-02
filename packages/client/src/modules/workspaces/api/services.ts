@@ -1,4 +1,5 @@
 import type {
+  IExtendedWorkspaceParticipant,
   IWorkspaceParticipantResponse,
   TActionWorkspaceInvitation,
   TCreateWorkspace,
@@ -75,4 +76,10 @@ export const findWorkspaceInfo = async (
   workspaceId: string,
 ): Promise<TWorkspaceInfo> => {
   return (await instance.get(`${BASE_URL}/${workspaceId}/info`)).data;
+};
+
+export const findParticipantsByWorkspaceId = async (
+  workspaceId: string,
+): Promise<IExtendedWorkspaceParticipant[]> => {
+  return (await instance.get(`${BASE_URL}/${workspaceId}/participants`)).data
 };

@@ -1,0 +1,15 @@
+
+.statusesInfo {
+    padding: 15px;
+    border: 1px solid gray;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
+    column-gap: 10px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.statusesInfoItemTitle {
+    margin-bottom: 5px;
+}

@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { todoCountInfoSchema } from "../todos/todo-count-info.schema.js";
-export const workspaceStatuses = z.enum(["OWNER", "MEMBER", "ADMIN"]);
+export const workspaceRoles = z.enum(["OWNER", "MEMBER", "MANAGER"]);
 
 export const createWorkspaceSchema = z.object({
   name: z.string(),
@@ -21,7 +21,7 @@ export const workspaceSchema = createWorkspaceSchema.extend({
 export const createWorkspaceInvitationSchemaBody = z.object({
   workspaceName: z.string(),
   email: z.email(),
-  status: workspaceStatuses,
+  status: workspaceRoles,
 });
 
 export const createWorkspaceParticipantSchema =
@@ -29,7 +29,6 @@ export const createWorkspaceParticipantSchema =
 
 export const workspaceInvitationSchema = z.object({
   id: z.string(),
-
   workspaceId: z.string(),
   userId: z.string(),
   createdAt: z.date(),
@@ -80,12 +79,12 @@ export const workspaceInfoSchema = z.object({
   description: z.string(),
   todo: todoCountInfoSchema,
   countOfMembers: z.number(),
-  role: workspaceStatuses,
+  role: workspaceRoles,
 });
 
 export const workspaceParticipantSchema = z.object({
   id: z.string(),
   workspaceId: z.string(),
   userId: z.string(),
-  status: workspaceStatuses.nullable(),
+  status: workspaceRoles.nullable(),
 });
