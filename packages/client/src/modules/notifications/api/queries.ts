@@ -13,21 +13,38 @@ import type { TNotification, IItemsResponse } from "types";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 
 export const useGetMyNotifications = () => {
-  return useInfiniteQuery<IItemsResponse<TNotification>>({
-    queryKey: ["notifications"],
-    queryFn: ({ pageParam }) =>
-      findMyNotifications({
-        cursor: pageParam as string | undefined,
-        take: 20,
-      }),
-    initialPageParam: undefined,
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-  });
+  const { data, hasNextPage, fetchNextPage, isFetchingNextPage, ...args } =
+    useInfiniteQuery<IItemsResponse<TNotification>>({
+      queryKey: ["notifications"],
+      queryFn: ({ pageParam }) =>
+        findMyNotifications({
+          cursor: pageParam as string | undefined,
+          take: 20,
+        }),
+      initialPageParam: undefined,
+      getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    });
+
+  const items = data?.pages.flatMap((page) => page.items);
+
+  const loadMoreRows = isFetchingNextPage
+    ? () => Promise.resolve()
+    : () => fetchNextPage();
+
+  return {
+    items,
+    rowCount: hasNextPage ? items?.length + 1 : items?.length,
+    loadMoreRows,
+    hasNextPage,
+    ...args
+  };
 };
 
 export const useUpdateReadNotification = () => {
   const queryClient = useQueryClient();
-  const addNotification = useSystemNotificationStore(store => store.addNotification)
+  const addNotification = useSystemNotificationStore(
+    (store) => store.addNotification,
+  );
   return useMutation({
     mutationFn: updateReadNotification,
     onMutate: async (id: string) => {
@@ -58,8 +75,8 @@ export const useUpdateReadNotification = () => {
     onError: (err, id, context) => {
       addNotification({
         type: "error",
-        message: "Failed to read notification"
-      })
+        message: "Failed to read notification",
+      });
       if (context?.previousNotifications) {
         queryClient.setQueryData(
           ["notifications"],
@@ -74,7 +91,9 @@ export const useUpdateReadNotification = () => {
 };
 export const useUpdateUnreadNotification = () => {
   const queryClient = useQueryClient();
-  const addNotification = useSystemNotificationStore(store => store.addNotification)
+  const addNotification = useSystemNotificationStore(
+    (store) => store.addNotification,
+  );
 
   return useMutation({
     mutationFn: updateUnreadNotificaton,
@@ -106,8 +125,8 @@ export const useUpdateUnreadNotification = () => {
     onError: (err, id, context) => {
       addNotification({
         type: "error",
-        message: "Failed to unread notification"
-      })
+        message: "Failed to unread notification",
+      });
       if (context?.previousNotifications) {
         queryClient.setQueryData(
           ["notifications"],
