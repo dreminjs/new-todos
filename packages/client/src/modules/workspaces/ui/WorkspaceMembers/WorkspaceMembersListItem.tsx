@@ -6,11 +6,11 @@ type TWorkspaceMemberItemProps = IExtendedWorkspaceParticipant;
 
 export const WorkspaceMembersListItem: FC<TWorkspaceMemberItemProps> = ({
   user,
-  status,
+  role,
 }) => {
   return (
     <li className={styles.workspaceMembersListItem}>
-      <h3>{`${user.firstName} ${user.lastName}`}</h3>
+      <h3>{`${user.firstName} ${user.lastName} - ${role}`}</h3>
       <button>
         <LuEllipsis />
       </button>

@@ -1,7 +1,7 @@
 import { useGetParticipantsByWorkspaceId } from "../../api/queries";
 import type { FC } from "react";
 import { WorkspaceMembersListItem } from "./WorkspaceMembersListItem";
-import styles from "./WorkspaceMembers.module.css"
+import styles from "./WorkspaceMembers.module.css";
 interface IWorkspaceMembersListProps {
   workspaceId: string;
 }
@@ -12,6 +12,7 @@ export const WorkspaceMembersList: FC<IWorkspaceMembersListProps> = ({
   const { data } = useGetParticipantsByWorkspaceId(workspaceId);
   return (
     <>
+      <h3 className={styles.workspaceMembersListTitle}>Members List</h3>
       <ul className={styles.workspaceMembersList}>
         {data?.map((el) => (
           <WorkspaceMembersListItem

@@ -5,5 +5,4 @@ export interface IStandartResponse {
 export interface IItemsResponse<T> {
   items: T[];
   nextCursor: string | null;
-  hasNextPage: boolean
 }
