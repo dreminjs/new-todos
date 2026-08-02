@@ -13,6 +13,12 @@ interface INotificationItemProps {
   onRejectInvite: (dto: TActionInviteParams) => void;
   onAcceptRequest: (dto: TActionRequestParams) => void;
   onRejectRequest: (dto: TActionRequestParams) => void;
+  onRead: (id: string) => void;
+  onUnread: (id: string) => void;
+  loadingStates: {
+    readLoading: boolean;
+    unreadLoading: boolean;
+  };
 }
 export const NotificationItem: FC<INotificationItemProps> = ({
   notification,
@@ -20,10 +26,13 @@ export const NotificationItem: FC<INotificationItemProps> = ({
   onRejectInvite,
   onAcceptRequest,
   onRejectRequest,
+  onRead,
+  onUnread,
+  loadingStates,
 }) => {
   const { message, id, createdAt, read } = notification;
 
-  console.log(notification)
+  console.log(notification);
 
   const isInvite = Boolean(notification.workspaceInvitationId);
   const isRequest = Boolean(notification.workspaceRequestId);
@@ -38,7 +47,7 @@ export const NotificationItem: FC<INotificationItemProps> = ({
     <li className={styles.notificationsItem}>
       <h3>{message}</h3>
 
-      {!read && handlers && (
+      {handlers ? (
         <div className={styles.notificationsItemButtons}>
           <Button
             onClick={() =>
@@ -63,6 +72,17 @@ export const NotificationItem: FC<INotificationItemProps> = ({
             Reject
           </Button>
         </div>
+      ) : !read ? (
+        <Button disabled={loadingStates.readLoading} onClick={() => onRead(id)}>
+          Read
+        </Button>
+      ) : (
+        <Button
+          disabled={loadingStates.unreadLoading}
+          onClick={() => onUnread(id)}
+        >
+          Unread
+        </Button>
       )}
     </li>
   );

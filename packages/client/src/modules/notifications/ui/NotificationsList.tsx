@@ -1,6 +1,10 @@
 import { NotificationItem } from "./NotificationsItem";
 import { useAcceptInvitation, useRejectInvitation } from "../../workspaces";
-import { useGetMyNotifications } from "../api/queries";
+import {
+  useGetMyNotifications,
+  useUpdateReadNotification,
+  useUpdateUnreadNotification,
+} from "../api/queries";
 import styles from "./Notifications.module.css";
 import {
   List,
@@ -9,9 +13,15 @@ import {
   type ListRowProps,
 } from "react-virtualized";
 
+const GAP = 8;
+const ITEM_HEIGHT = 40;
+
 export const NotificationsList = () => {
   const { mutate: acceptInvitation } = useAcceptInvitation();
   const { mutate: rejectInvitation } = useRejectInvitation();
+  const { mutate: readNotification, isPending: readNotificationIsPending } =
+    useUpdateReadNotification();
+  const { mutate: unreadNotification, isPending: unreadNotificationIsPending } = useUpdateUnreadNotification();
   const { items, isPending, hasNextPage, loadMoreRows, rowCount } =
     useGetMyNotifications();
 
@@ -33,17 +43,31 @@ export const NotificationsList = () => {
     const el = items[index];
     return (
       <div key={key} style={style}>
-        <NotificationItem
-          notification={el}
-          onAcceptInvite={acceptInvitation}
-          onRejectInvite={rejectInvitation}
-          onAcceptRequest={(workspaceRequestId: string) => {
-            throw new Error("Function not implemented.");
+        <div
+          style={{
+            height: ITEM_HEIGHT,
+            paddingBottom: GAP,
+            boxSizing: "border-box",
           }}
-          onRejectRequest={(workspaceRequestId: string) => {
-            throw new Error("Function not implemented.");
-          }}
-        />
+        >
+          <NotificationItem
+            notification={el}
+            onAcceptInvite={acceptInvitation}
+            onRejectInvite={rejectInvitation}
+            onRead={readNotification}
+            onUnread={unreadNotification}
+            loadingStates={{
+              readLoading: readNotificationIsPending,
+              unreadLoading: unreadNotificationIsPending
+            }}
+            onAcceptRequest={(workspaceRequestId: string) => {
+              throw new Error("Function not implemented.");
+            }}
+            onRejectRequest={(workspaceRequestId: string) => {
+              throw new Error("Function not implemented.");
+            }}
+          />
+        </div>
       </div>
     );
   };
@@ -64,7 +88,7 @@ export const NotificationsList = () => {
                 width={width}
                 height={height}
                 rowCount={rowCount}
-                rowHeight={40}
+                rowHeight={ITEM_HEIGHT + GAP}
                 rowRenderer={rowRenderer}
               />
             )}

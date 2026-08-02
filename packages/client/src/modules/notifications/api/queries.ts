@@ -36,7 +36,7 @@ export const useGetMyNotifications = () => {
     rowCount: hasNextPage ? items?.length + 1 : items?.length,
     loadMoreRows,
     hasNextPage,
-    ...args
+    ...args,
   };
 };
 
@@ -84,8 +84,22 @@ export const useUpdateReadNotification = () => {
         );
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    onSuccess: (updatedNotification) => {
+      queryClient.setQueryData<InfiniteData<IItemsResponse<TNotification>>>(
+        ["notifications"],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.map((el) =>
+                el.id === updatedNotification.id ? updatedNotification : el,
+              ),
+            })),
+          };
+        },
+      );
     },
   });
 };
@@ -134,8 +148,22 @@ export const useUpdateUnreadNotification = () => {
         );
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    onSuccess: (updatedNotification) => {
+      queryClient.setQueryData<InfiniteData<IItemsResponse<TNotification>>>(
+        ["notifications"],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.map((el) =>
+                el.id === updatedNotification.id ? updatedNotification : el,
+              ),
+            })),
+          };
+        },
+      );
     },
   });
 };
