@@ -10,9 +10,7 @@ import {
   updateUnreadNotificaton,
 } from "./services";
 import type { TNotification, IItemsResponse } from "types";
-import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 import type { ToggleReadParams } from "../model/notification.model";
-import { instance } from "../../../shared/api/api.instance";
 
 export const useGetMyNotifications = () => {
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage, ...args } =

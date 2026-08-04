@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type InfiniteData,
+} from "@tanstack/react-query";
 import {
   acceptInvitation,
   // acceptRequest,
@@ -9,6 +14,7 @@ import {
   findParticipantsByWorkspaceId,
   findWorkspaceInfo,
   inviteMember,
+  kickParticipant,
   rejectInvitation,
 } from "./services";
 import { useNavigate } from "react-router";
@@ -19,27 +25,14 @@ import type {
   TWorkspaceInvitationForm,
 } from "../model/workspace.types";
 import type {
+  IExtendedWorkspaceParticipant,
+  IItemsResponse,
   TActionWorkspaceInvitation,
   TCreateWorkspace,
+  TNotification,
   TWorkspace,
 } from "types";
 import { useGetMe } from "../../users";
-
-interface UseGetParticipantsProps {
-  enable: boolean;
-  workspaceId?: string;
-}
-
-export const useGetParticipants = ({
-  enable,
-  workspaceId,
-}: UseGetParticipantsProps) => {
-  return useQuery({
-    queryKey: ["participants"],
-    queryFn: findParticipants.bind(null, workspaceId),
-    enabled: enable,
-  });
-};
 
 export const useGetMyWorkspaces = ({ take }: { take?: number } = {}) => {
   return useQuery<TWorkspace[]>({
@@ -87,7 +80,6 @@ export const useCreateWorkspace = () => {
         ...variables,
         id: crypto.randomUUID(),
         ownerId: currentUserId,
-        code: crypto.randomUUID(),
       };
 
       queryClient.setQueryData<TWorkspace[]>(["workspaces", "my"], (old) =>
@@ -124,7 +116,6 @@ export const useInviteMember = (
   const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
-  const workspaceInfo = useGetWorkspaceInfo(workspaceId);
 
   const { mutate, ...rest } = useMutation({
     mutationFn: inviteMember,
@@ -135,9 +126,9 @@ export const useInviteMember = (
       });
       callbacks?.onSuccess();
     },
-    onError: () => {
+    onError: (_errs) => {
       addNotification({
-        message: "Failed to invite member",
+        message: "Failed to invite member: " + _errs.message,
         type: "error",
       });
       callbacks?.onError();
@@ -145,7 +136,7 @@ export const useInviteMember = (
   });
 
   const handleInviteMember = (data: TWorkspaceInvitationForm) => {
-    mutate({ ...data, workspaceId, workspaceName: workspaceInfo.data.title });
+    mutate({ ...data, workspaceId, email: data.email, role: data.role });
   };
 
   return { mutate: handleInviteMember, ...rest };
@@ -158,20 +149,52 @@ export const useAcceptInvitation = () => {
   const client = useQueryClient();
   const { mutate, ...rest } = useMutation({
     mutationFn: acceptInvitation,
-    onSuccess: () => {
+    onMutate: async (dto) => {
+      await client.cancelQueries({ queryKey: ["notifications"] });
+
+      const oldNotifications = client.getQueryData<
+        InfiniteData<IItemsResponse<TNotification>>
+      >(["notifications"]);
+
+      client.setQueryData<InfiniteData<IItemsResponse<TNotification>>>(
+        ["notifications"],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.filter(
+                (el) => el.workspaceInvitationId !== dto.invitationId,
+              ),
+            })),
+          };
+        },
+      );
+
+      return { previousData: oldNotifications };
+    },
+    onSuccess: (dto) => {
       addNotification({
         message: "Invitation accepted successfully",
         type: "success",
       });
+
       client.invalidateQueries({
         queryKey: ["workspaces"],
       });
     },
-    onError: () => {
+    onError: (_error, _dto, context) => {
       addNotification({
         message: "Failed to accept invitation",
         type: "error",
       });
+      if (context?.previousData) {
+        client.setQueryData<InfiniteData<IItemsResponse<TNotification>>>(
+          ["notifications"],
+          context.previousData,
+        );
+      }
     },
   });
 
@@ -190,21 +213,11 @@ export const useRejectInvitation = () => {
 
   const { mutate, ...rest } = useMutation({
     mutationFn: rejectInvitation,
-    onMutate: () => {
-      client.invalidateQueries({
-        queryKey: ["workspaces"],
-      });
-    },
+
     onSuccess: () => {
       addNotification({
         message: "Invitation rejected successfully",
         type: "success",
-      });
-    },
-    onError: (data) => {
-      addNotification({
-        message: "Failed to reject invitation: " + data?.message,
-        type: "error",
       });
     },
   });
@@ -243,5 +256,51 @@ export const useGetParticipantsByWorkspaceId = (workspaceId: string) => {
   return useQuery({
     queryFn: () => findParticipantsByWorkspaceId(workspaceId),
     queryKey: ["workspaces", workspaceId, "participants"],
+  });
+};
+
+export const useKickParticipant = (workspaceId: string) => {
+  const client = useQueryClient();
+  const addNotification = useSystemNotificationStore(
+    (state) => state.addNotification,
+  );
+  return useMutation({
+    mutationFn: (participantId: string) =>
+      kickParticipant(workspaceId, participantId),
+    onMutate: async (participantId: string) => {
+      await client.cancelQueries({
+        queryKey: ["workspaces", workspaceId, "participants"],
+      });
+      const oldData = client.getQueryData<IExtendedWorkspaceParticipant[]>([
+        "workspaces",
+        workspaceId,
+        "participants",
+      ]);
+      client.setQueryData<IExtendedWorkspaceParticipant[]>(
+        ["workspaces", workspaceId, "participants"],
+        (old) => {
+          if (!old) return old;
+          return old.filter((p) => p.id !== participantId);
+        },
+      );
+      return { oldData };
+    },
+    onError: (_error, _dto, context) => {
+      if (context?.oldData) {
+        client.setQueryData<IExtendedWorkspaceParticipant[]>(
+          ["participants", workspaceId],
+          context.oldData,
+        );
+        addNotification({
+          type: "error",
+          message: "Failed to kick participant",
+        });
+      }
+    },
+    onSettled: () => {
+      client.invalidateQueries({
+        queryKey: ["workspaces", workspaceId, "participants"],
+      });
+    },
   });
 };

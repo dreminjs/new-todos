@@ -8,7 +8,6 @@ import {
   CustomCheckbox,
 } from "../../../../shared";
 import { useCreateTodo } from "../../api/queries";
-import { useGetParticipants } from "../../../workspaces";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type {
@@ -69,8 +68,6 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
     todoContext: props.todoContext,
     cb: handleSuccess,
   });
-
-  const { data } = useGetParticipants({ enable: showAssignee });
 
   return (
     <Modal title="Add Todo" {...props}>
@@ -144,27 +141,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
           name={"priority"}
           control={control}
         />
-        {showAssignee && (
-          <Controller
-            render={({ field }) => (
-              <CustomSelect
-                name={"userId"}
-                register={register}
-                label={"Assignee"}
-                options={
-                  data?.map((user) => ({
-                    value: user.user.id,
-                    label: `${user.user.firstName} ${user.user.lastName}`,
-                  })) ?? []
-                }
-                className={styles.selectAssignee}
-                onChange={field.onChange}
-              />
-            )}
-            name={"userId"}
-            control={control}
-          />
-        )}
+
 
         <Controller
           control={control}

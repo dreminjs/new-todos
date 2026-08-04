@@ -60,3 +60,11 @@ export type TActionWorkspaceRequest = z.infer<
 export type TWorkspaceParticipant = z.infer<typeof workspaceParticipantSchema>;
 
 export type TWorkspaceQueryParams = z.infer<typeof workspaceQueryParamsSchema>;
+
+export interface ICreateWorkspaceInvitationResponse {
+  id: string;
+  workspace: {
+    id: string;
+    name: string;
+  };
+}

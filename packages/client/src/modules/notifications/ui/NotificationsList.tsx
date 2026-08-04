@@ -41,7 +41,7 @@ export const NotificationsList = () => {
 
     const el = items[index];
     return (
-      <div key={key} style={style}>
+      <div key={el.id} style={style}>
         <div
           style={{
             height: ITEM_HEIGHT,
@@ -69,7 +69,7 @@ export const NotificationsList = () => {
   return (
     <div className={styles.notificationsList}>
       {notificationIsPending && <h3>Loading...</h3>}
-      {!items.length && <h3>No notifications</h3>}
+      {!items?.length && <h3>No notifications</h3>}
       <AutoSizer>
         {({ width, height }) => (
           <InfiniteLoader

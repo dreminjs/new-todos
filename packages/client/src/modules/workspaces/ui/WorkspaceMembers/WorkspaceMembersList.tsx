@@ -4,6 +4,7 @@ import { WorkspaceMembersListItem } from "./WorkspaceMembersListItem";
 import styles from "./WorkspaceMembers.module.css";
 import { useCurrentWorkspace } from "../../model/hooks/useCurrentWorkspace";
 import { useGetMe } from "../../../users";
+import { useKickParticipant } from "../../api/queries";
 interface IWorkspaceMembersListProps {
   workspaceId: string;
 }
@@ -14,6 +15,7 @@ export const WorkspaceMembersList: FC<IWorkspaceMembersListProps> = ({
   const { data } = useGetParticipantsByWorkspaceId(workspaceId);
   const { workspaceInfo } = useCurrentWorkspace();
   const { data: me } = useGetMe();
+  const { mutate: kickParticipant } = useKickParticipant(workspaceId);
   return (
     <>
       <h3 className={styles.workspaceMembersListTitle}>Members List</h3>
@@ -27,7 +29,7 @@ export const WorkspaceMembersList: FC<IWorkspaceMembersListProps> = ({
             idDropdownShown={
               me.id !== el.user.id && workspaceInfo.role === "OWNER"
             }
-            onKickUser={() => {}}
+            onKickUser={() => kickParticipant(el.id)}
           />
         ))}
       </ul>

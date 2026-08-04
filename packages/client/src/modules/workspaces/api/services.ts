@@ -52,6 +52,7 @@ export const findManyMyWorkspaceInvitations = async (): Promise<
 export const acceptInvitation = async (
   dto: Omit<TActionWorkspaceInvitation, "workspaceId">,
 ): Promise<TWorkspaceInvitation> => {
+
   return (
     await instance.post(`${BASE_URL}/invitation/${dto.invitationId}/accept`)
   ).data;
@@ -85,4 +86,11 @@ export const findParticipantsByWorkspaceId = async (
   workspaceId: string,
 ): Promise<IExtendedWorkspaceParticipant[]> => {
   return (await instance.get(`${BASE_URL}/${workspaceId}/participants`)).data;
+};
+
+export const kickParticipant = async (
+  workspaceId: string,
+  userId: string,
+): Promise<void> => {
+  await instance.delete(`${BASE_URL}/${workspaceId}/participants/${userId}/kick`);
 };

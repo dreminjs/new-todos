@@ -16,7 +16,7 @@ export const WorkspaceInvitationForm = () => {
     useForm<TWorkspaceInvitationForm>({
       resolver: zodResolver(workspaceInvitationFormSchema),
       defaultValues: {
-        status: "MEMBER",
+        role: "MEMBER",
       },
     });
 
@@ -37,14 +37,14 @@ export const WorkspaceInvitationForm = () => {
       <WorkspaceInvitationFormField register={register} />
       <Controller
         control={control}
-        name={"status"}
+        name={"role"}
         render={({ field }) => (
           <CustomSelect<TWorkspaceInvitationForm>
             options={WORKSPACE_USER_STATUSES}
-            name={"status"}
+            name={"role"}
             className={styles.workspaceInvitationSelect}
             onChange={(value) => field.onChange(value)}
-            value={watch("status")}
+            value={watch("role")}
           />
         )}
       />

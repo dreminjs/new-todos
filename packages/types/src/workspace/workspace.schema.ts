@@ -13,9 +13,8 @@ export const workspaceSchema = createWorkspaceSchema.extend({
 });
 
 export const createWorkspaceInvitationSchemaBody = z.object({
-  workspaceName: z.string(),
   email: z.email(),
-  status: workspaceRoles,
+  role: workspaceRoles,
 });
 
 export const createWorkspaceParticipantSchema =

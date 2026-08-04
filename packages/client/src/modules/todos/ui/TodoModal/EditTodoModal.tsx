@@ -7,7 +7,6 @@ import {
   CustomCheckbox,
 } from "../../../../shared";
 import { useUpdateTodo } from "../../api/queries";
-import { useGetParticipants } from "../../../workspaces";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { todoFormSchema } from "../../model/todo.schema";
@@ -115,27 +114,7 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
           name={"priority"}
           control={control}
         />
-        {showAssignee && (
-          <Controller
-            render={({ field }) => (
-              <CustomSelect
-                name={"userId"}
-                register={register}
-                label={"Assignee"}
-                options={
-                  data?.map((user) => ({
-                    value: user.user.id,
-                    label: `${user.user.firstName} ${user.user.lastName}`,
-                  })) ?? []
-                }
-                className={styles.selectAssignee}
-                onChange={field.onChange}
-              />
-            )}
-            name={"userId"}
-            control={control}
-          />
-        )}
+
         <Controller
           control={control}
           name={"deadline"}
