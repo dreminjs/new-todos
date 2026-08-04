@@ -22,12 +22,14 @@ export const findMyNotifications = async (
 
 export const updateReadNotification = async (
   id: string,
+  signal: AbortSignal,
 ): Promise<TNotification> => {
-  return await instance.patch(`${BASE_URL}/${id}/read`);
+  return await instance.patch(`${BASE_URL}/${id}/read`, undefined, { signal });
 };
 
 export const updateUnreadNotificaton = async (
   id: string,
+  signal: AbortSignal,
 ): Promise<TNotification> => {
-  return await instance.patch(`${BASE_URL}/${id}/unread`);
+  return await instance.patch(`${BASE_URL}/${id}/unread`, undefined, { signal });
 };

@@ -1,6 +1,5 @@
 import type {
   IExtendedWorkspaceParticipant,
-  IWorkspaceParticipantResponse,
   TActionWorkspaceInvitation,
   TCreateWorkspace,
   TCreateWorkspaceInvitationBody,
@@ -16,12 +15,16 @@ const BASE_URL = "workspaces";
 
 export const findParticipants = async (
   workspaceId: string,
-): Promise<IWorkspaceParticipantResponse[]> => {
+): Promise<IExtendedWorkspaceParticipant[]> => {
   return (await instance.get(`${BASE_URL}/participant/${workspaceId}`)).data;
 };
 
-export const findManyMyWorkspaces = async (): Promise<TWorkspace[]> => {
-  return (await instance.get(`${BASE_URL}/my`)).data;
+export const findManyMyWorkspaces = async ({
+  take,
+}: {
+  take?: number;
+} = {}): Promise<TWorkspace[]> => {
+  return (await instance.get(`${BASE_URL}/my`, { params: { take } })).data;
 };
 
 export const createOne = async (dto: TCreateWorkspace): Promise<TWorkspace> => {
@@ -81,5 +84,5 @@ export const findWorkspaceInfo = async (
 export const findParticipantsByWorkspaceId = async (
   workspaceId: string,
 ): Promise<IExtendedWorkspaceParticipant[]> => {
-  return (await instance.get(`${BASE_URL}/${workspaceId}/participants`)).data
+  return (await instance.get(`${BASE_URL}/${workspaceId}/participants`)).data;
 };

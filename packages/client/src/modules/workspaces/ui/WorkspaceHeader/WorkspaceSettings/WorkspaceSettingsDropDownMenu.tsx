@@ -1,10 +1,5 @@
-
-import styles from './WorkspaceSettings.module.css';
+import styles from "./WorkspaceSettings.module.css";
 
 export const WorkspaceSettingsDropDownMenu = () => {
-  return (
-    <div className={styles.workspaceSettingsDropDownMenu}>
-
-    </div>
-  );
+  return <div className={styles.workspaceSettingsDropDownMenu}></div>;
 };

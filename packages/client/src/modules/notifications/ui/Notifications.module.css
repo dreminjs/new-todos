@@ -5,6 +5,10 @@
     width: 25px;
 }
 
+.notificationsItemRead {
+    text-decoration: line-through;
+}
+
 .notificationsItem {
     padding: 10px;
     display: flex;

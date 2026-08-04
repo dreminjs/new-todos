@@ -6,7 +6,7 @@ import { useState } from "react";
 import { CreateWorkspaceModal } from "../../../modules/workspaces";
 
 export const WorkspacesList = () => {
-  const { data } = useGetMyWorkspaces();
+  const { data } = useGetMyWorkspaces({ take: 10 });
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] =
     useState(false);
   const handleToggleCreateTodoGroup = () => {

@@ -1,6 +1,6 @@
 import type { TNotification } from "types";
 
-export type NotificationType = 'invitation' | 'request' | 'plain';
+export type NotificationType = "invitation" | "request" | "plain";
 
 export interface BaseNotification {
   id: string;
@@ -10,23 +10,31 @@ export interface BaseNotification {
 }
 
 export interface InvitationNotification extends TNotification {
-  type: 'invitation';
+  type: "invitation";
   workspaceInvitationId: string;
 }
 
 export interface RequestNotification extends TNotification {
-  type: 'request';
+  type: "request";
   workspaceRequestId: string;
 }
 
 export interface PlainNotification extends TNotification {
-  type: 'plain';
+  type: "plain";
 }
 
-export type Notification = InvitationNotification | RequestNotification | PlainNotification;
+export type Notification =
+  | InvitationNotification
+  | RequestNotification
+  | PlainNotification;
 
 export const isInvitation = (n: TNotification): n is InvitationNotification =>
   n.workspaceInvitationId !== null;
 
 export const isRequest = (n: Notification): n is RequestNotification =>
   n.workspaceRequestId !== null;
+
+export interface ToggleReadParams {
+  id: string;
+  read: boolean;
+}

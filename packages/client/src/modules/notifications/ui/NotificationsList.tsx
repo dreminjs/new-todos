@@ -2,8 +2,7 @@ import { NotificationItem } from "./NotificationsItem";
 import { useAcceptInvitation, useRejectInvitation } from "../../workspaces";
 import {
   useGetMyNotifications,
-  useUpdateReadNotification,
-  useUpdateUnreadNotification,
+  useToggleNotificationRead,
 } from "../api/queries";
 import styles from "./Notifications.module.css";
 import {
@@ -14,19 +13,19 @@ import {
 } from "react-virtualized";
 
 const GAP = 8;
-const ITEM_HEIGHT = 40;
+const ITEM_HEIGHT = 42;
 
 export const NotificationsList = () => {
   const { mutate: acceptInvitation } = useAcceptInvitation();
   const { mutate: rejectInvitation } = useRejectInvitation();
-  const { mutate: readNotification, isPending: readNotificationIsPending } =
-    useUpdateReadNotification();
-  const { mutate: unreadNotification, isPending: unreadNotificationIsPending } = useUpdateUnreadNotification();
-  const { items, isPending, hasNextPage, loadMoreRows, rowCount } =
-    useGetMyNotifications();
-
-  if (isPending) return <h3>Loading...</h3>;
-  if (!items) return <h3>No notifications</h3>;
+  const { mutate: toggleRead } = useToggleNotificationRead();
+  const {
+    items,
+    isPending: notificationIsPending,
+    hasNextPage,
+    loadMoreRows,
+    rowCount,
+  } = useGetMyNotifications();
 
   const isRowLoaded = ({ index }: { index: number }) =>
     !hasNextPage || index < items.length;
@@ -54,12 +53,7 @@ export const NotificationsList = () => {
             notification={el}
             onAcceptInvite={acceptInvitation}
             onRejectInvite={rejectInvitation}
-            onRead={readNotification}
-            onUnread={unreadNotification}
-            loadingStates={{
-              readLoading: readNotificationIsPending,
-              unreadLoading: unreadNotificationIsPending
-            }}
+            onToggleRead={toggleRead}
             onAcceptRequest={(workspaceRequestId: string) => {
               throw new Error("Function not implemented.");
             }}
@@ -74,6 +68,8 @@ export const NotificationsList = () => {
 
   return (
     <div className={styles.notificationsList}>
+      {notificationIsPending && <h3>Loading...</h3>}
+      {!items.length && <h3>No notifications</h3>}
       <AutoSizer>
         {({ width, height }) => (
           <InfiniteLoader

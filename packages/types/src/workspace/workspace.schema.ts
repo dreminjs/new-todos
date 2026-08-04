@@ -10,12 +10,6 @@ export const createWorkspaceSchema = z.object({
 export const workspaceSchema = createWorkspaceSchema.extend({
   id: z.string(),
   ownerId: z.string(),
-  code: z
-    .string()
-    .length(8)
-    .regex(/^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{8}$/, {
-      message: "Invalid workspace code format",
-    }),
 });
 
 export const createWorkspaceInvitationSchemaBody = z.object({
@@ -86,5 +80,16 @@ export const workspaceParticipantSchema = z.object({
   id: z.string(),
   workspaceId: z.string(),
   userId: z.string(),
-  status: workspaceRoles.nullable(),
+  role: workspaceRoles.nullable(),
+});
+
+// code: z
+//   .string()
+//   .length(8)
+//   .regex(/^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{8}$/, {
+//     message: "Invalid workspace code format",
+//   }),
+
+export const workspaceQueryParamsSchema = z.object({
+  take: z.coerce.number().optional(),
 });

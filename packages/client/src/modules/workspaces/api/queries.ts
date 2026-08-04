@@ -41,10 +41,10 @@ export const useGetParticipants = ({
   });
 };
 
-export const useGetMyWorkspaces = () => {
+export const useGetMyWorkspaces = ({ take }: { take?: number } = {}) => {
   return useQuery<TWorkspace[]>({
     queryKey: ["workspaces", "my"],
-    queryFn: findManyMyWorkspaces,
+    queryFn: () => findManyMyWorkspaces({ take }),
   });
 };
 

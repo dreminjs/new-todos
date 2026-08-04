@@ -11,6 +11,8 @@ import {
 } from "./services";
 import type { TNotification, IItemsResponse } from "types";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
+import type { ToggleReadParams } from "../model/notification.model";
+import { instance } from "../../../shared/api/api.instance";
 
 export const useGetMyNotifications = () => {
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage, ...args } =
@@ -40,14 +42,24 @@ export const useGetMyNotifications = () => {
   };
 };
 
-export const useUpdateReadNotification = () => {
+const notificationAbortControllers = new Map<string, AbortController>();
+
+export const useToggleNotificationRead = () => {
   const queryClient = useQueryClient();
-  const addNotification = useSystemNotificationStore(
-    (store) => store.addNotification,
-  );
-  return useMutation({
-    mutationFn: updateReadNotification,
-    onMutate: async (id: string) => {
+
+  const { mutate, ...props } = useMutation({
+    mutationFn: ({ id, read }: ToggleReadParams) => {
+      notificationAbortControllers.get(id)?.abort();
+
+      const controller = new AbortController();
+      notificationAbortControllers.set(id, controller);
+
+      return read
+        ? updateReadNotification(id, controller.signal)
+        : updateUnreadNotificaton(id, controller.signal);
+    },
+
+    onMutate: async ({ id, read }: ToggleReadParams) => {
       await queryClient.cancelQueries({ queryKey: ["notifications"] });
 
       const previousNotifications = queryClient.getQueryData<
@@ -63,7 +75,7 @@ export const useUpdateReadNotification = () => {
             pages: old.pages.map((page) => ({
               ...page,
               items: page.items.map((el) =>
-                el.id === id ? { ...el, read: true } : el,
+                el.id === id ? { ...el, read } : el,
               ),
             })),
           };
@@ -72,11 +84,8 @@ export const useUpdateReadNotification = () => {
 
       return { previousNotifications };
     },
-    onError: (err, id, context) => {
-      addNotification({
-        type: "error",
-        message: "Failed to read notification",
-      });
+
+    onError: (_, _data, context) => {
       if (context?.previousNotifications) {
         queryClient.setQueryData(
           ["notifications"],
@@ -84,6 +93,7 @@ export const useUpdateReadNotification = () => {
         );
       }
     },
+
     onSuccess: (updatedNotification) => {
       queryClient.setQueryData<InfiniteData<IItemsResponse<TNotification>>>(
         ["notifications"],
@@ -101,69 +111,15 @@ export const useUpdateReadNotification = () => {
         },
       );
     },
-  });
-};
-export const useUpdateUnreadNotification = () => {
-  const queryClient = useQueryClient();
-  const addNotification = useSystemNotificationStore(
-    (store) => store.addNotification,
-  );
 
-  return useMutation({
-    mutationFn: updateUnreadNotificaton,
-    onMutate: async (id: string) => {
-      await queryClient.cancelQueries({ queryKey: ["notifications"] });
-
-      const previousNotifications = queryClient.getQueryData<
-        InfiniteData<IItemsResponse<TNotification>>
-      >(["notifications"]);
-
-      queryClient.setQueryData<InfiniteData<IItemsResponse<TNotification>>>(
-        ["notifications"],
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            pages: old.pages.map((page) => ({
-              ...page,
-              items: page.items.map((el) =>
-                el.id === id ? { ...el, read: false } : el,
-              ),
-            })),
-          };
-        },
-      );
-
-      return { previousNotifications };
-    },
-    onError: (err, id, context) => {
-      addNotification({
-        type: "error",
-        message: "Failed to unread notification",
-      });
-      if (context?.previousNotifications) {
-        queryClient.setQueryData(
-          ["notifications"],
-          context.previousNotifications,
-        );
-      }
-    },
-    onSuccess: (updatedNotification) => {
-      queryClient.setQueryData<InfiniteData<IItemsResponse<TNotification>>>(
-        ["notifications"],
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            pages: old.pages.map((page) => ({
-              ...page,
-              items: page.items.map((el) =>
-                el.id === updatedNotification.id ? updatedNotification : el,
-              ),
-            })),
-          };
-        },
-      );
+    onSettled: (_data, _err, { id }) => {
+      notificationAbortControllers.delete(id);
     },
   });
+
+  const handleMutate = (id: string, read: boolean) => {
+    mutate({ id, read });
+  };
+
+  return { ...props, mutate: handleMutate };
 };

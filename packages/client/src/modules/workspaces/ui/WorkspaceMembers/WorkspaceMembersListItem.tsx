@@ -1,19 +1,28 @@
 import type { FC } from "react";
 import type { IExtendedWorkspaceParticipant } from "types";
 import styles from "./WorkspaceMembers.module.css";
-import { LuEllipsis } from "react-icons/lu";
-type TWorkspaceMemberItemProps = IExtendedWorkspaceParticipant;
+import { WorkspaceMembersDropdown } from "./WorkspaceMembersDropdown";
+type TWorkspaceMemberItemProps = IExtendedWorkspaceParticipant & {
+  idDropdownShown: boolean;
+  onKickUser: () => void
+
+};
 
 export const WorkspaceMembersListItem: FC<TWorkspaceMemberItemProps> = ({
   user,
   role,
+  idDropdownShown,
+  onKickUser
 }) => {
   return (
     <li className={styles.workspaceMembersListItem}>
-      <h3>{`${user.firstName} ${user.lastName} - ${role}`}</h3>
-      <button>
-        <LuEllipsis />
-      </button>
+      <div>
+        <h3>{`${user.firstName} ${user.lastName} - ${role}`}</h3>
+        <h5>{user.email}</h5>
+      </div>
+      {idDropdownShown && (
+        <WorkspaceMembersDropdown userRole={role} onKickUser={onKickUser} />
+      )}
     </li>
   );
 };

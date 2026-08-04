@@ -9,6 +9,7 @@ import {
   workspaceInfoSchema,
   workspaceInvitationSchema,
   workspaceParticipantSchema,
+  workspaceQueryParamsSchema,
   workspaceRequestSchema,
   workspaceRoles,
   workspaceSchema,
@@ -32,6 +33,7 @@ export interface IWorkspaceParticipantShortInfo {
   firstName: string;
   lastName: string;
   avatarUrl: string;
+  email: string;
   id: string;
 }
 
@@ -56,3 +58,5 @@ export type TActionWorkspaceRequest = z.infer<
 >;
 
 export type TWorkspaceParticipant = z.infer<typeof workspaceParticipantSchema>;
+
+export type TWorkspaceQueryParams = z.infer<typeof workspaceQueryParamsSchema>;

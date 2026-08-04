@@ -4,15 +4,10 @@ import styles from "./WorkspaceHeader.module.css";
 import { WorkspaceInfo } from "./WorkspaceInfo";
 import { WorkspaceNavigation } from "./WorkspaceNavigation/WorkspaceNavigation";
 import { Skeleton } from "@chakra-ui/react";
+import { useCurrentWorkspace } from "../../model/hooks/useCurrentWorkspace";
 
 export const WorkspaceHeader = () => {
-  const { workspaceId } = useParams();
-
-  const {
-    data: workspaceInfo,
-    isPending,
-    isError,
-  } = useGetWorkspaceInfo(workspaceId);
+  const { workspaceInfo, isPending, isError } = useCurrentWorkspace();
 
   if (isPending) return <Skeleton width={"100%"} height={50} />;
 

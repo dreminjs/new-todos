@@ -4,10 +4,10 @@ import { WORKSPACE_USER_STATUSES } from "../../model/workspace.data";
 import { WorkspaceInvitationFormField } from "./WorkspaceInvitationFormField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { workspaceInvitationFormSchema } from "../../model/workspace.schema";
-import type { TWorkspaceInvitationForm } from "../../model/workspace.types";
-import styles from "./WorkspaceInvitation.module.css";
 import { useInviteMember } from "../../api/queries";
 import { useParams } from "react-router";
+import type { TWorkspaceInvitationForm } from "../../model/workspace.types";
+import styles from "./WorkspaceInvitation.module.css";
 
 export const WorkspaceInvitationForm = () => {
   const { workspaceId } = useParams();
