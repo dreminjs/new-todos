@@ -13,7 +13,6 @@ export const ChangeUserRoleListItem: FC<IChangeUserRoleListItemProps> = ({
   value,
   onClick,
 }) => {
-  console.log({ currentUserRole, value });
   return (
     <Menu.Item
       onClick={onClick}

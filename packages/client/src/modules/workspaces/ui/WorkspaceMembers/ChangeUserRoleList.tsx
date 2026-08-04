@@ -41,6 +41,15 @@ export const ChangeUserRoleList: FC<IChangeUserRoleListProps> = ({
             throw new Error("Function not implemented.");
           }}
         />
+        <ChangeUserRoleListItem
+          currentUserRole={userRole}
+          value="OWNER"
+          onClick={function (
+            e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+          ): void {
+            throw new Error("Function not implemented.");
+          }}
+        />
       </Menu.ItemGroup>
     </>
   );
