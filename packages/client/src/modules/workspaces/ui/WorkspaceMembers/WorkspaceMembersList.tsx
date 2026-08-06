@@ -1,4 +1,7 @@
-import { useGetParticipantsByWorkspaceId } from "../../api/queries";
+import {
+  useGetParticipantsByWorkspaceId,
+  usePatchTransferOwnership,
+} from "../../api/queries";
 import type { FC } from "react";
 import { WorkspaceMembersListItem } from "./WorkspaceMembersListItem";
 import styles from "./WorkspaceMembers.module.css";
@@ -16,6 +19,9 @@ export const WorkspaceMembersList: FC<IWorkspaceMembersListProps> = ({
   const { workspaceInfo } = useCurrentWorkspace();
   const { data: me } = useGetMe();
   const { mutate: kickParticipant } = useKickParticipant(workspaceId);
+  const { mutate: patchTransferOwnership } =
+    usePatchTransferOwnership(workspaceId);
+
   return (
     <>
       <h3 className={styles.workspaceMembersListTitle}>Members List</h3>
@@ -29,7 +35,8 @@ export const WorkspaceMembersList: FC<IWorkspaceMembersListProps> = ({
             idDropdownShown={
               me.id !== el.user.id && workspaceInfo.role === "OWNER"
             }
-            onKickUser={() => kickParticipant(el.id)}
+            onKickUser={kickParticipant}
+            onTransferOwnership={patchTransferOwnership}
           />
         ))}
       </ul>

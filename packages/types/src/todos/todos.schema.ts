@@ -14,9 +14,9 @@ export const statusSchema = z.enum([
 export const prioritySchema = z.enum(["LOW", "MEDIUM", "HIGH"]);
 
 export const todoParticipantSchema = z.object({
-  id: z.string().uuid(),
-  todoId: z.string().uuid(),
-  userId: z.string().uuid(),
+  id: z.uuid(),
+  todoId: z.uuid(),
+  userId: z.uuid(),
 });
 
 export const extendedTodoParticipantSchema = todoParticipantSchema
@@ -28,7 +28,7 @@ export const extendedTodoParticipantSchema = todoParticipantSchema
   });
 
 export const todoSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   title: z.string().min(2),
   description: z.string(),
   priority: prioritySchema.optional().nullable(),
@@ -36,8 +36,8 @@ export const todoSchema = z.object({
   isMyToday: z.boolean(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  workspaceId: z.string().uuid().nullable().optional(),
-  todoGroupId: z.string().uuid().nullable().optional(),
+  workspaceId: z.uuid().nullable().optional(),
+  todoGroupId: z.uuid().nullable().optional(),
   deadline: z.date().nullable().optional(),
 });
 
@@ -54,11 +54,11 @@ export const extendedTodoSchema = todoSchema
 
 export const findTodosSchema = z.object({
   deadline: z.string().datetime().nullable().optional(),
-  workspaceId: z.string().optional(),
-  assignedUserId: z.string().optional(),
+  workspaceId: z.uuid().optional(),
+  assignedUserId: z.uuid().optional(),
   priority: prioritySchema.optional(),
   status: statusSchema.optional(),
-  todoGroupId: z.string().uuid().optional(),
+  todoGroupId: z.uuid().optional(),
   planned: boolean,
   assignedMe: boolean,
   isMyToday: boolean.optional(),

@@ -7,12 +7,14 @@ import { KickUserButton } from "./KickUserButton";
 
 interface IWorkspaceMembersDropdownProps {
   userRole: TWorkspaceRoles;
-  onKickUser: () => void
+  onKickUser: () => void;
+  onTransferOwnership: () => void;
 }
 
 export const WorkspaceMembersDropdown: FC<IWorkspaceMembersDropdownProps> = ({
   userRole,
   onKickUser,
+  onTransferOwnership,
 }) => {
   return (
     <Menu.Root>
@@ -23,7 +25,10 @@ export const WorkspaceMembersDropdown: FC<IWorkspaceMembersDropdownProps> = ({
       </Menu.Trigger>
       <Menu.Positioner>
         <Menu.Content>
-          <ChangeUserRoleList userRole={userRole} />
+          <ChangeUserRoleList
+            userRole={userRole}
+            onTransferOwnership={onTransferOwnership}
+          />
           <Separator />
           <KickUserButton onClick={onKickUser} />
         </Menu.Content>

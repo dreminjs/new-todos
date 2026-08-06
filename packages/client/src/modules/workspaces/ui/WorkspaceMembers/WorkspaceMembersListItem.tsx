@@ -4,15 +4,17 @@ import styles from "./WorkspaceMembers.module.css";
 import { WorkspaceMembersDropdown } from "./WorkspaceMembersDropdown";
 type TWorkspaceMemberItemProps = IExtendedWorkspaceParticipant & {
   idDropdownShown: boolean;
-  onKickUser: () => void
-
+  onKickUser: (participantId: string) => void;
+  onTransferOwnership: (participantId: string) => void;
 };
 
 export const WorkspaceMembersListItem: FC<TWorkspaceMemberItemProps> = ({
   user,
   role,
   idDropdownShown,
-  onKickUser
+  onKickUser,
+  onTransferOwnership,
+  id: participantId,
 }) => {
   return (
     <li className={styles.workspaceMembersListItem}>
@@ -21,7 +23,11 @@ export const WorkspaceMembersListItem: FC<TWorkspaceMemberItemProps> = ({
         <h5>{user.email}</h5>
       </div>
       {idDropdownShown && (
-        <WorkspaceMembersDropdown userRole={role} onKickUser={onKickUser} />
+        <WorkspaceMembersDropdown
+          userRole={role}
+          onKickUser={() => onKickUser(participantId)}
+          onTransferOwnership={() => onTransferOwnership(participantId)}
+        />
       )}
     </li>
   );

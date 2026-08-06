@@ -16,6 +16,7 @@ import {
   inviteMember,
   kickParticipant,
   rejectInvitation,
+  transferOwnership,
 } from "./services";
 import { useNavigate } from "react-router";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
@@ -235,6 +236,32 @@ export const useGetWorkspaceInfo = (workspaceId: string) => {
   return useQuery({
     queryKey: ["workspaces", workspaceId, "info"],
     queryFn: () => findWorkspaceInfo(workspaceId),
+  });
+};
+
+export const usePatchTransferOwnership = (workspaceId: string) => {
+  const client = useQueryClient();
+  const addNotification = useSystemNotificationStore(
+    (state) => state.addNotification,
+  );
+  return useMutation({
+    mutationFn: (participantId: string) =>
+      transferOwnership(workspaceId, participantId),
+    onSuccess: () => {
+      client.invalidateQueries({
+        queryKey: ["workspaces", workspaceId, "participants"],
+      });
+      addNotification({
+        message: "Ownership transferred successfully",
+        type: "success",
+      });
+    },
+    onError: () => {
+      addNotification({
+        message: "Failed to transfer ownership",
+        type: "error",
+      });
+    },
   });
 };
 

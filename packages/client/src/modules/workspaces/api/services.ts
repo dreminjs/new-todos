@@ -64,6 +64,15 @@ export const rejectInvitation = async (
   await instance.delete(`${BASE_URL}/invitation/${dto.invitationId}/reject`);
 };
 
+export const transferOwnership = async (
+  workspaceId: string,
+  participantId: string,
+): Promise<TWorkspace> => {
+  return (
+    await instance.post(`${BASE_URL}/${workspaceId}/participants/${participantId}/transfer-ownership`)
+  ).data;
+};
+
 // export const acceptRequest = async (
 //   dto: TActionWorkspaceRequest,
 // ): Promise<TWorkspaceParticipant> => {

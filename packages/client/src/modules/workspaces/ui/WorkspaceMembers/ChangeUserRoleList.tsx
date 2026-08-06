@@ -6,10 +6,12 @@ import type { FC } from "react";
 
 interface IChangeUserRoleListProps {
   userRole: TWorkspaceRoles;
+  onTransferOwnership: () => void;
 }
 
 export const ChangeUserRoleList: FC<IChangeUserRoleListProps> = ({
   userRole,
+  onTransferOwnership,
 }) => {
   return (
     <>
@@ -29,6 +31,16 @@ export const ChangeUserRoleList: FC<IChangeUserRoleListProps> = ({
             e: React.MouseEvent<HTMLDivElement, MouseEvent>,
           ): void {
             throw new Error("Function not implemented.");
+          }}
+        />
+
+        <ChangeUserRoleListItem
+          currentUserRole={userRole}
+          value={"OWNER"}
+          onClick={function (
+            e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+          ): void {
+            onTransferOwnership();
           }}
         />
 
