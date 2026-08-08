@@ -5,6 +5,7 @@ import type {
   TCreateWorkspaceInvitationBody,
   TExtendedWorkspaceInvitation,
   TMembershipResult,
+  TTodoGroupResponse,
   TWorkspace,
   TWorkspaceInfo,
   TWorkspaceInvitation,
@@ -52,7 +53,6 @@ export const findManyMyWorkspaceInvitations = async (): Promise<
 export const acceptInvitation = async (
   dto: Omit<TActionWorkspaceInvitation, "workspaceId">,
 ): Promise<TWorkspaceInvitation> => {
-
   return (
     await instance.post(`${BASE_URL}/invitation/${dto.invitationId}/accept`)
   ).data;
@@ -69,7 +69,9 @@ export const transferOwnership = async (
   participantId: string,
 ): Promise<TWorkspace> => {
   return (
-    await instance.post(`${BASE_URL}/${workspaceId}/participants/${participantId}/transfer-ownership`)
+    await instance.post(
+      `${BASE_URL}/${workspaceId}/participants/${participantId}/transfer-ownership`,
+    )
   ).data;
 };
 
@@ -101,5 +103,13 @@ export const kickParticipant = async (
   workspaceId: string,
   userId: string,
 ): Promise<void> => {
-  await instance.delete(`${BASE_URL}/${workspaceId}/participants/${userId}/kick`);
+  await instance.delete(
+    `${BASE_URL}/${workspaceId}/participants/${userId}/kick`,
+  );
+};
+
+export const findWorkspaceTodoGroups = async (
+  workspaceId: string,
+): Promise<TTodoGroupResponse[]> => {
+  return (await instance.get(`${BASE_URL}/${workspaceId}/todo-groups`)).data;
 };

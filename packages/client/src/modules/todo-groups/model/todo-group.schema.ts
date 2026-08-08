@@ -1,6 +1,5 @@
-import { createTodoGroupSchema } from "types";
+import { createTodoGroupBodySchema } from "types";
 
-export const createTodoGroupFormSchema = createTodoGroupSchema.omit({
-  id: true,
-  userId: true,
+export const createTodoGroupFormSchema = createTodoGroupBodySchema.omit({
+  workspaceId: true
 });

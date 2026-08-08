@@ -1,10 +1,6 @@
 import { useForm } from "react-hook-form";
 import { FormBottom, FormField, Modal } from "../../../../shared";
-import {
-  createTodoGroupSchema,
-  type TCreateTodoGroup,
-  type TTodoGroup,
-} from "types";
+import { type TCreateTodoGroupBody } from "types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateTodoGroup } from "../../api/queries";
 import { type FC } from "react";
@@ -18,7 +14,7 @@ import styles from "./CreateTodoGroupModal.module.css";
 interface ICreateTodoGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
-  todoGroupContext: TCreateTodoGroupContext;
+  todoGroupContext?: TCreateTodoGroupContext;
 }
 
 export const CreateTodoGroupModal: FC<ICreateTodoGroupModalProps> = ({
@@ -36,7 +32,13 @@ export const CreateTodoGroupModal: FC<ICreateTodoGroupModalProps> = ({
 
   const { mutate, isPending } = useCreateTodoGroup();
   const handleCreateTodoGroup = (data: TCreateTodoGroupForm) => {
-    mutate({ ...data, ...todoGroupContext }, { onSuccess: onClose });
+    mutate(
+      {
+        ...data,
+        ...todoGroupContext,
+      },
+      { onSuccess: onClose },
+    );
   };
 
   return (

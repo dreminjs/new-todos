@@ -13,6 +13,7 @@ import {
   findParticipants,
   findParticipantsByWorkspaceId,
   findWorkspaceInfo,
+  findWorkspaceTodoGroups,
   inviteMember,
   kickParticipant,
   rejectInvitation,
@@ -329,5 +330,12 @@ export const useKickParticipant = (workspaceId: string) => {
         queryKey: ["workspaces", workspaceId, "participants"],
       });
     },
+  });
+};
+
+export const useGetWorkspaceTodoGroups = (workspaceId: string) => {
+  return useQuery({
+    queryFn: () => findWorkspaceTodoGroups(workspaceId),
+    queryKey: ["workspaces", workspaceId, "todo-groups"],
   });
 };

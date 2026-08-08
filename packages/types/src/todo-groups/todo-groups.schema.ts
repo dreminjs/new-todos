@@ -1,17 +1,22 @@
 import * as z from "zod";
 
-export const createTodoGroupSchema = z.object({
+export const createTodoGroupBodySchema = z.object({
   name: z.string().min(1).max(50),
-  id: z.uuid(),
-  userId: z.uuid(),
+
   workspaceId: z.string().nullable().optional(),
 });
-export const updateTodoGroupSchema = createTodoGroupSchema.pick({
+export const updateTodoGroupBodySchema = createTodoGroupBodySchema.pick({
   name: true,
 });
 
-export const todoGroupSchema = createTodoGroupSchema;
+export const todoGroupSchema = createTodoGroupBodySchema.extend({
+  id: z.uuid()
+})
 
 export const todoGroupResponseSchema = todoGroupSchema.extend({
   hasAccess: z.boolean(),
-})
+});
+
+export const findTodoGroupsSchema = z.object({
+  workspaceId: z.string().nullable().optional(),
+});

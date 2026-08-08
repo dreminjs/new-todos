@@ -5,12 +5,10 @@ import {
 } from "../../../modules/todo-groups";
 import { SidebarMenuItem } from "./SidebarMenuItem";
 import { CustomAccordion } from "../../../shared";
-import { useGetMe } from "../../../modules/users";
 import styles from "./Sidebar.module.css";
 
 export const GroupTodosList = () => {
   const { data } = useGetTodoGroups();
-  const { data: currentUserId } = useGetMe("id");
   const [isCreateTodoGroupOpen, setIsCreateTodoGroupOpen] = useState(false);
   const handleToggleCreateTodoGroup = () => {
     setIsCreateTodoGroupOpen((prev) => !prev);
@@ -41,10 +39,6 @@ export const GroupTodosList = () => {
         <CreateTodoGroupModal
           isOpen={isCreateTodoGroupOpen}
           onClose={handleToggleCreateTodoGroup}
-          todoGroupContext={{
-            userId: currentUserId,
-            id: crypto.randomUUID(),
-          }}
         />
       )}
     </>

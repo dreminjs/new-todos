@@ -19,10 +19,10 @@ export const WorkspaceNavigation: FC<IWorkspaceNavigationProps> = ({
           All tasks
         </WorkspaceNavigationItem>
         <WorkspaceNavigationItem
-          isActive={pathname === `lists`}
-          href={`${workspaceId}/lists`}
+          isActive={pathname === `todo-groups`}
+          href={`${workspaceId}/todo-groups`}
         >
-          Lists
+          Todo groups
         </WorkspaceNavigationItem>
         <WorkspaceNavigationItem
           isActive={pathname === `chats`}

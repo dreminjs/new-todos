@@ -14,14 +14,11 @@ import {
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 import type {
   IItemsResponse,
-  TCreateTodoGroup,
+  TCreateTodoGroupBody,
   TExtendedTodo,
   TTodoGroup,
 } from "types";
-import type {
-  TCreateTodoGroupContext,
-  TCreateTodoGroupForm,
-} from "../model/todo-group.dto";
+import type { TCreateTodoGroupForm } from "../model/todo-group.dto";
 
 export const useGetTodoGroups = () => {
   return useQuery({
@@ -35,29 +32,39 @@ export const useCreateTodoGroup = () => {
     (state) => state.addNotification,
   );
   const client = useQueryClient();
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: TTodoGroup) => createOne(data),
-    onSuccess: () => {
+  return useMutation({
+    mutationFn: (data: TCreateTodoGroupBody) => createOne(data),
+    onMutate: async (newTodoGroup) => {
+      await client.cancelQueries({ queryKey: ["todo-groups"] });
+      const previousData = client.getQueryData<TTodoGroup[]>(["todo-groups"]);
+      const temporaryId = crypto.randomUUID();
+      client.setQueryData<TTodoGroup[]>(["todo-groups"], (old) => [
+        ...(old ?? []),
+        { ...newTodoGroup, id: temporaryId },
+      ]);
+      return { previousData, temporaryId };
+    },
+    onSuccess: (todoGroup, _dto, context) => {
       addNotification({
         type: "success",
         message: "Todo group created successfully",
       });
+      client.setQueryData<TTodoGroup[]>(["todo-groups"], (old) =>
+        (old ?? [])
+          .filter((el) => el.id !== context.temporaryId)
+          .concat(todoGroup),
+      );
     },
-    onError: () => {
+    onError: (_err, _dto, context) => {
+      if (context.previousData) {
+        client.setQueryData<TTodoGroup[]>(["todo-groups"], context.previousData);
+      }
       addNotification({
         type: "error",
         message: "Failed to create todo group",
       });
     },
-    onMutate: (newTodoGroup) => {
-      client.setQueryData<TTodoGroup[]>(["todo-groups"], (oldData) => [
-        ...oldData,
-        newTodoGroup,
-      ]);
-    },
   });
-
-  return { mutate, isPending };
 };
 
 export const useDeleteTodoGroup = () => {
@@ -89,22 +96,22 @@ export const useDeleteTodoGroup = () => {
   });
 };
 
-export const useUpdateTodoGroup = (dtoContext: TCreateTodoGroupContext) => {
+export const useUpdateTodoGroup = (id: string) => {
   const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const client = useQueryClient();
   const { mutate, ...props } = useMutation({
-    mutationFn: (data: TCreateTodoGroup) => {
-      return updateOne(data);
+    mutationFn: (data: TCreateTodoGroupBody) => {
+      return updateOne(data, id);
     },
-    mutationKey: ["todo-groups", dtoContext.id],
+    mutationKey: ["todo-groups"],
     onSuccess: (newTodoGroup) => {
       addNotification({
         type: "success",
         message: "Todo group updated successfully",
       });
-      client.setQueryData(["todo-groups", newTodoGroup.id], () => newTodoGroup);
+      client.setQueryData(["todo-groups"], () => newTodoGroup);
       client.setQueriesData<InfiniteData<IItemsResponse<TExtendedTodo>>>(
         { queryKey: ["todos"] },
         (old) => {
@@ -125,16 +132,14 @@ export const useUpdateTodoGroup = (dtoContext: TCreateTodoGroupContext) => {
       await client.cancelQueries({
         queryKey: ["todo-groups"],
       });
-      const previous = client.getQueryData<TTodoGroup>([
-        "todo-groups",
-        newTodoGroup.id,
-      ]);
-      client.setQueryData<TTodoGroup>(["todo-groups", newTodoGroup.id], () => ({
+      const previous = client.getQueryData<TTodoGroup>(["todo-groups"]);
+      client.setQueryData<TTodoGroup>(["todo-groups"], () => ({
         ...newTodoGroup,
+        id: crypto.randomUUID(),
       }));
       return { previous };
     },
-    onError: (err, _newTodoGroup, context) => {
+    onError: (_err, _newTodoGroup, context) => {
       if (context?.previous) {
         client.setQueryData(
           ["todo-groups", context.previous.id],
@@ -149,10 +154,7 @@ export const useUpdateTodoGroup = (dtoContext: TCreateTodoGroupContext) => {
   });
 
   const handleSubmit = (dto: TCreateTodoGroupForm, cb?: () => void) => {
-    mutate(
-      { name: dto.name, userId: dtoContext.userId, id: dtoContext.id },
-      { onSuccess: cb },
-    );
+    mutate({ name: dto.name }, { onSuccess: cb });
   };
   return { mutate: handleSubmit, ...props };
 };

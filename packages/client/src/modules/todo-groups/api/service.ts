@@ -1,14 +1,14 @@
-import type { TCreateTodoGroup, TTodoGroup } from "types";
+import type { TCreateTodoGroupBody, TTodoGroup } from "types";
 import { instance } from "../../../shared/api/api.instance";
 
 const URL = "todo-groups";
 
 export const findGroups = async (): Promise<TTodoGroup[]> => {
-  return (await instance.get(URL)).data;
+  return (await instance.get(`${URL}`)).data;
 };
 
 export const createOne = async (
-  data: TCreateTodoGroup,
+  data: TCreateTodoGroupBody,
 ): Promise<TTodoGroup> => {
   return (await instance.post(URL, data)).data;
 };
@@ -18,9 +18,10 @@ export const deleteOne = async (id: string): Promise<void> => {
 };
 
 export const updateOne = async (
-  data: TCreateTodoGroup,
+  data: TCreateTodoGroupBody,
+  id: string
 ): Promise<TTodoGroup> => {
-  return (await instance.put(`${URL}/${data.id}`, { name: data.name })).data;
+  return (await instance.put(`${URL}/${id}`, { name: data.name })).data;
 };
 
 export const findOne = async (id: string): Promise<TTodoGroup | null> => {

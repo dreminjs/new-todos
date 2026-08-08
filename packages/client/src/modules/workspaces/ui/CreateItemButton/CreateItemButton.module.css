@@ -1,0 +1,30 @@
+@import url("../../../../styles/vars.css");
+
+.createItemButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: lightslategray;
+  border: 1px solid lightslategray;
+  flex-basis: 240px;
+  padding: 10px 0;
+  border-radius: var(--border-radius);
+}
+
+.createItemButton:hover {
+  background-color: #f0f0f0;
+  color: #4338ca;
+  border: 1px solid #4338ca;
+  box-shadow: 0 0 0 2px #4338ca;
+}
+
+.createItemButtonPlus {
+  font-size: 24px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.createItemButtonTitle {
+  font-size: 16px;
+}

@@ -1,15 +1,18 @@
 import * as z from "zod";
 import {
-  createTodoGroupSchema,
+  createTodoGroupBodySchema,
+  findTodoGroupsSchema,
   todoGroupResponseSchema,
   todoGroupSchema,
-  updateTodoGroupSchema,
+  updateTodoGroupBodySchema,
 } from "./todo-groups.schema.js";
 
-export type TCreateTodoGroup = z.infer<typeof createTodoGroupSchema>;
+export type TCreateTodoGroupBody = z.infer<typeof createTodoGroupBodySchema>;
 
 export type TTodoGroup = z.infer<typeof todoGroupSchema>;
 
-export type TUpdateTodoGroup = z.infer<typeof updateTodoGroupSchema>;
+export type TUpdateTodoGroupBody = z.infer<typeof updateTodoGroupBodySchema>;
 
 export type TTodoGroupResponse = z.infer<typeof todoGroupResponseSchema>;
+
+export type TFindTodoGroups = z.infer<typeof findTodoGroupsSchema>;
