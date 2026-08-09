@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { todoCountInfoSchema } from "../todos/todo-count-info.schema.js";
+import { userSchema } from "../user/user.schema.js";
 export const workspaceRoles = z.enum(["OWNER", "MEMBER", "MANAGER"]);
 
 export const createWorkspaceSchema = z.object({
@@ -37,10 +38,10 @@ export const extendedWorkspaceInvitationSchema = workspaceInvitationSchema
       id: z.string(),
       name: z.string(),
     }),
-    user: z.object({
-      firstName: z.string(),
-      lastName: z.string(),
-      id: z.string(),
+    user: userSchema.pick({
+      firstName: true,
+      lastName: true,
+      id: true,
     }),
   });
 

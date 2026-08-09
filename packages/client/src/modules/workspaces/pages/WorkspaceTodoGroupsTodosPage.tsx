@@ -1,12 +1,17 @@
+import { useParams } from "react-router";
+import { TodoKanbanBoard } from "../../todos";
 import { useConnectWorkspaceTodoGroupRoom } from "../model/hooks/useConnectWorkspaceTodoGroupRoom";
 
 export const WorkspaceTodoGroupsTodosPage = () => {
-
-  useConnectWorkspaceTodoGroupRoom()
+  useConnectWorkspaceTodoGroupRoom();
+  const { todoGroupId, workspaceId } = useParams();
 
   return (
     <>
-      <div>123</div>
+      <TodoKanbanBoard
+        dtoContext={{ todoGroupId, workspaceId }}
+        queryFilters={{ todoGroupId, limit: 10 }}
+      />
     </>
   );
 };

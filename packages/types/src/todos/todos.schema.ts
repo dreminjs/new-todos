@@ -13,20 +13,6 @@ export const statusSchema = z.enum([
 
 export const prioritySchema = z.enum(["LOW", "MEDIUM", "HIGH"]);
 
-export const todoParticipantSchema = z.object({
-  id: z.uuid(),
-  todoId: z.uuid(),
-  userId: z.uuid(),
-});
-
-export const extendedTodoParticipantSchema = todoParticipantSchema
-  .omit({
-    userId: true,
-  })
-  .extend({
-    user: userSchema,
-  });
-
 export const todoSchema = z.object({
   id: z.uuid(),
   title: z.string().min(2),
@@ -49,7 +35,7 @@ export const extendedTodoSchema = todoSchema
   .extend({
     workspace: workspaceSchema.nullable(),
     todoGroup: todoGroupSchema.nullable(),
-    todoParticipants: extendedTodoParticipantSchema.array().optional(),
+    user: userSchema.nullable()
   });
 
 export const findTodosSchema = z.object({
@@ -59,8 +45,8 @@ export const findTodosSchema = z.object({
   priority: prioritySchema.optional(),
   status: statusSchema.optional(),
   todoGroupId: z.uuid().optional(),
-  planned: boolean,
-  assignedMe: boolean,
+  planned: boolean.optional(),
+  assignedMe: boolean.optional(),
   isMyToday: boolean.optional(),
   cursor: z.string().uuid().optional(),
   limit: z.string().transform((v) => Number(v)),
