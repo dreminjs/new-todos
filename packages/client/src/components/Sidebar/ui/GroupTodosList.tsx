@@ -14,8 +14,6 @@ export const GroupTodosList = () => {
     setIsCreateTodoGroupOpen((prev) => !prev);
   };
 
-  console.log(data)
-
   return (
     <>
       <CustomAccordion

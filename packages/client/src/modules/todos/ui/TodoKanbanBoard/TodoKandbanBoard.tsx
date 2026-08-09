@@ -41,7 +41,12 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
         }}
         onDragEnd={handleDragEnd}
       >
-        <ul className={clsx(styles.TodoKanbanBoardList, !isOnline && styles.TodoKanbanBoardListOffline)}>
+        <ul
+          className={clsx(
+            styles.TodoKanbanBoardList,
+            !isOnline && styles.TodoKanbanBoardListOffline,
+          )}
+        >
           <TodoKanbanColumn
             endpoint={endpoint}
             showAssignee={showAssignee}
@@ -72,7 +77,9 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
           />
         </ul>
         <DragOverlay>
-          {activeTodo && <TodoItem {...activeTodo} isOverlay={true} />}
+          {activeTodo && (
+            <TodoItem todoParticipants={[]} {...activeTodo} isOverlay={true} />
+          )}
         </DragOverlay>
       </DragDropProvider>
     </>

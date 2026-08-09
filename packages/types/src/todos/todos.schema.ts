@@ -49,7 +49,7 @@ export const extendedTodoSchema = todoSchema
   .extend({
     workspace: workspaceSchema.nullable(),
     todoGroup: todoGroupSchema.nullable(),
-    todoParticipants: extendedTodoParticipantSchema.array(),
+    todoParticipants: extendedTodoParticipantSchema.array().optional(),
   });
 
 export const findTodosSchema = z.object({
@@ -68,4 +68,8 @@ export const findTodosSchema = z.object({
 
 export const updateTodoStatusSchema = z.object({
   status: statusSchema,
+});
+
+export const joinGroupTodosRoomSchema = z.object({
+  todoGroupId: z.uuid(),
 });
