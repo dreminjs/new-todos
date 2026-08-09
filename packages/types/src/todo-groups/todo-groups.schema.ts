@@ -15,6 +15,7 @@ export const todoGroupSchema = createTodoGroupBodySchema.extend({
 
 export const todoGroupResponseSchema = todoGroupSchema.extend({
   hasAccess: z.boolean(),
+  countOfActiveTodos: z.number(),
 });
 
 export const findTodoGroupsSchema = z.object({

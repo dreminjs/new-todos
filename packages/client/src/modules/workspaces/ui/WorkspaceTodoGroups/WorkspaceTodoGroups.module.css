@@ -1,8 +1,27 @@
 .workspaceTodoGroupsList {
   max-width: 900px;
-  min-width: 700px;
+  min-width: 370px;
   margin: 0 auto;
-  border: 1px solid red;
   display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
 
+.workspaceTodoGroupsListItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: lightslategray;
+  border: 1px solid lightslategray;
+  flex: 1 1 280px;
+  padding: 15px 0;
+  border-radius: var(--border-radius);
+}
+
+.workspaceTodoGroupsListItemName {
+  display: block;
+  text-align: center;
+  margin-bottom: 15px;
 }

@@ -17,6 +17,7 @@ import type {
   TCreateTodoGroupBody,
   TExtendedTodo,
   TTodoGroup,
+  TTodoGroupResponse,
 } from "types";
 import type { TCreateTodoGroupForm } from "../model/todo-group.dto";
 
@@ -49,6 +50,11 @@ export const useCreateTodoGroup = () => {
         type: "success",
         message: "Todo group created successfully",
       });
+      if (todoGroup.workspaceId) {
+        client.invalidateQueries({
+          queryKey: ["workspaces", todoGroup.workspaceId, "todo-groups"],
+        });
+      }
       client.setQueryData<TTodoGroup[]>(["todo-groups"], (old) =>
         (old ?? [])
           .filter((el) => el.id !== context.temporaryId)
@@ -147,10 +153,7 @@ export const useUpdateTodoGroup = (id: string) => {
     },
     onError: (_err, _newTodoGroup, context) => {
       if (context?.previous) {
-        client.setQueryData(
-          ["todo-groups", context.previous.id],
-          context.previous,
-        );
+        client.setQueryData(["todo-groups"], context.previous);
       }
       addNotification({
         type: "error",
