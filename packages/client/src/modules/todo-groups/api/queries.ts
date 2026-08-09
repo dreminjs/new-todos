@@ -57,7 +57,10 @@ export const useCreateTodoGroup = () => {
     },
     onError: (_err, _dto, context) => {
       if (context.previousData) {
-        client.setQueryData<TTodoGroup[]>(["todo-groups"], context.previousData);
+        client.setQueryData<TTodoGroup[]>(
+          ["todo-groups"],
+          context.previousData,
+        );
       }
       addNotification({
         type: "error",
@@ -111,7 +114,10 @@ export const useUpdateTodoGroup = (id: string) => {
         type: "success",
         message: "Todo group updated successfully",
       });
-      client.setQueryData(["todo-groups"], () => newTodoGroup);
+      client.setQueryData<TTodoGroup[]>(["todo-groups"], (old) => [
+        ...old,
+        newTodoGroup,
+      ]);
       client.setQueriesData<InfiniteData<IItemsResponse<TExtendedTodo>>>(
         { queryKey: ["todos"] },
         (old) => {
@@ -132,11 +138,11 @@ export const useUpdateTodoGroup = (id: string) => {
       await client.cancelQueries({
         queryKey: ["todo-groups"],
       });
-      const previous = client.getQueryData<TTodoGroup>(["todo-groups"]);
-      client.setQueryData<TTodoGroup>(["todo-groups"], () => ({
-        ...newTodoGroup,
-        id: crypto.randomUUID(),
-      }));
+      const previous = client.getQueryData<TTodoGroup[]>(["todo-groups"]);
+      client.setQueryData<TTodoGroup[]>(["todo-groups"], (old) => [
+        ...old,
+        { ...newTodoGroup, id: crypto.randomUUID() },
+      ]);
       return { previous };
     },
     onError: (_err, _newTodoGroup, context) => {

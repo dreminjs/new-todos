@@ -14,10 +14,12 @@ export const GroupTodosList = () => {
     setIsCreateTodoGroupOpen((prev) => !prev);
   };
 
+  console.log(data)
+
   return (
     <>
       <CustomAccordion
-        defaultOpen={true}
+        defaultOpen={false}
         header={
           <h3 className={styles.sidebarMenuTitle}>
             <span>my groups todos</span>

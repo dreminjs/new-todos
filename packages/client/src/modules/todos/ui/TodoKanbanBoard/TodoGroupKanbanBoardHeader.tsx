@@ -1,18 +1,20 @@
 import { useState, type FC } from "react";
 import { InputGroupTodoListTitle } from "./InputGroupTodoListTitle";
 import { DeleteTodoGroupButton } from "./DeleteTodoGroupButton";
-import type { TCreateTodoGroup } from "types";
-import styles from "./TodoKanbanBoard.module.css";
 import { useUpdateTodoGroup } from "../../../todo-groups";
+import { useParams } from "react-router";
 import type { TCreateTodoGroupForm } from "../../../todo-groups/model/todo-group.dto";
+import type { TCreateTodoGroupBody } from "types";
+import styles from "./TodoKanbanBoard.module.css";
 import clsx from "clsx";
 
-type TodoGroupKanbanBoardHeaderProps = TCreateTodoGroup;
+type TodoGroupKanbanBoardHeaderProps = TCreateTodoGroupBody;
 
 export const TodoGroupKanbanBoardHeader: FC<TodoGroupKanbanBoardHeaderProps> = (
   props,
 ) => {
-  const { mutate, isPending } = useUpdateTodoGroup(props);
+  const { groupId } = useParams();
+  const { mutate, isPending } = useUpdateTodoGroup(groupId!);
   const [isTyping, setIsTyping] = useState(false);
   const onSubmit = (data: TCreateTodoGroupForm) => {
     mutate(data);
@@ -41,7 +43,7 @@ export const TodoGroupKanbanBoardHeader: FC<TodoGroupKanbanBoardHeaderProps> = (
           </button>
         )}
       </h3>
-      <DeleteTodoGroupButton todoGroupId={props.id} />
+      <DeleteTodoGroupButton todoGroupId={groupId} />
     </header>
   );
 };
