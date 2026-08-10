@@ -60,6 +60,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
       status: props.todoContext?.status,
       priority: props.todoContext?.priority,
       isMyToday: props.todoContext?.isMyToday || false,
+
     },
   });
 
@@ -91,7 +92,6 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
           control={control}
           name={"isMyToday"}
           render={({ field }) => {
-            console.log(field.value);
             return (
               <CustomCheckbox
                 onChange={field.onChange}
@@ -105,30 +105,30 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
         />
 
         <Controller
+          control={control}
+          name={"status"}
           render={({ field }) => (
             <CustomSelect
+              name={field.name}
               value={field.value}
               onChange={field.onChange}
-              name={field.name}
-              register={register}
-              label={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+              label={field?.name.charAt(0).toUpperCase() + field?.name.slice(1)}
               options={TODO_STATUS_OPTIONS}
               className={styles.selectStatus}
               placeholder="Status"
             />
           )}
-          name={"status"}
-          control={control}
         />
 
         <Controller
+          name={"priority"}
+          control={control}
           render={({ field }) => (
             <CustomSelect
               value={field.value}
               onChange={field.onChange}
               name={field.name}
-              register={register}
-              label={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+              label={field?.name.charAt(0).toUpperCase() + field?.name.slice(1)}
               options={TODO_PRIORITY_OPTIONS}
               className={styles.selectPriority}
               placeholder="Priority"
@@ -138,10 +138,7 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
               }
             />
           )}
-          name={"priority"}
-          control={control}
         />
-
 
         <Controller
           control={control}

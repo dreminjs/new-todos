@@ -1,21 +1,28 @@
 model Todo {
-  id               String                 @id @default(uuid())
-  title            String
-  description      String
-  priority         Priority?
-  deadline         DateTime?
-  createdAt        DateTime               @default(now())
-  updatedAt        DateTime               @default(now())
-  workspaceId      String?
-  status           Status?
-  todoGroupId      String?
-  isMyToday        Boolean                @default(false)
-  subTodos         SubTodo[]
-  todoGroup        TodoGroup?             @relation(fields: [todoGroupId], references: [id])
-  workspace        Workspace?             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  tags             WorkspaceTodoTag[]
-  userId           String
-  user             User                   @relation(fields: [userId], references: [id])
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  priority    Priority?
+  deadline    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+
+  workspaceId String?
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  status      Status?
+  todoGroupId String?
+  todoGroup   TodoGroup? @relation(fields: [todoGroupId], references: [id])
+
+  isMyToday   Boolean   @default(false)
+  subTodos    SubTodo[]
+  tags        WorkspaceTodoTag[]
+
+  userId      String
+  user        User      @relation("CreatedTodos", fields: [userId], references: [id])
+
+  assigneeId  String?
+  assignee    User?     @relation("AssignedTodos", fields: [assigneeId], references: [id])
 }
 
 model SubTodo {

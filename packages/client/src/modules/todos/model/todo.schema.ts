@@ -12,5 +12,6 @@ export const todoFormSchema = todoSchema
     id: true,
     todoGroupId: true,
     workspaceId: true,
+    assigneeId: true,
     updatedAt: true,
   });

@@ -186,11 +186,6 @@ export class WorkspaceService {
     const todoGroups = (await this.todoGroupsService.findMany(
       {
         workspaceId,
-        todoGroupParticipants: {
-          some: {
-            userId,
-          },
-        },
       },
       {
         todoGroupParticipants: {

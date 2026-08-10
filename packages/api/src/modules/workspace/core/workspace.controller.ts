@@ -19,6 +19,7 @@ import {
 import { WorkspaceService } from "./workspace.service.js";
 import { TTodoGroupResponse, TWorkspace, TWorkspaceInfo } from "types";
 import { IsWorkspaceOwnerGuard } from "./guards/isWorkspaceOwner.guard.js";
+import { IsUserWorkspaceParticipantGuard } from "./guards/isUserWorkspaceParticipant.guard.js";
 
 @UseGuards(AccessTokenGuard)
 @Controller("workspaces")
@@ -72,7 +73,7 @@ export class WorkspaceController {
     );
   }
   // TODO: MAKE CURSOR PAGINATION
-  @UseGuards(IsWorkspaceOwnerGuard)
+  @UseGuards(IsUserWorkspaceParticipantGuard)
   @Get(":workspaceId/todo-groups")
   async findWorkspaceTodoGroups(
     @Param("workspaceId") workspaceId: string,

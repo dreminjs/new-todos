@@ -1,4 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+} from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import {
   CreateTodoDto,
@@ -8,51 +13,78 @@ import {
 } from "./dto/todo.dto.js";
 import { Prisma, Todo } from "api/generated/prisma/client.js";
 
-import {
-  extendedTodoSchema,
-  IItemsResponse,
-  TExtendedTodo,
-  TTodo,
-  TTodoStatus,
-} from "types";
+import { IItemsResponse, TExtendedTodo, TTodo, TTodoStatus } from "types";
 import { buildInfinityScrollResponse } from "../../../libs/buildInfinityScrollResponse.js";
 import { TodoRepository } from "./todo.repository.js";
+import { WorkspaceParticipantService } from "../../workspace/sub/workspace-participant/workspace-participant.service.js";
 
 @Injectable()
 export class TodoService {
-  constructor(private readonly todoRepository: TodoRepository) {}
+  constructor(
+    private readonly todoRepository: TodoRepository,
+    private readonly workspaceParticipantService: WorkspaceParticipantService,
+  ) {}
+
+  private logger = new Logger(TodoService.name);
 
   async createOne(
     dto: CreateTodoDto,
     currentUserId: string,
   ): Promise<TExtendedTodo> {
-    const createdTodo = (await this.todoRepository.create({
-      data: {
-        ...dto,
+    const { workspaceId, assigneeId, ...todoData } = dto;
+
+    if (!workspaceId) {
+      if (assigneeId && assigneeId !== currentUserId) {
+        throw new BadRequestException(
+          "Personal tasks cannot be assigned to other users",
+        );
+      }
+
+      const result = await this.todoRepository.createExtendedTask(
+        dto,
+        currentUserId,
+      );
+      return result as unknown as TExtendedTodo;
+    }
+
+    const isCreatorMember = await this.workspaceParticipantService.findOne({
+      where: {
+        workspaceId,
         userId: currentUserId,
       },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        status: true,
-        isMyToday: true,
-        createdAt: true,
-        updatedAt: true,
-        workspace: true,
-        todoGroup: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
-      },
-    })) as unknown as TExtendedTodo;
+    });
+    if (!isCreatorMember) {
+      throw new ForbiddenException("You are not a member of this workspace");
+    }
 
-    return extendedTodoSchema.parse(createdTodo);
+    const targetAssigneeId = assigneeId ?? currentUserId;
+
+    if (targetAssigneeId !== currentUserId) {
+      const isAssigneeMember = await this.workspaceParticipantService.findOne({
+        where: {
+          workspaceId,
+          userId: targetAssigneeId,
+        },
+      });
+      if (!isAssigneeMember) {
+        throw new ForbiddenException(
+          "Assignee is not a member of this workspace",
+        );
+      }
+    }
+
+    const result = await this.todoRepository.createExtendedTask(
+      {
+        ...todoData,
+        workspaceId,
+        assigneeId: targetAssigneeId,
+      },
+      currentUserId,
+    );
+
+    this.logger.log(result);
+
+    return result as unknown as TExtendedTodo;
   }
 
   async findWorkspaceTodosInfo(workspaceId: string): Promise<TTodoCountInfo> {
@@ -89,6 +121,8 @@ export class TodoService {
   async findAll(
     query: FindTodoQueryParamsDto,
   ): Promise<IItemsResponse<TExtendedTodo>> {
+    this.logger.log(query);
+
     const deadlineFilter = query.deadline
       ? {
           gte: new Date(new Date(query.deadline).setHours(0, 0, 0, 0)),
@@ -96,17 +130,31 @@ export class TodoService {
         }
       : undefined;
 
+    const isMyDayRequest = query.isMyToday && deadlineFilter;
+
+    this.logger.log(isMyDayRequest);
+
+    const where: Prisma.TodoWhereInput = {
+      ...(query.assignedUserId && { assigneeId: query.assignedUserId }),
+      ...(query.workspaceId && { workspaceId: query.workspaceId }),
+      ...(query.todoGroupId && { todoGroupId: query.todoGroupId }),
+      ...(query.priority && { priority: query.priority }),
+      ...(query.status && { status: query.status }),
+
+      ...(isMyDayRequest
+        ? {
+            OR: [{ isMyToday: true }, { deadline: deadlineFilter }],
+          }
+        : {
+            ...(query.isMyToday && { isMyToday: query.isMyToday }),
+            ...(deadlineFilter && { deadline: deadlineFilter }),
+          }),
+    };
+
+    this.logger.log(where)
+
     const todos = (await this.todoRepository.findMany({
-      where: {
-        ...(query.workspaceId && { workspaceId: query.workspaceId }),
-        ...(query.assignedUserId && { userId: query.assignedUserId }),
-        ...(query.todoGroupId && { todoGroupId: query.todoGroupId }),
-        ...(query.planned && { deadline: { not: null } }),
-        ...(deadlineFilter && { deadline: deadlineFilter }),
-        ...(query.priority && { priority: query.priority }),
-        ...(query.status && { status: query.status }),
-        ...(query.isMyToday && { isMyToday: query.isMyToday }),
-      },
+      where,
       ...(query.cursor && { cursor: { id: query.cursor }, skip: 1 }),
       take: query.limit + 1,
       orderBy: { createdAt: "desc" },
@@ -123,6 +171,15 @@ export class TodoService {
         todoGroup: true,
         deadline: true,
         user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            avatarUrl: true,
+          },
+        },
+        assignee: {
           select: {
             id: true,
             firstName: true,
@@ -157,6 +214,7 @@ export class TodoService {
     userId: string,
     query: FindMyDayDto,
   ): Promise<IItemsResponse<TExtendedTodo>> {
-    return await this.findAll({ ...query, assignedUserId: userId });
+
+    return await this.findAll({ ...query, isMyToday: true, assignedUserId: userId });
   }
 }

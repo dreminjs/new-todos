@@ -21,7 +21,7 @@ import {
 import { Todo } from "api/generated/prisma/client.js";
 import { FindTodoQueryParamsDto } from "./dto/todo.dto.js";
 import { CurrentUser } from "../../user/decorators/user.decorator.js";
-import { extendedTodoSchema, IItemsResponse, TExtendedTodo } from "types";
+import { IItemsResponse, TExtendedTodo } from "types";
 import { IsTodoOnwerGuard } from "./isTodoOwner.guard.js";
 
 @UseGuards(AccessTokenGuard)
@@ -29,19 +29,19 @@ import { IsTodoOnwerGuard } from "./isTodoOwner.guard.js";
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
   private logger = new Logger(TodoController.name);
-  @Post("my")
+
+  @Post()
   async createOne(
     @Body() dto: CreateTodoDto,
-    @CurrentUser("id") userId: string,
+    @CurrentUser("id") currentUserId: string,
   ): Promise<TExtendedTodo> {
-    return await this.todoService.createOne(dto, userId);
+    return await this.todoService.createOne(dto, currentUserId);
   }
 
   @Get()
   async findAll(
     @Query() query: FindTodoQueryParamsDto,
   ): Promise<IItemsResponse<TExtendedTodo>> {
-    this.logger.log(query);
     return await this.todoService.findAll(query);
   }
 

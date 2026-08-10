@@ -61,8 +61,6 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
     onClose();
   });
 
-  const { data } = useGetParticipants({ enable: showAssignee });
-
   return (
     <Modal onClose={onClose} isOpen={isOpen} title="Edit Todo">
       <form onSubmit={handleSubmit(mutate)} className={styles.todoForm}>
@@ -101,7 +99,6 @@ export const EditTodoModal: FC<TEditTodoModalProps> = ({
               value={field.value}
               onChange={field.onChange}
               name={field.name}
-              register={register}
               label={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
               options={TODO_PRIORITY_OPTIONS}
               className={styles.selectPriority}

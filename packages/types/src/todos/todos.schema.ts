@@ -25,17 +25,20 @@ export const todoSchema = z.object({
   workspaceId: z.uuid().nullable().optional(),
   todoGroupId: z.uuid().nullable().optional(),
   deadline: z.date().nullable().optional(),
+  assigneeId: z.string().nullable().optional(),
 });
 
 export const extendedTodoSchema = todoSchema
   .omit({
     workspaceId: true,
     todoGroupId: true,
+    assigneeId: true
   })
   .extend({
     workspace: workspaceSchema.nullable(),
     todoGroup: todoGroupSchema.nullable(),
-    user: userSchema.nullable()
+    user: userSchema.nullable(),
+    assignee: userSchema.nullable(),
   });
 
 export const findTodosSchema = z.object({

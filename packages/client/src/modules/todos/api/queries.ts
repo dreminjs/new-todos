@@ -70,7 +70,7 @@ export const useCreateTodo = ({
                   } as TTodo,
                   ...firstPage.items,
                 ],
-                total: firstPage.total + 1,
+                total: firstPage.items.length + 1,
               },
               ...restPages,
             ],
@@ -119,7 +119,7 @@ export const useCreateTodo = ({
   });
 
   const handleMutate = (data: TCreateTodoForm) => {
-    mutate({ ...data, ...todoContext, id: crypto.randomUUID() });
+    mutate({ ...data, ...todoContext, id: crypto.randomUUID(),  });
   };
 
   return {
@@ -205,7 +205,7 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
             pages: old.pages.map((page) => ({
               ...page,
               items: page.items.filter((t) => t.id !== todoId),
-              total: page.total - 1,
+              total: page.items.length - 1,
             })),
           };
         },
@@ -225,7 +225,7 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
                   { ...movedTodo, status: newStatus } as TTodo,
                   ...firstPage.items,
                 ],
-                total: firstPage.total + 1,
+                total: firstPage.items.length + 1,
               },
               ...restPages,
             ],
@@ -274,7 +274,7 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
             pages: old.pages.map((page) => ({
               ...page,
               items: page.items.filter((t) => t.id !== newTodo.id),
-              total: page.total - 1,
+              total: page.items.length - 1,
             })),
           };
         },
@@ -294,7 +294,7 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
                   { ...movedTodo, status: newTodo.status } as TTodo,
                   ...firstPage.items,
                 ],
-                total: firstPage.total + 1,
+                total: firstPage.items.length + 1,
               },
               ...restPages,
             ],
@@ -340,7 +340,7 @@ export const useUpdateTodo = (
         message: "Todo updated successfully",
         type: "success",
       });
-      // console.log({ newTodo });
+
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         getTodosQueryKey(queryFilter),
         (old) => {
