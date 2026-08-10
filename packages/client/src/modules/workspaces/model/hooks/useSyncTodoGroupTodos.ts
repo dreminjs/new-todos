@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import { useSocket } from "../../../../app/model/useSocket";
 import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
-import type { IItemsResponse, TExtendedTodo, TTodo } from "types";
+import type {
+  IItemsResponse,
+  TExtendedTodo,
+  TTodo,
+  WsTodoDeletedPayload,
+} from "types";
 import { getTodosQueryKey } from "../../../todos/model/todo.helper";
 
 export const useSyncWorkspaceTodoGroupTodos = ({
@@ -40,6 +45,28 @@ export const useSyncWorkspaceTodoGroupTodos = ({
             pages: oldData.pages.map((page) => ({
               ...page,
               items: [data, ...page.items],
+            })),
+          };
+        },
+      );
+    });
+
+    socket.on("todos:delete", (data: WsTodoDeletedPayload) => {
+      const queryKey = getTodosQueryKey({
+        todoGroupId: data.todoGroupId,
+        workspaceId: data.workspaceId,
+        status: data.status,
+        limit: 10,
+      });
+      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
+        queryKey,
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== data.todoId),
             })),
           };
         },

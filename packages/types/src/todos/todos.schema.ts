@@ -18,7 +18,7 @@ export const todoSchema = z.object({
   title: z.string().min(2),
   description: z.string(),
   priority: prioritySchema.optional().nullable(),
-  status: statusSchema.nullable(),
+  status: statusSchema.optional(),
   isMyToday: z.boolean(),
   createdAt: z.date(),
   updatedAt: z.date(),

@@ -12,17 +12,21 @@ export class TodoRepository {
     return this.prisma.todo.create(args);
   }
 
-  async createExtendedTask(dto: CreateTodoDto, currentUserId: string) {
+  async createExtendedTask(
+    dto: CreateTodoDto,
+    currentUserId: string,
+  ): Promise<TExtendedTodo> {
     const { assigneeId, ...todoData } = dto;
 
-    return await this.create({
+    return (await this.create({
       data: {
         ...todoData,
         userId: currentUserId,
         assigneeId: assigneeId ?? currentUserId,
+        status: todoData.status ?? "PENDING",
       },
       select: EXTENDED_TODO_SELECT,
-    });
+    })) as unknown as TExtendedTodo;
   }
 
   async findMany(args: Prisma.TodoFindManyArgs) {

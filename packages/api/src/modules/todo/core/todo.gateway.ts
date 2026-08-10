@@ -7,7 +7,7 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import type { TExtendedTodo } from "types";
+import type { TExtendedTodo, WsTodoDeletedPayload } from "types";
 import { JoinGroupTodosRoomDto } from "./dto/todo.dto.js";
 import { Logger, UseGuards } from "@nestjs/common";
 import { WsAccessTokenGuard } from "../../token/guards/ws-access-token.guard.js";
@@ -57,5 +57,21 @@ export class TodoGateway
     return this.server
       .to(`todos-group-${where.todoGroupId}:workspace-${where.workspaceId}`)
       .emit("todos", payload);
+  }
+
+  @SubscribeMessage("todos:delete")
+  async handleMeessageTodoDeleted(
+    client: Socket,
+    payload: WsTodoDeletedPayload,
+  ) {
+    return client
+      .to(`todos-group-${payload.todoGroupId}:workspace-${payload.workspaceId}`)
+      .emit("todos:delete", payload);
+  }
+
+  async handleTodoDeleted(payload: WsTodoDeletedPayload) {
+    return this.server
+      .to(`todos-group-${payload.todoGroupId}:workspace-${payload.workspaceId}`)
+      .emit("todos:delete", payload);
   }
 }

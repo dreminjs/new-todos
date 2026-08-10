@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   Logger,
+  NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import {
@@ -208,7 +209,19 @@ export class TodoService {
   }
 
   async deleteOne(id: string): Promise<Todo> {
-    return this.todoRepository.delete(id);
+    const deletedTodo = await this.todoRepository.delete(id);
+    if (!deletedTodo) {
+      throw new NotFoundException(`Todo not found`);
+    }
+    if (deletedTodo.todoGroupId && deletedTodo.workspaceId) {
+      await this.todoGateway.handleTodoDeleted({
+        workspaceId: deletedTodo.workspaceId,
+        todoGroupId: deletedTodo.todoGroupId,
+        status: deletedTodo.status,
+        todoId: deletedTodo.id
+      })
+    }
+    return deletedTodo;
   }
 
   async findMyDay(

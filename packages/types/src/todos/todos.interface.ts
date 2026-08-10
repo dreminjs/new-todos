@@ -26,3 +26,9 @@ export type TUpdateTodoStatus = z.infer<typeof updateTodoStatusSchema>;
 export type TExtendedTodo = z.infer<typeof extendedTodoSchema>;
 export type TTodoCountInfo = z.infer<typeof todoCountInfoSchema>;
 export type TJoinGroupTodosRoom = z.infer<typeof joinGroupTodosRoomSchema>;
+export interface WsTodoDeletedPayload {
+  todoId: string;
+  todoGroupId: string;
+  workspaceId: string;
+  status: TTodoStatus;
+}

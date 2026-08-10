@@ -10,7 +10,7 @@ model Todo {
   workspaceId String?
   workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-  status      Status?
+  status      Status    @default(PENDING)
   todoGroupId String?
   todoGroup   TodoGroup? @relation(fields: [todoGroupId], references: [id])
 
