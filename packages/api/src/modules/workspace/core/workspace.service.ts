@@ -63,7 +63,7 @@ export class WorkspaceService {
       });
 
     const deleteTodosQuery = this.todoService.deleteMany({
-      where: { workspaceId, todoParticipants: { some: { userId } } },
+      where: { workspaceId, userId },
     });
 
     await Promise.all([deleteParticipantsQuery, deleteTodosQuery]);

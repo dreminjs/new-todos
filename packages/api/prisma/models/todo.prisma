@@ -13,16 +13,9 @@ model Todo {
   subTodos         SubTodo[]
   todoGroup        TodoGroup?             @relation(fields: [todoGroupId], references: [id])
   workspace        Workspace?             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  todoParticipants TodoParticipant[]
   tags             WorkspaceTodoTag[]
-}
-
-model TodoParticipant {
-  id                String                @id @default(uuid())
-  todoId            String
-  userId            String
-  todo              Todo                  @relation(fields: [todoId], references: [id], onDelete: Cascade)
-  user              User                  @relation(fields: [userId], references: [id])
+  userId           String
+  user             User                   @relation(fields: [userId], references: [id])
 }
 
 model SubTodo {

@@ -18,19 +18,8 @@ export class IsTodoOnwerGuard implements CanActivate {
     const todoId = request.params.id;
     const currentTodo = await this.todoService.findOne({
       where: { id: todoId },
-      select: {
-        todoParticipants: {
-          select: {
-            user: {
-              select: {
-                id: true,
-              },
-            },
-          },
-        },
-      },
+
     })
-    // return currentTodo?.todoParticipants.some((p) => p.user.id === userId);
-    return true
+    return currentTodo?.userId === userId;
   }
 }

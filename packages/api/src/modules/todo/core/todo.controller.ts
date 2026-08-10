@@ -34,53 +34,15 @@ export class TodoController {
     @Body() dto: CreateTodoDto,
     @CurrentUser("id") userId: string,
   ): Promise<TExtendedTodo> {
-    const createdTodo = await this.todoService.createOne({
-      data: {
-        ...dto,
-        todoParticipants: {
-          create: {
-            userId,
-          },
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        status: true,
-        isMyToday: true,
-        createdAt: true,
-        updatedAt: true,
-        workspace: true,
-        todoGroup: true,
-        todoParticipants: {
-          select: {
-            id: true,
-            todoId: true,
-            user: {
-              select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                email: true,
-                avatarUrl: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    return extendedTodoSchema.parse(createdTodo);
+    return await this.todoService.createOne(dto, userId);
   }
 
   @Get()
   async findAll(
-    @CurrentUser("id") userId: string,
     @Query() query: FindTodoQueryParamsDto,
   ): Promise<IItemsResponse<TExtendedTodo>> {
     this.logger.log(query);
-    return await this.todoService.findAll(userId, query);
+    return await this.todoService.findAll(query);
   }
 
   @Patch("/:id/update-status")

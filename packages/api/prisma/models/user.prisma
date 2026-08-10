@@ -10,11 +10,11 @@ model User {
   notifcationsRoomId    String?
   chatMessages          ChatMessage[]
   notifications         Notification[]
-  todoParticipants      TodoParticipant[]
   token                 Token?
   workspaces            Workspace[]
   workspaceInvitations  WorkspaceInvitation[]
   workspaceParticipants WorkspaceParticipant[]
   workspaceRequests     WorkspaceRequest[]
+  todos                 Todo[]
   todoGroupParticipants TodoGroupParticipant[]
 }

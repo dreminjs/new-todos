@@ -19,6 +19,7 @@ export const findMyDayTodosSchema = findTodosSchema.pick({
   deadline: true,
   limit: true,
   status: true,
+  cursor: true,
 });
 
 export const todoCountInfoSchema = z.object({
