@@ -60,4 +60,5 @@ export const updateTodoStatusSchema = z.object({
 
 export const joinGroupTodosRoomSchema = z.object({
   todoGroupId: z.uuid(),
+  workspaceId: z.uuid(),
 });

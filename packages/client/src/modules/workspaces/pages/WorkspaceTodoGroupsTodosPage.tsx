@@ -1,16 +1,22 @@
 import { useParams } from "react-router";
 import { TodoKanbanBoard } from "../../todos";
-import { useConnectWorkspaceTodoGroupRoom } from "../model/hooks/useConnectWorkspaceTodoGroupRoom";
+import { useSyncWorkspaceTodoGroupTodos } from "../model/hooks/useSyncTodoGroupTodos";
 
 export const WorkspaceTodoGroupsTodosPage = () => {
-  useConnectWorkspaceTodoGroupRoom();
-  const { todoGroupId, workspaceId } = useParams();
+  const params = useParams();
+  useSyncWorkspaceTodoGroupTodos({
+    todoGroupId: params.todoGroupId,
+    workspaceId: params.workspaceId,
+  });
 
   return (
     <>
       <TodoKanbanBoard
-        dtoContext={{ todoGroupId, workspaceId }}
-        queryFilters={{ todoGroupId, limit: 10 }}
+        dtoContext={{
+          todoGroupId: params.todoGroupId,
+          workspaceId: params.workspaceId,
+        }}
+        queryFilters={{ workspaceId: params.workspaceId, todoGroupId: params.todoGroupId, limit: 10 }}
       />
     </>
   );

@@ -19,8 +19,6 @@ export class TokenService {
     private readonly configService: ConfigService,
   ) {}
 
-  private logger = new Logger(TokenService.name);
-
   public async deleteOne(args: Prisma.TokenDeleteArgs): Promise<Token> {
     return await this.prisma.token.delete(args);
   }

@@ -119,7 +119,7 @@ export const useCreateTodo = ({
   });
 
   const handleMutate = (data: TCreateTodoForm) => {
-    mutate({ ...data, ...todoContext, id: crypto.randomUUID(),  });
+    mutate({ ...data, ...todoContext, id: crypto.randomUUID() });
   };
 
   return {
@@ -129,6 +129,7 @@ export const useCreateTodo = ({
 };
 
 export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
+
   return useInfiniteQuery({
     queryKey: getTodosQueryKey(query),
     queryFn: ({ pageParam }) => findAll(query, endpoint, pageParam),

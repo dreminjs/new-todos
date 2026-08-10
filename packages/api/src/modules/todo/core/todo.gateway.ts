@@ -4,18 +4,25 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
+  WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import type { TExtendedTodo } from "types";
 import { JoinGroupTodosRoomDto } from "./dto/todo.dto.js";
-import { Logger } from "@nestjs/common";
-import { wsAuthMiddleware } from "../../token/helpers/ws-auth-middleware.js";
-
+import { Logger, UseGuards } from "@nestjs/common";
+import { WsAccessTokenGuard } from "../../token/guards/ws-access-token.guard.js";
+import { WsAuthMiddleware } from "../../token/ws-auth.middleware.js";
+@UseGuards(WsAccessTokenGuard)
 @WebSocketGateway()
 export class TodoGateway
   implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
+  constructor(private readonly wsAuthMiddleware: WsAuthMiddleware) {}
+
   private logger = new Logger(TodoGateway.name);
+
+  @WebSocketServer()
+  server: Server;
 
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`client conntected`);
@@ -24,19 +31,31 @@ export class TodoGateway
     this.logger.log(`client disconnected`);
   }
   afterInit(server: Server) {
-    server.use(wsAuthMiddleware);
+    server.use(this.wsAuthMiddleware.use);
   }
 
   @SubscribeMessage("join-group-todos-room")
   handleJoinGroupTodosRoom(client: Socket, payload: JoinGroupTodosRoomDto) {
-    const { todoGroupId } = payload;
-    client.join(`group-todos-${todoGroupId}`);
+    const { todoGroupId, workspaceId } = payload;
+    this.logger.log(`${client.id} - ${todoGroupId}, ${workspaceId}`);
+    client.join(`todos-group-${todoGroupId}:workspace-${workspaceId}`);
   }
 
   @SubscribeMessage("todos")
   handleMessage(client: Socket, payload: TExtendedTodo) {
     return client
-      .to(`group-todos-${payload.todoGroup?.id}`)
+      .to(
+        `todos-group-${payload.todoGroup?.id}:workspace-${payload.workspace?.id}`,
+      )
+      .emit("todos", payload);
+  }
+
+  async handleTodoAdded(
+    where: { todoGroupId: string; workspaceId: string },
+    payload: TExtendedTodo,
+  ) {
+    return this.server
+      .to(`todos-group-${where.todoGroupId}:workspace-${where.workspaceId}`)
       .emit("todos", payload);
   }
 }

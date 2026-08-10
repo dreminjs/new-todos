@@ -205,8 +205,6 @@ export class WorkspaceService {
       tasks: { id: string }[];
     })[];
 
-    this.logger.log(todoGroups);
-
     return todoGroups.map(({ todoGroupParticipants, tasks, ...group }) => ({
       ...group,
       hasAccess: todoGroupParticipants.length > 0,

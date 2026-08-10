@@ -13,6 +13,7 @@ import { CurrentWsUser } from "../user/decorators/user.ws.decorator.js";
 import { TokenService } from "../token/token.service.js";
 import { wsAuthMiddleware } from "../token/helpers/ws-auth-middleware.js";
 import type { TCreateNotification, TNotification } from "types";
+import { WsAuthMiddleware } from "../token/ws-auth.middleware.js";
 @UseGuards(WsAccessTokenGuard)
 @WebSocketGateway({
   cors: {
@@ -23,7 +24,10 @@ import type { TCreateNotification, TNotification } from "types";
 export class NotifactionsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private readonly tokenService: TokenService) {}
+  constructor(
+    private readonly tokenService: TokenService,
+    private readonly wsAuthMiddleware: WsAuthMiddleware,
+  ) {}
   private logger = new Logger(NotifactionsGateway.name);
 
   @WebSocketServer()
@@ -41,7 +45,7 @@ export class NotifactionsGateway
   }
 
   afterInit(server: Server) {
-    server.use(wsAuthMiddleware);
+    server.use(this.wsAuthMiddleware.use);
   }
 
   handleConnection(client: Socket) {

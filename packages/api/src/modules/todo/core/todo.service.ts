@@ -17,12 +17,14 @@ import { IItemsResponse, TExtendedTodo, TTodo, TTodoStatus } from "types";
 import { buildInfinityScrollResponse } from "../../../libs/buildInfinityScrollResponse.js";
 import { TodoRepository } from "./todo.repository.js";
 import { WorkspaceParticipantService } from "../../workspace/sub/workspace-participant/workspace-participant.service.js";
+import { TodoGateway } from "./todo.gateway.js";
 
 @Injectable()
 export class TodoService {
   constructor(
     private readonly todoRepository: TodoRepository,
     private readonly workspaceParticipantService: WorkspaceParticipantService,
+    private readonly todoGateway: TodoGateway,
   ) {}
 
   private logger = new Logger(TodoService.name);
@@ -73,18 +75,23 @@ export class TodoService {
       }
     }
 
-    const result = await this.todoRepository.createExtendedTask(
+    const result = (await this.todoRepository.createExtendedTask(
       {
         ...todoData,
         workspaceId,
         assigneeId: targetAssigneeId,
       },
       currentUserId,
-    );
+    )) as unknown as TExtendedTodo;
 
-    this.logger.log(result);
+    if (result.todoGroup?.id && result.workspace?.id) {
+      await this.todoGateway.handleTodoAdded(
+        { todoGroupId: result.todoGroup.id, workspaceId: result.workspace.id },
+        result,
+      );
+    }
 
-    return result as unknown as TExtendedTodo;
+    return result;
   }
 
   async findWorkspaceTodosInfo(workspaceId: string): Promise<TTodoCountInfo> {
@@ -121,8 +128,6 @@ export class TodoService {
   async findAll(
     query: FindTodoQueryParamsDto,
   ): Promise<IItemsResponse<TExtendedTodo>> {
-    this.logger.log(query);
-
     const deadlineFilter = query.deadline
       ? {
           gte: new Date(new Date(query.deadline).setHours(0, 0, 0, 0)),
@@ -131,8 +136,6 @@ export class TodoService {
       : undefined;
 
     const isMyDayRequest = query.isMyToday && deadlineFilter;
-
-    this.logger.log(isMyDayRequest);
 
     const where: Prisma.TodoWhereInput = {
       ...(query.assignedUserId && { assigneeId: query.assignedUserId }),
@@ -150,8 +153,6 @@ export class TodoService {
             ...(deadlineFilter && { deadline: deadlineFilter }),
           }),
     };
-
-    this.logger.log(where)
 
     const todos = (await this.todoRepository.findMany({
       where,
@@ -214,7 +215,10 @@ export class TodoService {
     userId: string,
     query: FindMyDayDto,
   ): Promise<IItemsResponse<TExtendedTodo>> {
-
-    return await this.findAll({ ...query, isMyToday: true, assignedUserId: userId });
+    return await this.findAll({
+      ...query,
+      isMyToday: true,
+      assignedUserId: userId,
+    });
   }
 }
