@@ -218,4 +218,17 @@ export class WorkspaceService {
       countOfActiveTodos: tasks.length,
     }));
   }
+
+  async findMyWorkspaces(userId: string, take: number): Promise<TWorkspace[]> {
+    return this.workspaceRepository.findMany({
+      where: {
+        participants: {
+          some: {
+            userId,
+          },
+        },
+      },
+      take,
+    });
+  }
 }

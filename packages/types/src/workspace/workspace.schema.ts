@@ -91,5 +91,5 @@ export const workspaceParticipantSchema = z.object({
 //   }),
 
 export const workspaceQueryParamsSchema = z.object({
-  take: z.coerce.number().optional(),
+  take: z.coerce.number(),
 });

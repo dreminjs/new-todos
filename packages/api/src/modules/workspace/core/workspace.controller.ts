@@ -46,16 +46,7 @@ export class WorkspaceController {
     @CurrentUser("id") userId: string,
     @Query() query: WorkspaceQueryParamsDto,
   ): Promise<TWorkspace[]> {
-    return this.workspaceService.findMany({
-      where: {
-        participants: {
-          some: {
-            userId,
-          },
-        },
-      },
-      take: query.take,
-    });
+    return this.workspaceService.findMyWorkspaces(userId, query.take);
   }
 
   @UseGuards(IsWorkspaceOwnerGuard)
@@ -87,6 +78,9 @@ export class WorkspaceController {
     @Param("workspaceId") workspaceId: string,
     @CurrentUser("id") userId: string,
   ): Promise<TTodoGroupResponse[]> {
-    return await this.workspaceService.findWorkspaceTodoGroups(workspaceId, userId);
+    return await this.workspaceService.findWorkspaceTodoGroups(
+      workspaceId,
+      userId,
+    );
   }
 }
