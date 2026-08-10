@@ -63,12 +63,12 @@ export class TodoController {
                 firstName: true,
                 lastName: true,
                 email: true,
-                avatarUrl: true
+                avatarUrl: true,
               },
             },
           },
         },
-      }
+      },
     });
 
     return extendedTodoSchema.parse(createdTodo);
@@ -111,11 +111,7 @@ export class TodoController {
 
   @UseGuards(IsTodoOnwerGuard)
   @Delete(":id")
-  async deleteOne(
-    @Param("id") todoId: string,
-  ): Promise<void> {
+  async deleteOne(@Param("id") todoId: string): Promise<void> {
     await this.todoService.deleteOne(todoId);
   }
-
-
 }
