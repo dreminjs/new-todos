@@ -1,0 +1,20 @@
+model User {
+  id                    String                 @id @default(uuid())
+  firstName             String
+  lastName              String
+  avatarUrl             String?
+  createdAt             DateTime               @default(now())
+  email                 String                 @unique
+  hashedPassword        String
+  emailConfirmed        Boolean                @default(false)
+  notifcationsRoomId    String?
+  chatMessages          ChatMessage[]
+  notifications         Notification[]
+  todoParticipants      TodoParticipant[]
+  token                 Token?
+  workspaces            Workspace[]
+  workspaceInvitations  WorkspaceInvitation[]
+  workspaceParticipants WorkspaceParticipant[]
+  workspaceRequests     WorkspaceRequest[]
+  todoGroupParticipants TodoGroupParticipant[]
+}

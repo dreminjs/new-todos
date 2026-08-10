@@ -1,0 +1,20 @@
+model Notification {
+  id                    String               @id @default(uuid())
+  message               String
+  read                  Boolean              @default(false)
+  createdAt             DateTime             @default(now())
+  userId                String
+  workspaceInvitationId String?              @unique
+  workspaceRequestId    String?              @unique
+  workspaceId           String?              @unique
+  user                  User                 @relation(fields: [userId], references: [id])
+  workspaceInvitation   WorkspaceInvitation? @relation(fields: [workspaceInvitationId], references: [id], onDelete: Cascade)
+  workspaceRequest      WorkspaceRequest?    @relation(fields: [workspaceRequestId], references: [id], onDelete: Cascade)
+  workspace             Workspace?           @relation(fields: [workspaceId], references:[id], onDelete: Cascade)
+  @@index([id, createdAt])
+}
+
+enum NotificationType {
+  CHAT_MESSAGE
+  WORKSPACE_INVITE
+}

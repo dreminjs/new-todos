@@ -1,0 +1,81 @@
+model Workspace {
+  id                   String                     @id @default(uuid())
+  name                 String
+  // code                 String
+  ownerId              String
+  description          String
+  chats                Chat[]
+  todos                Todo[]
+  owner                User                       @relation(fields: [ownerId], references: [id])
+  notifications        Notification[]
+  workspaceInvitations WorkspaceInvitation[]
+  participants         WorkspaceParticipant[]
+  workspaceRequests    WorkspaceRequest[]
+  roles                WorkspaceStatus[]
+  tags                 WorkspaceTag[]
+  todoGroups           TodoGroup[]
+}
+
+model WorkspaceRequest {
+  id             String        @id @default(uuid())
+  workspaceId    String
+  userId         String
+  createdAt      DateTime      @default(now())
+  notificationId String?       @unique
+  notification   Notification?
+  user           User           @relation(fields: [userId], references: [id])
+  workspace      Workspace      @relation(fields: [workspaceId], references: [id])
+}
+
+model WorkspaceInvitation {
+  id             String         @id @default(uuid())
+  workspaceId    String
+  userId         String
+  createdAt      DateTime      @default(now())
+  notificationId String?        @unique
+  notification   Notification?
+  user           User           @relation(fields: [userId], references: [id])
+  workspace      Workspace      @relation(fields: [workspaceId], references: [id])
+}
+
+model WorkspaceParticipant {
+  id             String              @id @default(uuid())
+  workspaceId    String
+  userId         String
+  role           WorkspaceUserRole   @default(MEMBER)
+  statusId       String?
+  status         WorkspaceStatus?    @relation(fields: [statusId], references: [id])
+  user           User                @relation(fields: [userId], references: [id])
+  workspace      Workspace           @relation(fields: [workspaceId], references: [id])
+}
+
+model WorkspaceStatus {
+  id                      String                 @id @default(uuid())
+  workspaceId             String
+  status                  String
+  WorkspaceParticipant    WorkspaceParticipant[]
+  workspace               Workspace              @relation(fields: [workspaceId], references: [id])
+}
+
+model WorkspaceTag {
+  id          String             @id @default(uuid())
+  workspaceId String
+  tag         String
+  workspace   Workspace          @relation(fields: [workspaceId], references: [id])
+  todos       WorkspaceTodoTag[]
+}
+
+model WorkspaceTodoTag {
+  id             String       @id @default(uuid())
+  tag            String
+  todoId         String
+  workspaceTagId String
+  todo           Todo         @relation(fields: [todoId], references: [id])
+  workspaceTag   WorkspaceTag @relation(fields: [workspaceTagId], references: [id])
+}
+
+enum WorkspaceUserRole {
+  OWNER
+  MEMBER
+  MANAGER
+}
