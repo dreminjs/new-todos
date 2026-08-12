@@ -4,7 +4,7 @@ import { TodoGroupKanbanBoardHeader } from "../ui/TodoKanbanBoard/TodoGroupKanba
 import { KanbanPageWrapper } from "../ui/KanbanPageWrapper/KanbanPageWrapper";
 import { useGetTodoGroup } from "../../todo-groups";
 import { GlobalLoadingSpinner } from "../../../shared";
-import type { TFindAllQuery } from "../model/todo.interface";
+import type { TFindAllQuery } from "../model/todo.types";
 
 const TodosGroupPage = () => {
   const { groupId } = useParams();

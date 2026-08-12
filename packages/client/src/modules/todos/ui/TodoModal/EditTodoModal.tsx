@@ -14,7 +14,7 @@ import type {
   ICreateTodoContext,
   TCreateTodo,
   TFindAllQuery,
-} from "../../model/todo.interface";
+} from "../../model/todo.types";
 import {
   COLOR_TODO_PRIORITY,
   TODO_PRIORITY_OPTIONS,

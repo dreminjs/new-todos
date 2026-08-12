@@ -2,7 +2,7 @@ import { createZodDto } from "nestjs-zod";
 import {
   findTodosSchema,
   joinGroupTodosRoomSchema,
-  updateTodoStatusSchema,
+  updateTodoStatusBodySchema,
 } from "types";
 import {
   createTodoSchema,
@@ -16,7 +16,7 @@ export class CreateTodoDto extends createZodDto(createTodoSchema) {}
 
 export class FindTodoQueryParamsDto extends createZodDto(findTodosSchema) {}
 
-export class UpdateTodoStatusDto extends createZodDto(updateTodoStatusSchema) {}
+export class UpdateTodoStatusBodyDto extends createZodDto(updateTodoStatusBodySchema) {}
 
 export class FindMyDayDto extends createZodDto(findMyDayTodosSchema) {}
 

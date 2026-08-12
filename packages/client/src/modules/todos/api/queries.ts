@@ -19,8 +19,15 @@ import type {
   ICreateTodoContext,
   TCreateTodo,
   TFindAllQuery,
-} from "../model/todo.interface";
-import type { IItemsResponse, TExtendedTodo, TTodo, TTodoStatus } from "types";
+  TUpdateTodoStatusDto,
+} from "../model/todo.types";
+import type {
+  IItemsResponse,
+  TExtendedTodo,
+  TTodo,
+  TTodoStatus,
+  TUpdateTodoStatusBody,
+} from "types";
 import type { DragEndEvent } from "@dnd-kit/react";
 import type { TCreateTodoForm } from "../model/buildTodo.schema";
 
@@ -129,7 +136,6 @@ export const useCreateTodo = ({
 };
 
 export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
-
   return useInfiniteQuery({
     queryKey: getTodosQueryKey(query),
     queryFn: ({ pageParam }) => findAll(query, endpoint, pageParam),
@@ -146,26 +152,29 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
 
   const handleDragEnd = (e: DragEndEvent) => {
     const todoId = e.operation.source?.id.toString().split("_")[1] as string;
-    const newStatus = e.operation.target?.id as TTodoStatus;
+    const status = e.operation.target?.id as TTodoStatus;
     abortControllerRef.current?.abort();
     const controller = new AbortController();
     abortControllerRef.current = controller;
-    mutate({ todoId, newStatus, abortController: abortControllerRef.current });
+    mutate({
+      todoId,
+      status,
+      abortController: abortControllerRef.current,
+    });
   };
 
   const { mutate } = useMutation({
     mutationKey: ["todo", "update", "status"],
     mutationFn: ({
       todoId,
-      newStatus,
+      status,
       abortController,
-    }: {
-      todoId: string;
-      newStatus: TTodoStatus;
+    }: TUpdateTodoStatusBody & {
       abortController: AbortController;
-    }) => updateStatus(todoId, { status: newStatus }, abortController),
+      todoId: string;
+    }) => updateStatus(todoId, { status }, abortController),
 
-    onMutate: async ({ todoId, newStatus }) => {
+    onMutate: async ({ todoId, status }) => {
       await client.cancelQueries({ queryKey: ["todos"] });
 
       const previousData = client.getQueriesData<
@@ -194,7 +203,7 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
 
       const targetQueryKey = getTodosQueryKey({
         ...query,
-        status: newStatus,
+        status,
       } as TFindAllQuery);
 
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
@@ -222,10 +231,7 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
             pages: [
               {
                 ...firstPage,
-                items: [
-                  { ...movedTodo, status: newStatus } as TTodo,
-                  ...firstPage.items,
-                ],
+                items: [{ ...movedTodo, status } as TTodo, ...firstPage.items],
                 total: firstPage.items.length + 1,
               },
               ...restPages,

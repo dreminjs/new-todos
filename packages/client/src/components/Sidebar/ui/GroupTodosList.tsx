@@ -30,10 +30,10 @@ export const GroupTodosList = () => {
             <SidebarMenuItem
               key={el.id}
               label={el.name}
-              to={`/todos/group/${el.id}`}
+              to={`/todo-groups/${el.id}/todos`}
             />
           ))}
-        </ul>
+        </ul>2
       </CustomAccordion>
       {isCreateTodoGroupOpen && (
         <CreateTodoGroupModal

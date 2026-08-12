@@ -45,10 +45,14 @@ export class TodoRepository {
     return this.prisma.todo.deleteMany(args);
   }
 
-  async update(id: string, data: Prisma.TodoUpdateInput) {
+  async update(
+    id: string,
+    data: Prisma.TodoUpdateInput,
+  ): Promise<TExtendedTodo> {
     return this.prisma.todo.update({
       where: { id },
       data,
+      select: EXTENDED_TODO_SELECT,
     });
   }
 
@@ -56,7 +60,8 @@ export class TodoRepository {
     return this.prisma.todo.update({
       where: { id },
       data: { status },
-    });
+      select: EXTENDED_TODO_SELECT,
+    }) as unknown as TExtendedTodo;
   }
 
   async delete(id: string) {

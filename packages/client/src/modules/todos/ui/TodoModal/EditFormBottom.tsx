@@ -3,7 +3,7 @@ import type { FC } from "react";
 import { FormBottom } from "../../../../shared";
 import { Button } from "@chakra-ui/react";
 import { useDeleteTodo } from "../../api/queries";
-import type { TFindAllQuery } from "../../model/todo.interface";
+import type { TFindAllQuery } from "../../model/todo.types";
 
 type TEditTodoFormBottomProps = {
   onClose: () => void;

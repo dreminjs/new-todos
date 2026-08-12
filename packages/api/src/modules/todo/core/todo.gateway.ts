@@ -41,11 +41,11 @@ export class TodoGateway
     client.join(`todos-group-${todoGroupId}:workspace-${workspaceId}`);
   }
 
-  @SubscribeMessage("todos")
+  @SubscribeMessage("todos:created")
   handleMessage(client: Socket, payload: TExtendedTodo) {
     return client
       .to(
-        `todos-group-${payload.todoGroup?.id}:workspace-${payload.workspace?.id}`,
+        `todos-group-${payload.todoGroup!.id}:workspace-${payload.workspace!.id}`,
       )
       .emit("todos", payload);
   }
@@ -57,6 +57,23 @@ export class TodoGateway
     return this.server
       .to(`todos-group-${where.todoGroupId}:workspace-${where.workspaceId}`)
       .emit("todos", payload);
+  }
+
+  @SubscribeMessage("todos:updated")
+  handleMessageTodoUpdated(client: Socket, payload: TExtendedTodo) {
+    return client
+      .to(
+        `todos-group-${payload.todoGroup!.id}:workspace-${payload.workspace!.id}`,
+      )
+      .emit("todos:updated", payload);
+  }
+
+  handleTodoUpdated(payload: TExtendedTodo) {
+    return this.server
+      .to(
+        `todos-group-${payload.todoGroup!.id}:workspace-${payload.workspace!.id}`,
+      )
+      .emit("todos:updated", payload);
   }
 
   @SubscribeMessage("todos:delete")
@@ -73,5 +90,22 @@ export class TodoGateway
     return this.server
       .to(`todos-group-${payload.todoGroupId}:workspace-${payload.workspaceId}`)
       .emit("todos:delete", payload);
+  }
+
+  @SubscribeMessage("todos:status-changed")
+  async handleMessageTodoStatusChanged(client: Socket, payload: TExtendedTodo) {
+    return client
+      .to(
+        `todos-group-${payload.todoGroup!.id}:workspace-${payload.workspace!.id}`,
+      )
+      .emit("todos:status-changed", payload);
+  }
+
+  handleTodoStatusChanged(payload: TExtendedTodo) {
+    return this.server
+      .to(
+        `todos-group-${payload.todoGroup!.id}:workspace-${payload.workspace!.id}`,
+      )
+      .emit("todos:status-changed", payload);
   }
 }

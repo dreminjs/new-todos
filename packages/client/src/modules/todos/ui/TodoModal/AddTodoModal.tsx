@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type {
   ICreateTodoContext,
   TFindAllQuery,
-} from "../../model/todo.interface";
+} from "../../model/todo.types";
 import {
   COLOR_TODO_PRIORITY,
   TODO_PRIORITY_OPTIONS,

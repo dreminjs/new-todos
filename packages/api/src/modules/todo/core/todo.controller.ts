@@ -16,7 +16,7 @@ import { AccessTokenGuard } from "../../token/guards/accees-token.guard.js";
 import {
   CreateTodoDto,
   FindMyDayDto,
-  UpdateTodoStatusDto,
+  UpdateTodoStatusBodyDto,
 } from "./dto/todo.dto.js";
 import { Todo } from "api/generated/prisma/client.js";
 import { FindTodoQueryParamsDto } from "./dto/todo.dto.js";
@@ -49,9 +49,12 @@ export class TodoController {
   async updateStatus(
     @CurrentUser("id") userId: string,
     @Param("id") todoId: string,
-    @Body() dto: UpdateTodoStatusDto,
-  ): Promise<Todo | null> {
-    return await this.todoService.updateStatus(todoId, dto.status);
+    @Body() dto: UpdateTodoStatusBodyDto,
+  ): Promise<TExtendedTodo | null> {
+    return await this.todoService.updateStatus(todoId, {
+      status: dto.status,
+      userId,
+    });
   }
 
   @Get("my-day")
@@ -67,7 +70,7 @@ export class TodoController {
   async updateOne(
     @Param("id") todoId: string,
     @Body() dto: CreateTodoDto,
-  ): Promise<Todo | null> {
+  ): Promise<TExtendedTodo | null> {
     return await this.todoService.updateOne(todoId, dto);
   }
 

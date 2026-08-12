@@ -4,7 +4,7 @@ import type {
   ICreateTodoContext,
   TCreateTodo,
   TFindAllQuery,
-} from "../model/todo.interface";
+} from "../model/todo.types";
 
 export const createOne = async (
   data: TCreateTodo & ICreateTodoContext,
@@ -52,7 +52,7 @@ export const updateStatus = async (
   ).data;
 };
 
-export const deleteOne = async (todoId: string): Promise<string> => {
-  await instance.delete(`/todos/${todoId}`);
+export const deleteOne = async (todoId: string, abortController?: AbortController): Promise<string> => {
+  await instance.delete(`/todos/${todoId}`, { signal: abortController?.signal });
   return todoId;
 };

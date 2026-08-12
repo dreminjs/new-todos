@@ -176,7 +176,7 @@ export const useAcceptInvitation = () => {
 
       return { previousData: oldNotifications };
     },
-    onSuccess: (dto) => {
+    onSuccess: () => {
       addNotification({
         message: "Invitation accepted successfully",
         type: "success",
@@ -211,7 +211,6 @@ export const useRejectInvitation = () => {
   const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
-  const client = useQueryClient();
 
   const { mutate, ...rest } = useMutation({
     mutationFn: rejectInvitation,

@@ -1,5 +1,5 @@
 import { TODOS_QUERY_FIELDS } from "./todo.constants";
-import type { TFindAllQuery } from "./todo.interface";
+import type { TFindAllQuery } from "./todo.types";
 
 export const getTodosQueryKey = (dto: Partial<TFindAllQuery>) => [
   "todos",

@@ -1,16 +1,20 @@
 import { DragDropProvider, DragOverlay } from "@dnd-kit/react";
 import { TodoKanbanColumn } from "./TodoKanbanColumn";
-import type {
-  ICreateTodoContext,
-  TFindAllQuery,
-} from "../../model/todo.interface";
+import type { ICreateTodoContext, TFindAllQuery } from "../../model/todo.types";
 import { useUpdateTodoStatus } from "../../api/queries";
 import { TodoItem } from "./TodoItem";
 import { type FC } from "react";
-import type { TTodo } from "types";
+import type { TExtendedTodo, TTodo } from "types";
 import styles from "./TodoKanbanBoard.module.css";
 import { useIsOnline } from "../../../../hooks/useIsOnline";
 import clsx from "clsx";
+import { useGetMe } from "../../../users";
+import {
+  useGetMembershipResult,
+  useGetWorkspaceInfo,
+} from "../../../workspaces";
+import { useParams } from "react-router";
+import { useCanUserChangeStatusOfTodo } from "../../model/hooks/useCanUserChangeStatusOfTodo";
 type TTodoKanbanBoardProps = {
   showAssignee?: boolean;
   endpoint?: string;
@@ -26,12 +30,17 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
 }) => {
   const { setActiveTodo, handleDragEnd, activeTodo } =
     useUpdateTodoStatus(queryFilters);
+  const { isOwnerOrManager, currentUserId } = useCanUserChangeStatusOfTodo();
   const isOnline = useIsOnline();
+
   return (
     <>
       <DragDropProvider
         onDragStart={(e) => {
-          const data = e.operation.source?.data;
+          const data = e.operation.source?.data as TExtendedTodo;
+
+          if (!isOwnerOrManager || data?.user.id !== currentUserId) return;
+
           setActiveTodo({
             id: data?.id,
             title: data?.title,
@@ -77,9 +86,7 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
           />
         </ul>
         <DragOverlay>
-          {activeTodo && (
-            <TodoItem todoParticipants={[]} {...activeTodo} isOverlay={true} />
-          )}
+          {activeTodo && <TodoItem {...activeTodo} isOverlay={true} />}
         </DragOverlay>
       </DragDropProvider>
     </>

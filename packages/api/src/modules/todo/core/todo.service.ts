@@ -4,6 +4,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import {
@@ -19,6 +20,7 @@ import { buildInfinityScrollResponse } from "../../../libs/buildInfinityScrollRe
 import { TodoRepository } from "./todo.repository.js";
 import { WorkspaceParticipantService } from "../../workspace/sub/workspace-participant/workspace-participant.service.js";
 import { TodoGateway } from "./todo.gateway.js";
+import { TUpdateTodoStatusDto } from "./dto/todo.types.js";
 
 @Injectable()
 export class TodoService {
@@ -200,12 +202,53 @@ export class TodoService {
     return this.todoRepository.findOne(args);
   }
 
-  async updateOne(id: string, dto: Prisma.TodoUpdateInput): Promise<Todo> {
+  async updateOne(
+    id: string,
+    dto: Prisma.TodoUpdateInput,
+  ): Promise<TExtendedTodo> {
     return this.todoRepository.update(id, dto);
   }
 
-  async updateStatus(id: string, status: TTodoStatus): Promise<Todo> {
-    return this.updateOne(id, { status });
+  async updateStatus(
+    id: string,
+    dto: TUpdateTodoStatusDto,
+  ): Promise<TExtendedTodo> {
+    const participantQuery = this.workspaceParticipantService.findOne({
+      where: {
+        userId: dto.userId,
+        workspaceId: dto.workspaceId,
+      },
+    });
+
+    const todoCandidateQuery = this.findOne({ where: { id } });
+
+    const [participant, todoCandidate] = await Promise.all([
+      participantQuery,
+      todoCandidateQuery,
+    ]);
+
+    if (!todoCandidate) {
+      throw new NotFoundException(`Todo not found`);
+    }
+
+    if (!participant) {
+      throw new ForbiddenException(
+        `You are not a participant in this workspace`,
+      );
+    }
+
+    const isManagerOrOwner = ["OWNER", "MANAGER"].includes(participant.role);
+    const isTodoOwner = todoCandidate.userId === dto.userId;
+
+    if (!isManagerOrOwner && !isTodoOwner) {
+      throw new ForbiddenException(
+        `You are not authorized to update this todo`,
+      );
+    }
+
+    const updatedTodo = await this.updateOne(id, { status: dto.status });
+    this.todoGateway.handleTodoStatusChanged(updatedTodo);
+    return updatedTodo;
   }
 
   async deleteOne(id: string): Promise<Todo> {
@@ -218,8 +261,8 @@ export class TodoService {
         workspaceId: deletedTodo.workspaceId,
         todoGroupId: deletedTodo.todoGroupId,
         status: deletedTodo.status,
-        todoId: deletedTodo.id
-      })
+        todoId: deletedTodo.id,
+      });
     }
     return deletedTodo;
   }

@@ -6,7 +6,7 @@ import {
   prioritySchema,
   statusSchema,
   todoSchema,
-  updateTodoStatusSchema,
+  updateTodoStatusBodySchema,
 } from "./todos.schema.js";
 import { todoCountInfoSchema } from "./todo-count-info.schema.js";
 
@@ -22,7 +22,7 @@ export interface ITodoKanbanBoard {
 
 export type TTodoStatus = z.infer<typeof statusSchema>;
 export type TTodoPriority = z.infer<typeof prioritySchema>;
-export type TUpdateTodoStatus = z.infer<typeof updateTodoStatusSchema>;
+export type TUpdateTodoStatusBody = z.infer<typeof updateTodoStatusBodySchema>;
 export type TExtendedTodo = z.infer<typeof extendedTodoSchema>;
 export type TTodoCountInfo = z.infer<typeof todoCountInfoSchema>;
 export type TJoinGroupTodosRoom = z.infer<typeof joinGroupTodosRoomSchema>;
@@ -31,4 +31,10 @@ export interface WsTodoDeletedPayload {
   todoGroupId: string;
   workspaceId: string;
   status: TTodoStatus;
+}
+
+export interface IChangeTodoStatus {
+  status: TTodoStatus;
+  todoId: string;
+  userId: string;
 }

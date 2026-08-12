@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CreateTodoGroupModal } from "../../../todo-groups";
-import { CreateItemButton } from "../CreateItemButton/CreateItemButton";
+import { CreateItemButton } from "../../views/CreateItemButton/CreateItemButton";
 import { WorkspaceTodoGroupList } from "./WorkspaceTodoGroupsList";
 import { useParams } from "react-router";
 

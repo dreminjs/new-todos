@@ -1,6 +1,6 @@
 import type { TTodoPriority, TTodoStatus } from "types";
 import styles from "../views/TodoItem/TodoItemView.module.css";
-import type { TFindAllQuery } from "./todo.interface";
+import type { TFindAllQuery } from "./todo.types";
 export const TODO_STATUS = {
   TODO: "todo",
   IN_PROGRESS: "in-progress",

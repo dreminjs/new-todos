@@ -3,7 +3,7 @@ import type {
   ICreateTodoContext,
   IKanbanColumn,
   TFindAllQuery,
-} from "../../model/todo.interface";
+} from "../../model/todo.types";
 import { TodoItem } from "./TodoItem";
 import { AddTodoModal } from "../TodoModal/AddTodoModal";
 import { useGetTodos } from "../../api/queries";

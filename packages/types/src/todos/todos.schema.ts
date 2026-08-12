@@ -42,20 +42,21 @@ export const extendedTodoSchema = todoSchema
   });
 
 export const findTodosSchema = z.object({
-  deadline: z.string().datetime().nullable().optional(),
+  deadline: z.string().datetime().optional(),
   workspaceId: z.uuid().optional(),
   assignedUserId: z.uuid().optional(),
   priority: prioritySchema.optional(),
   status: statusSchema.optional(),
   todoGroupId: z.uuid().optional(),
   planned: boolean.optional(),
-  isMyToday: boolean.optional(),
   cursor: z.string().uuid().optional(),
   limit: z.string().transform((v) => Number(v)),
 });
 
-export const updateTodoStatusSchema = z.object({
+export const updateTodoStatusBodySchema = z.object({
   status: statusSchema,
+  workspaceId: z.uuid().optional(),
+  todoGroupId: z.uuid().optional(),
 });
 
 export const joinGroupTodosRoomSchema = z.object({

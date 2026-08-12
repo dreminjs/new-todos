@@ -1,4 +1,4 @@
-import type { findTodosSchema, TTodo, TTodoStatus } from "types";
+import type { findTodosSchema, TTodo, TTodoStatus, TUpdateTodoStatusBody } from "types";
 import { todoFormSchema } from "./todo.schema";
 import type z from "zod";
 
@@ -27,3 +27,7 @@ export interface ICreateTodoContext {
 export type CreateTodoContextKeys = keyof ICreateTodoContext;
 
 export type TFindAllQuery = z.infer<typeof findTodosSchema>;
+
+export type TUpdateTodoStatusDto = TUpdateTodoStatusBody & {
+  todoId: string
+}
