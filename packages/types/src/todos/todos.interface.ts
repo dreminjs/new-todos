@@ -38,3 +38,18 @@ export interface IChangeTodoStatus {
   todoId: string;
   userId: string;
 }
+
+export interface TodoDragPositionPayload {
+  todoId: string;
+  todoGroupId: string;
+  workspaceId: string;
+  x: number;
+  y: number;
+  targetColumnStatus?: TTodoStatus;
+}
+
+export interface TodoDragEndPayload {
+  todoId: string;
+  todoGroupId: string;
+  workspaceId: string;
+}

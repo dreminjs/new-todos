@@ -26,6 +26,7 @@
   cursor: grab;
 }
 
+
 .todoItem:active {
   cursor: grabbing;
 }

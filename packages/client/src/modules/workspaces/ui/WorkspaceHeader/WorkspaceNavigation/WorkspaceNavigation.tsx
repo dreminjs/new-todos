@@ -15,7 +15,16 @@ export const WorkspaceNavigation: FC<IWorkspaceNavigationProps> = ({
   return (
     <nav>
       <ul className={styles.workspaceNavigation}>
-        <WorkspaceNavigationItem isActive={pathname === undefined} href={workspaceId}>
+        <WorkspaceNavigationItem
+          isActive={pathname === undefined}
+          href={workspaceId}
+        >
+          Home
+        </WorkspaceNavigationItem>
+        <WorkspaceNavigationItem
+          isActive={pathname === "all-todos"}
+          href={`${workspaceId}/all-todos`}
+        >
           All tasks
         </WorkspaceNavigationItem>
         <WorkspaceNavigationItem

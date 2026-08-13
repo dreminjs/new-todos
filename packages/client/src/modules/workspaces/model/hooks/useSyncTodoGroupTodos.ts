@@ -17,6 +17,7 @@ export const useSyncWorkspaceTodoGroupTodos = ({
 }) => {
   const socket = useSocket();
   const client = useQueryClient();
+
   useEffect(() => {
     if (!socket || !todoGroupId || !workspaceId) return;
     socket.emit("join-group-todos-room", {

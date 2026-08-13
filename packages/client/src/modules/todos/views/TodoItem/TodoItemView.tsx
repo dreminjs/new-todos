@@ -1,11 +1,6 @@
-import type { FC } from "react";
+import type { FC, RefObject } from "react";
 import clsx from "clsx";
-import {
-  LuTimerOff,
-  LuCalendar,
-  LuSun,
-  LuBookText,
-} from "react-icons/lu";
+import { LuTimerOff, LuCalendar, LuSun, LuBookText } from "react-icons/lu";
 import styles from "./TodoItemView.module.css";
 import { TODO_PRIORITY_CLASSES } from "../../model/todo.constants";
 import type { TTodoGroup, TWorkspace } from "types";
@@ -18,12 +13,14 @@ interface ITodoItemViewProps {
   deadline?: string;
   isExpired?: boolean;
   ref?: (el: Element) => void;
+  liRef?: RefObject<HTMLLIElement>
   onClick?: () => void;
   todoGroup: TTodoGroup | null;
   workspace: TWorkspace | null;
   isMyToday: boolean;
   isDescriptionVisible: boolean;
   className?: string;
+  isBeingDraggedRemotely?: boolean;
 }
 
 export const TodoItemView: FC<ITodoItemViewProps> = ({
@@ -35,20 +32,28 @@ export const TodoItemView: FC<ITodoItemViewProps> = ({
   deadline,
   isExpired,
   ref,
+  liRef,
   onClick,
   todoGroup,
   workspace,
   isMyToday,
   isDescriptionVisible,
   className,
+  isBeingDraggedRemotely,
 }) => {
   return (
     <>
-      <li className={clsx(styles.TodoItem, className)}>
+      <li ref={liRef} className={clsx(styles.TodoItem, className)}>
         <button
           onClick={onClick}
           ref={isOverlay ? undefined : ref}
-          style={{ opacity: isOverlay ? 1 : isDragging ? 0 : 1 }}
+          style={{
+            opacity: isOverlay
+              ? 1
+              : isDragging || isBeingDraggedRemotely
+                ? 0.3
+                : 1,
+          }}
         >
           <h5
             className={clsx(

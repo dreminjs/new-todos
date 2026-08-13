@@ -10,10 +10,7 @@ import {
 import { useCreateTodo } from "../../api/queries";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type {
-  ICreateTodoContext,
-  TFindAllQuery,
-} from "../../model/todo.types";
+import type { ICreateTodoContext, TFindAllQuery } from "../../model/todo.types";
 import {
   COLOR_TODO_PRIORITY,
   TODO_PRIORITY_OPTIONS,
@@ -29,7 +26,6 @@ type TAddTodoModalProps = {
   onClose: () => void;
   isOpen: boolean;
   showAssignee: boolean;
-  planned: boolean;
   queryFilters: TFindAllQuery;
   todoContext?: ICreateTodoContext;
 };
@@ -39,8 +35,8 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
   ...props
 }) => {
   const formSchema = useMemo(
-    () => buildTodoFormSchema(props.planned),
-    [props.planned],
+    () => buildTodoFormSchema(props.queryFilters.planned),
+    [props.queryFilters.planned],
   );
 
   const handleSuccess = () => {
@@ -60,7 +56,6 @@ export const AddTodoModal: FC<TAddTodoModalProps> = ({
       status: props.todoContext?.status,
       priority: props.todoContext?.priority,
       isMyToday: props.todoContext?.isMyToday || false,
-
     },
   });
 

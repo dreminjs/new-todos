@@ -31,3 +31,5 @@ export type TFindAllQuery = z.infer<typeof findTodosSchema>;
 export type TUpdateTodoStatusDto = TUpdateTodoStatusBody & {
   todoId: string
 }
+
+export type TTodoDtoContext = Omit<ICreateTodoContext, "deadline" | "status">

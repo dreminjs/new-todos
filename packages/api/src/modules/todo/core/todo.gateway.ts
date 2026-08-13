@@ -5,9 +5,16 @@ import {
   OnGatewayDisconnect,
   OnGatewayInit,
   WebSocketServer,
+  ConnectedSocket,
+  MessageBody,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import type { TExtendedTodo, WsTodoDeletedPayload } from "types";
+import type {
+  TExtendedTodo,
+  TodoDragPositionPayload,
+  WsTodoDeletedPayload,
+  TodoDragEndPayload,
+} from "types";
 import { JoinGroupTodosRoomDto } from "./dto/todo.dto.js";
 import { Logger, UseGuards } from "@nestjs/common";
 import { WsAccessTokenGuard } from "../../token/guards/ws-access-token.guard.js";
@@ -107,5 +114,24 @@ export class TodoGateway
         `todos-group-${payload.todoGroup!.id}:workspace-${payload.workspace!.id}`,
       )
       .emit("todos:status-changed", payload);
+  }
+
+  @SubscribeMessage("todo:drag-position")
+  handleDragPosition(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: TodoDragPositionPayload,
+  ) {
+    const room = `todos-group-${payload.todoGroupId}:workspace-${payload.workspaceId}`;
+    client.volatile.to(room).emit("todo:drag-position", payload);
+  }
+
+  @SubscribeMessage("todo:drag-end")
+  handleDragEndEvent(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: TodoDragEndPayload,
+  ) {
+    const room = `todos-group-${payload.todoGroupId}:workspace-${payload.workspaceId}`;
+    client.to(room).emit("todo:drag-end", payload);
   }
 }

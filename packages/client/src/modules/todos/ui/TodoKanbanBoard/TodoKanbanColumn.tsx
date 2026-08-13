@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, type FC } from "react";
+import { Fragment, useState, type FC } from "react";
 import type {
   ICreateTodoContext,
   IKanbanColumn,
@@ -94,7 +94,6 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
       </div>
       {todoModalOpen && (
         <AddTodoModal
-          planned={queryFilters?.planned}
           showAssignee={showAssignee}
           onClose={handleTodoModalToggle}
           isOpen={todoModalOpen}

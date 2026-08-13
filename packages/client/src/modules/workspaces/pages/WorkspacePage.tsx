@@ -1,11 +1,9 @@
 import { useParams } from "react-router";
 
-export const WorkspacePage = () => {
-  const { workspaceId } = useParams();
+const WorkspacePage = () => {
+  const params = useParams();
 
-  return (
-    <>
-      {workspaceId}
-    </>
-  );
+  return <>{params.workspaceId}</>;
 };
+
+export default WorkspacePage;
