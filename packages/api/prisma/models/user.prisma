@@ -16,7 +16,8 @@ model User {
   workspaceParticipants WorkspaceParticipant[]
   workspaceRequests     WorkspaceRequest[]
   todoGroupParticipants TodoGroupParticipant[]
-
+  chatMessages          ChatMessage[]
+  chatParticipants      ChatParticipant[]
   todos                 Todo[]                 @relation("CreatedTodos")
   assigneeTodos         Todo[]                 @relation("AssignedTodos")
 }
