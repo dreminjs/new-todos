@@ -31,4 +31,8 @@ export class ChatsService {
   async delete(id: string): Promise<Chat> {
     return this.chatsRepository.delete(id);
   }
+
+  async findChatsByWorkspaceId(workspaceId: string): Promise<Chat[]> {
+    return this.chatsRepository.findAllByWorkspaceId(workspaceId);
+  }
 }

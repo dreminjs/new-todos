@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { CreateWorkspaceDto } from "./dto/workspace.dto.js";
 import {
+  TChat,
   TTodoGroup,
   TTodoGroupResponse,
   TWorkspace,
@@ -19,6 +20,7 @@ import { WorkspaceParticipantRepository } from "../sub/workspace-participant/wor
 import { Transactional } from "@nestjs-cls/transactional";
 import { WorkspaceParticipantService } from "../sub/workspace-participant/workspace-participant.service.js";
 import { TodoGroupsService } from "../../todo/sub/todo-groups/todo-groups.service.js";
+import { ChatsService } from "../../chats/chats.service.js";
 
 @Injectable()
 export class WorkspaceService {
@@ -28,6 +30,7 @@ export class WorkspaceService {
     private readonly workspaceParticipantRepository: WorkspaceParticipantRepository,
     private readonly workspaceParticipantService: WorkspaceParticipantService,
     private readonly todoGroupsService: TodoGroupsService,
+    private readonly chatsService: ChatsService,
   ) {}
 
   private logger = new Logger(WorkspaceService.name);
@@ -188,10 +191,6 @@ export class WorkspaceService {
         workspaceId,
       },
       {
-        todoGroupParticipants: {
-          where: { userId },
-          select: { id: true },
-        },
         tasks: {
           where: {
             status: {
@@ -201,13 +200,11 @@ export class WorkspaceService {
         },
       },
     )) as unknown as (TTodoGroup & {
-      todoGroupParticipants: { id: string }[];
       tasks: { id: string }[];
     })[];
 
-    return todoGroups.map(({ todoGroupParticipants, tasks, ...group }) => ({
+    return todoGroups.map(({ tasks, ...group }) => ({
       ...group,
-      hasAccess: todoGroupParticipants.length > 0,
       countOfActiveTodos: tasks.length,
     }));
   }
@@ -223,5 +220,9 @@ export class WorkspaceService {
       },
       take,
     });
+  }
+
+  async findWorkspceChats(workspaceId: string): Promise<TChat[]> {
+    return this.chatsService.findChatsByWorkspaceId(workspaceId);
   }
 }
