@@ -8,8 +8,6 @@ import { NotificationFindManyArgs } from "generated/prisma/models.js";
 export class NotificationsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  private logger = new Logger(NotificationsRepository.name);
-
   async create(data: TCreateNotification) {
     return this.prisma.notification.create({
       data: {

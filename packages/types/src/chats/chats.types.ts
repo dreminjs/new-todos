@@ -7,6 +7,7 @@ import {
   extendedChatMessageSchema,
   joinChatRoomBodySchema,
   updateChatBodySchema,
+  updateChatMessageBodySchema,
 } from "./chats.schema.js";
 
 export type TChat = z.infer<typeof chatsSchema>;
@@ -28,3 +29,7 @@ export type TCreateChatMessageBodyDto = z.infer<
 export interface IWsChatMessageDeletedPayload {
   chatMessageId: string;
 }
+
+export type TUpdateChatMessageBodyDto = z.infer<
+  typeof updateChatMessageBodySchema
+>;

@@ -42,7 +42,11 @@ export const createChatMessageBodySchema = chatMessageSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-  userId: true
+  userId: true,
+});
+
+export const updateChatMessageBodySchema = createChatMessageBodySchema.omit({
+  replyToId: true,
 });
 
 // model ChatMessage {

@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service.js";
 import { ChatMessage, Prisma } from "generated/prisma/client.js";
+import { TExtendedChatMessage } from "types";
+import { GetChatMessagesQuery } from "./dto/chat-messages.types.js";
 
 @Injectable()
 export class ChatMessagesRepository {
@@ -8,9 +10,8 @@ export class ChatMessagesRepository {
 
   async createExtended(
     data: Prisma.ChatMessageCreateInput,
-    include?: Prisma.ChatMessageInclude,
-  ) {
-    return this.prisma.chatMessage.create({
+  ): Promise<TExtendedChatMessage> {
+    return (await this.prisma.chatMessage.create({
       data,
       include: {
         user: {
@@ -23,32 +24,35 @@ export class ChatMessagesRepository {
           },
         },
       },
-    });
+    })) as unknown as TExtendedChatMessage;
   }
 
-  async findAllByChatId({
-    chatId,
-    include,
-    take,
-    cursor,
-  }: {
-    chatId: string;
-    include?: Prisma.ChatMessageInclude;
-    take?: number;
-    cursor?: Prisma.ChatMessageWhereUniqueInput;
-  }): Promise<ChatMessage[]> {
+  async findAllByChatId(
+    chatId: string,
+    query: GetChatMessagesQuery,
+  ): Promise<TExtendedChatMessage[]> {
     return this.prisma.chatMessage.findMany({
       where: { chatId },
-      include,
-      take,
-      cursor,
-      ...(cursor && {
-        skip: 1,
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            avatarUrl: true,
+          },
+        },
+      },
+      take: query.take + 1,
+      orderBy: { createdAt: "desc" },
+      skip: query.cursor ? 1 : 0,
+      ...(query.cursor && {
         cursor: {
-          id: cursor.id,
+          id: query.cursor,
         },
       }),
-    });
+    }) as unknown as TExtendedChatMessage[];
   }
 
   async updateOneById(id: string, data: Prisma.ChatMessageUpdateInput) {
@@ -56,6 +60,27 @@ export class ChatMessagesRepository {
       where: { id },
       data,
     });
+  }
+
+  async updateExtended(
+    id: string,
+    data: Prisma.ChatMessageUpdateInput,
+  ): Promise<TExtendedChatMessage> {
+    return this.prisma.chatMessage.update({
+      where: { id },
+      data,
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            avatarUrl: true,
+          },
+        },
+      },
+    }) as unknown as TExtendedChatMessage;
   }
 
   async deleteById(id: string) {

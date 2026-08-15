@@ -14,7 +14,7 @@ import {
 } from "./dto/todo.dto.js";
 import { Prisma, Todo } from "api/generated/prisma/client.js";
 
-import { IItemsResponse, TExtendedTodo s} from "types";
+import { IItemsResponse, TExtendedTodo } from "types";
 import { buildInfinityScrollResponse } from "../../../libs/buildInfinityScrollResponse.js";
 import { TodoRepository } from "./todo.repository.js";
 import { WorkspaceParticipantService } from "../../workspace/sub/workspace-participant/workspace-participant.service.js";

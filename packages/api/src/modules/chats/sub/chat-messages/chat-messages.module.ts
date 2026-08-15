@@ -4,11 +4,13 @@ import { ChatMessagesController } from "./chat-messages.controller.js";
 import { ChatMessagesService } from "./chat-messages.service.js";
 import { ChatMessagesRepository } from "./chat-messages.repository.js";
 import { TokenModule } from "../../../token/token.module.js";
+import { ChatMessagesGateway } from "./chat-message.gateway.js";
+import { UserModule } from "../../../user/user.module.js";
 
 @Module({
-  imports: [PrismaModule, TokenModule],
+  imports: [PrismaModule, TokenModule, UserModule],
   controllers: [ChatMessagesController],
-  providers: [ChatMessagesService, ChatMessagesRepository],
+  providers: [ChatMessagesService, ChatMessagesRepository, ChatMessagesGateway],
   exports: [ChatMessagesService],
 })
 export class ChatMessagesModule {}

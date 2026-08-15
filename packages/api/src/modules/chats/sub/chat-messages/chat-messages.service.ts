@@ -1,8 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { ChatMessagesRepository } from "./chat-messages.repository.js";
 import { TExtendedChatMessage } from "types";
-import { TCreateMessageDto } from "./dto/chat-messages.types.js";
+import {
+  GetChatMessagesQuery,
+  TCreateMessageDto,
+  TUpdateMessageDto,
+} from "./dto/chat-messages.types.js";
 import { ChatMessagesGateway } from "./chat-message.gateway.js";
+import { buildInfinityScrollResponse } from "../../../../libs/buildInfinityScrollResponse.js";
 
 @Injectable()
 export class ChatMessagesService {
@@ -13,39 +18,57 @@ export class ChatMessagesService {
 
   async createOne(dto: TCreateMessageDto) {
     const { chatId, content, userId } = dto;
-    const chatMessage = (await this.chatMessagesRepository.createExtended(
-      {
-        chat: {
-          connect: {
-            id: chatId,
-          },
-        },
-        user: {
-          connect: {
-            id: userId,
-          },
-        },
-        content,
-      },
-      {
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            avatarUrl: true,
-          },
+    const chatMessage = await this.chatMessagesRepository.createExtended({
+      chat: {
+        connect: {
+          id: chatId,
         },
       },
-    )) as unknown as TExtendedChatMessage;
+      user: {
+        connect: {
+          id: userId,
+        },
+      },
+      content,
+    });
 
     this.chatMessagesGateway.handleSendMessage(chatMessage);
     return chatMessage;
   }
 
-  async deleteOneBy(id: string) {
+  async deleteOneById(id: string) {
     await this.chatMessagesRepository.deleteById(id);
     this.chatMessagesGateway.handleDeleteMessage({ chatMessageId: id });
+  }
+
+  async updateOneById(id: string, dto: TUpdateMessageDto) {
+    const { chatId, content, userId } = dto;
+    const chatMessage = (await this.chatMessagesRepository.updateExtended(id, {
+      chat: {
+        connect: {
+          id: chatId,
+        },
+      },
+      user: {
+        connect: {
+          id: userId,
+        },
+      },
+      content,
+    })) as unknown as TExtendedChatMessage;
+
+    this.chatMessagesGateway.handleEditMessage(chatMessage);
+    return chatMessage;
+  }
+
+  async findManyByChatId(chatId: string, query: GetChatMessagesQuery) {
+    const foundMessages = await this.chatMessagesRepository.findAllByChatId(
+      chatId,
+      {
+        take: query.take,
+        cursor: query.cursor,
+      },
+    );
+    return buildInfinityScrollResponse(foundMessages, query.take);
   }
 }

@@ -8,12 +8,8 @@ import { UseGuards } from "@nestjs/common";
 import { WsAccessTokenGuard } from "../../../token/guards/ws-access-token.guard.js";
 import { JoinChatRoomDto } from "./dto/chat-messages.types.js";
 import { Server, Socket } from "socket.io";
-import type {
-  IWsChatMessageDeletedPayload,
-  type TExtendedChatMessage,
-} from "types";
-import { th } from "zod/v4/locales";
 import { WsAuthMiddleware } from "../../../token/ws-auth.middleware.js";
+import type { IWsChatMessageDeletedPayload, TExtendedChatMessage } from "types";
 @UseGuards(WsAccessTokenGuard)
 @WebSocketGateway({
   cors: {
@@ -23,7 +19,6 @@ import { WsAuthMiddleware } from "../../../token/ws-auth.middleware.js";
 })
 export class ChatMessagesGateway {
   constructor(
-    private readonly chatMessagesService: ChatMessagesService,
     private readonly wsAuthMiddleware: WsAuthMiddleware,
   ) {}
 
