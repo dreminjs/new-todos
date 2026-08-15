@@ -58,7 +58,7 @@ export class ChatMessagesRepository {
     });
   }
 
-  async delete(id: string) {
+  async deleteById(id: string) {
     return this.prisma.chatMessage.delete({
       where: { id },
     });

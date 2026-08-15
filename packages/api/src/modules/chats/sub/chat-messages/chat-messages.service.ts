@@ -1,10 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ChatMessagesRepository } from "./chat-messages.repository.js";
 import { TExtendedChatMessage } from "types";
-import {
-  CreateMessageBodyDto,
-  TCreateMessageDto,
-} from "./dto/chat-messages.types.js";
+import { TCreateMessageDto } from "./dto/chat-messages.types.js";
 import { ChatMessagesGateway } from "./chat-message.gateway.js";
 
 @Injectable()
@@ -45,5 +42,10 @@ export class ChatMessagesService {
 
     this.chatMessagesGateway.handleSendMessage(chatMessage);
     return chatMessage;
+  }
+
+  async deleteOneBy(id: string) {
+    await this.chatMessagesRepository.deleteById(id);
+    this.chatMessagesGateway.handleDeleteMessage({ chatMessageId: id });
   }
 }
