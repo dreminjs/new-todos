@@ -17,3 +17,5 @@ export * from "./todos/todos.interface.js";
 export * from "./todos/todos.schema.js";
 export * from "./api/infinity-query-params.interface.js"
 export * from "./api/infinity-query-params.schema.js"
+export * from "./chats/chats.types.js";
+export * from "./chats/chats.schema.js";

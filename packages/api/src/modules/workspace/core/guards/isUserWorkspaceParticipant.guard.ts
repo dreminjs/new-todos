@@ -8,7 +8,6 @@ import { User } from "generated/prisma/browser.js";
 import { TUserAuthicatedRequest } from "src/interfaces/request.js";
 import { WorkspaceParticipantService } from "../../sub/workspace-participant/workspace-participant.service.js";
 
-
 @Injectable()
 export class IsUserWorkspaceParticipantGuard implements CanActivate {
   constructor(
@@ -33,6 +32,12 @@ export class IsUserWorkspaceParticipantGuard implements CanActivate {
     if (!candidate) {
       throw new ForbiddenException(
         "You are not participant of this workspace!",
+      );
+    }
+
+    if (candidate.role !== "OWNER") {
+      throw new ForbiddenException(
+        "You do not have the required role to perform this action!",
       );
     }
 
