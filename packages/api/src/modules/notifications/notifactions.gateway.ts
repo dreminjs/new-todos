@@ -25,7 +25,6 @@ export class NotifactionsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
-    private readonly tokenService: TokenService,
     private readonly wsAuthMiddleware: WsAuthMiddleware,
   ) {}
   private logger = new Logger(NotifactionsGateway.name);

@@ -1,0 +1,84 @@
+import {
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from "@nestjs/websockets";
+import { ChatMessagesService } from "./chat-messages.service.js";
+import { UseGuards } from "@nestjs/common";
+import { WsAccessTokenGuard } from "../../../token/guards/ws-access-token.guard.js";
+import { JoinChatRoomDto } from "./dto/chat-messages.types.js";
+import { Server, Socket } from "socket.io";
+import type {
+  IWsChatMessageDeletedPayload,
+  type TExtendedChatMessage,
+} from "types";
+import { th } from "zod/v4/locales";
+import { WsAuthMiddleware } from "../../../token/ws-auth.middleware.js";
+@UseGuards(WsAccessTokenGuard)
+@WebSocketGateway({
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true,
+  },
+})
+export class ChatMessagesGateway {
+  constructor(
+    private readonly chatMessagesService: ChatMessagesService,
+    private readonly wsAuthMiddleware: WsAuthMiddleware,
+  ) {}
+
+  @WebSocketServer()
+  server: Server;
+
+  @SubscribeMessage("join-chat-room")
+  handleJoinChatRoom(client: Socket, payload: JoinChatRoomDto) {
+    const { id } = payload;
+    client.join(`chat-room:${id}`);
+  }
+
+  afterInit(server: Server) {
+    server.use(this.wsAuthMiddleware.use);
+  }
+
+  @SubscribeMessage("chat-message:send")
+  handleMessageSendMessage(client: Socket, payload: TExtendedChatMessage) {
+    return this.server
+      .to(`chat-room:${payload.chatId}`)
+      .emit("chat-message:send", payload);
+  }
+
+  handleSendMessage(payload: TExtendedChatMessage) {
+    return this.server
+      .to(`chat-room:${payload.chatId}`)
+      .emit("chat-message:send", payload);
+  }
+
+  @SubscribeMessage("chat-message:delete")
+  handleMessageDeletMessage(
+    client: Socket,
+    payload: IWsChatMessageDeletedPayload,
+  ) {
+    return this.server
+      .to(`chat-room:${payload.chatMessageId}`)
+      .emit("chat-message:delete", payload);
+  }
+
+  handleDeleteMessage(payload: IWsChatMessageDeletedPayload) {
+    return this.server
+      .to(`chat-room:${payload.chatMessageId}`)
+      .emit("chat-message:delete", payload);
+  }
+
+  @SubscribeMessage("chat-message:edit")
+  handleMessageEditMessage(client: Socket, payload: TExtendedChatMessage) {
+    return this.server
+      .to(`chat-room:${payload.chatId}`)
+      .emit("chat-message:edit", payload);
+  }
+
+  handleEditMessage(payload: TExtendedChatMessage) {
+    return this.server
+      .to(`chat-room:${payload.chatId}`)
+      .emit("chat-message:edit", payload);
+  }
+}

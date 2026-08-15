@@ -4,16 +4,8 @@ model Chat {
   workspaceId  String
   workspace    Workspace     @relation(fields: [workspaceId], references: [id])
   messages     ChatMessage[]
-  participants ChatParticipant[]
 }
 
-model ChatParticipant {
-  id        String        @id @default(uuid())
-  chatId    String
-  userId    String
-  chat      Chat          @relation(fields: [chatId], references: [id])
-  user      User          @relation(fields: [userId], references: [id])
-}
 
 model ChatMessage {
   id        String        @id @default(uuid())

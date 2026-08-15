@@ -12,7 +12,7 @@ import { IsUserWorkspaceParticipantGuard } from "./guards/isUserWorkspacePartici
 import { IsWorkspaceOwnerGuard } from "./guards/isWorkspaceOwner.guard.js";
 import { TodoGroupsModule } from "../../todo/sub/todo-groups/todo-groups.module.js";
 import { TodoModule } from "../../todo/core/todo.module.js";
-import { ChatsModule } from "../../chats/chats.module.js";
+import { ChatsModule } from "../../chats/core/chats.module.js";
 
 @Module({
   imports: [

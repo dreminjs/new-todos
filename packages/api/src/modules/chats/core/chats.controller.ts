@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { ChatsService } from "./chats.service.js";
 import { CreateChatDto, UpdateChatDto } from "./dto/chats.types.js";
-import { AccessTokenGuard } from "../token/guards/accees-token.guard.js";
+import { AccessTokenGuard } from "../../token/guards/accees-token.guard.js";
 
 @UseGuards(AccessTokenGuard)
 @Controller("chats")

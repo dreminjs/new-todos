@@ -20,7 +20,7 @@ import { WorkspaceParticipantRepository } from "../sub/workspace-participant/wor
 import { Transactional } from "@nestjs-cls/transactional";
 import { WorkspaceParticipantService } from "../sub/workspace-participant/workspace-participant.service.js";
 import { TodoGroupsService } from "../../todo/sub/todo-groups/todo-groups.service.js";
-import { ChatsService } from "../../chats/chats.service.js";
+import { ChatsService } from "../../chats/core/chats.service.js";
 
 @Injectable()
 export class WorkspaceService {

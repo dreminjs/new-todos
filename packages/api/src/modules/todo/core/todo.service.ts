@@ -4,7 +4,6 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  UnauthorizedException,
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import {
@@ -15,7 +14,7 @@ import {
 } from "./dto/todo.dto.js";
 import { Prisma, Todo } from "api/generated/prisma/client.js";
 
-import { IItemsResponse, TExtendedTodo, TTodo, TTodoStatus } from "types";
+import { IItemsResponse, TExtendedTodo s} from "types";
 import { buildInfinityScrollResponse } from "../../../libs/buildInfinityScrollResponse.js";
 import { TodoRepository } from "./todo.repository.js";
 import { WorkspaceParticipantService } from "../../workspace/sub/workspace-participant/workspace-participant.service.js";

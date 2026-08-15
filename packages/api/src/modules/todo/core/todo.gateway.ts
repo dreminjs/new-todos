@@ -42,7 +42,10 @@ export class TodoGateway
   }
 
   @SubscribeMessage("join-group-todos-room")
-  handleJoinGroupTodosRoom(client: Socket, payload: JoinGroupTodosRoomDto) {
+  handleJoinGroupTodosRoomMessage(
+    client: Socket,
+    payload: JoinGroupTodosRoomDto,
+  ) {
     const { todoGroupId, workspaceId } = payload;
     this.logger.log(`${client.id} - ${todoGroupId}, ${workspaceId}`);
     client.join(`todos-group-${todoGroupId}:workspace-${workspaceId}`);
@@ -84,7 +87,7 @@ export class TodoGateway
   }
 
   @SubscribeMessage("todos:delete")
-  async handleMeessageTodoDeleted(
+  async handleMessageTodoDeleted(
     client: Socket,
     payload: WsTodoDeletedPayload,
   ) {
@@ -117,7 +120,7 @@ export class TodoGateway
   }
 
   @SubscribeMessage("todo:drag-position")
-  handleDragPosition(
+  handleMessageDragPosition(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: TodoDragPositionPayload,
   ) {
@@ -126,7 +129,7 @@ export class TodoGateway
   }
 
   @SubscribeMessage("todo:drag-end")
-  handleDragEndEvent(
+  handleMessageDragEnd(
     @ConnectedSocket() client: Socket,
     @MessageBody()
     payload: TodoDragEndPayload,
