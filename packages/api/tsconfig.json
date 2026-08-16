@@ -23,7 +23,8 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "prisma/config": ["./node_modules/prisma/config.d.ts"],
-      "src/*": ["src/*"]
+      "src/*": ["src/*"],
+      "#generated/*": ["./generated/prisma/*"],
     },
   },
 }

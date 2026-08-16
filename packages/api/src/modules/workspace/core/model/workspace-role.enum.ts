@@ -1,4 +1,4 @@
-import { WorkspaceUserRole } from "generated/prisma/enums.js";
+import { WorkspaceUserRole } from "#generated/enums.js";
 
 const ROLE_HIERARCHY: Record<WorkspaceUserRole, number> = {
   [WorkspaceUserRole.OWNER]: 3,

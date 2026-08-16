@@ -1,7 +1,6 @@
 import {
   UseGuards,
   Controller,
-  Logger,
   Post,
   Body,
   Get,
@@ -18,9 +17,9 @@ import {
 } from "./dto/workspace.dto.js";
 import { WorkspaceService } from "./workspace.service.js";
 import { TTodoGroupResponse, TWorkspace, TWorkspaceInfo } from "types";
-import { IsWorkspaceOwnerGuard } from "./guards/isWorkspaceOwner.guard.js";
-import { IsUserWorkspaceParticipantGuard } from "./guards/isUserWorkspaceParticipant.guard.js";
-
+import { MinRole } from "./decorators/min-role.decorator.js";
+import { WorkspaceRoleGuard } from "./guards/workspace-role.guard.js";
+import { WorkspaceUserRole } from "#generated/enums.js";
 @UseGuards(AccessTokenGuard)
 @Controller("workspaces")
 export class WorkspaceController {
@@ -34,6 +33,8 @@ export class WorkspaceController {
     return await this.workspaceService.createOne(dto, userId);
   }
 
+  @MinRole(WorkspaceUserRole.MEMBER)
+  @UseGuards(WorkspaceRoleGuard)
   @Get(":workspaceId/info")
   async findWorkspaceInfo(
     @Param("workspaceId") workspaceId: string,
@@ -49,8 +50,8 @@ export class WorkspaceController {
   ): Promise<TWorkspace[]> {
     return this.workspaceService.findMyWorkspaces(userId, query.take);
   }
-
-  @UseGuards(IsWorkspaceOwnerGuard)
+  @MinRole(WorkspaceUserRole.MEMBER)
+  @UseGuards(WorkspaceRoleGuard)
   @Delete(":workspaceId/leave")
   async leaveWorkspace(
     @Param("workspaceId") workspaceId: string,
@@ -59,7 +60,8 @@ export class WorkspaceController {
     await this.workspaceService.leave(workspaceId, userId);
   }
   // TODO: MAKE OTP LOGIC
-  @UseGuards(IsWorkspaceOwnerGuard)
+  @MinRole(WorkspaceUserRole.OWNER)
+  @UseGuards(WorkspaceRoleGuard)
   @Patch(":workspaceId/participants/:participantId/transfer-ownership")
   async transferOwnership(
     @Param("workspaceId") workspaceId: string,
@@ -73,7 +75,8 @@ export class WorkspaceController {
     );
   }
   // TODO: MAKE CURSOR PAGINATION
-  @UseGuards(IsUserWorkspaceParticipantGuard)
+  @MinRole(WorkspaceUserRole.MEMBER)
+  @UseGuards(WorkspaceRoleGuard)
   @Get(":workspaceId/todo-groups")
   async findWorkspaceTodoGroups(
     @Param("workspaceId") workspaceId: string,

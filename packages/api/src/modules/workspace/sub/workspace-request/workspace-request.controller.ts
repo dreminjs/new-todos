@@ -3,7 +3,9 @@ import { AccessTokenGuard } from "../../../token/guards/accees-token.guard.js";
 import { CurrentUser } from "../../../user/decorators/user.decorator.js";
 import { WorkspaceRequestService } from "./workspace-request.service.js";
 import { TWorkspaceParticipant, TWorkspaceRequest } from "types";
-import { IsWorkspaceOwnerGuard } from "../../core/guards/isWorkspaceOwner.guard.js";
+import { WorkspaceUserRole } from "#generated/enums.js";
+import { WorkspaceRoleGuard } from "../../core/guards/workspace-role.guard.js";
+import { MinRole } from "../../core/decorators/min-role.decorator.js";
 
 @UseGuards(AccessTokenGuard)
 @Controller("workspace")
@@ -31,7 +33,9 @@ export class WorkspaceRequestController {
   ): Promise<TWorkspaceRequest[]> {
     return await this.workspaceRequestService.findAllByWorkspaceId(workspaceId);
   }
-  @UseGuards(IsWorkspaceOwnerGuard)
+
+  @MinRole(WorkspaceUserRole.OWNER)
+  @UseGuards(WorkspaceRoleGuard)
   @Post(":workspaceId/request/:workspaceRequestId/accept")
   async accept(
     @Param("workspaceId") workspaceId: string,
@@ -43,13 +47,14 @@ export class WorkspaceRequestController {
     });
   }
 
-  @UseGuards(IsWorkspaceOwnerGuard)
+  @MinRole(WorkspaceUserRole.OWNER)
+  @UseGuards(WorkspaceRoleGuard)
   @Post(":workspaceId/request/:workspaceRequestId/reject")
   async reject(
     @Param("workspaceId") workspaceId: string,
     @Param("workspaceRequestId") workspaceRequestId: string,
-  ): Promise<TWorkspaceParticipant> {
-    return await this.workspaceRequestService.accept({
+  ): Promise<void> {
+    return await this.workspaceRequestService.reject({
       workspaceId,
       requestId: workspaceRequestId,
     });

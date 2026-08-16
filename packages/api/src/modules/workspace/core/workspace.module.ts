@@ -8,8 +8,6 @@ import { WorkspaceRequestModule } from "../sub/workspace-request/workspace-reque
 import { WorkspaceController } from "./workspace.controller.js";
 import { TokenModule } from "../../token/token.module.js";
 import { WorkspaceRepository } from "./workspace.repository.js";
-import { IsUserWorkspaceParticipantGuard } from "./guards/isUserWorkspaceParticipant.guard.js";
-import { IsWorkspaceOwnerGuard } from "./guards/isWorkspaceOwner.guard.js";
 import { TodoGroupsModule } from "../../todo/sub/todo-groups/todo-groups.module.js";
 import { TodoModule } from "../../todo/core/todo.module.js";
 import { ChatsModule } from "../../chats/core/chats.module.js";
@@ -24,20 +22,10 @@ import { ChatsModule } from "../../chats/core/chats.module.js";
     TodoModule,
     TokenModule,
     TodoGroupsModule,
-    ChatsModule
+    ChatsModule,
   ],
   controllers: [WorkspaceController],
-  providers: [
-    WorkspaceService,
-    IsWorkspaceOwnerGuard,
-    WorkspaceRepository,
-    IsUserWorkspaceParticipantGuard,
-  ],
-  exports: [
-    WorkspaceService,
-    IsWorkspaceOwnerGuard,
-    IsUserWorkspaceParticipantGuard,
-    WorkspaceRepository,
-  ],
+  providers: [WorkspaceService, WorkspaceRepository],
+  exports: [WorkspaceService, WorkspaceRepository],
 })
 export class WorkspaceModule {}

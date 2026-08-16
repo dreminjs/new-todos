@@ -5,8 +5,7 @@ import {
   Injectable,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { PrismaService } from "src/modules/prisma/prisma.service.js";
-import { MIN_ROLE_KEY } from "../min-role.decorator.js";
+import { MIN_ROLE_KEY } from "../decorators/min-role.decorator.js";
 import { hasMinRole } from "../model/workspace-role.enum.js";
 import { WorkspaceParticipantService } from "../../sub/workspace-participant/workspace-participant.service.js";
 

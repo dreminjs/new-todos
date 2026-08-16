@@ -11,21 +11,26 @@ import {
 import { AccessTokenGuard } from "../../../token/guards/accees-token.guard.js";
 import { CurrentUser } from "../../../user/decorators/user.decorator.js";
 import { WorkspaceInvitationService } from "./workspace-invitation.service.js";
-import { TWorkspaceInvitation, TExtendedWorkspaceInvitation, ICreateWorkspaceInvitationResponse } from "types";
+import {
+  TWorkspaceInvitation,
+  TExtendedWorkspaceInvitation,
+  ICreateWorkspaceInvitationResponse,
+} from "types";
 import { CreateWorkspaceInvitationBodyDto } from "./dto.js";
-import { IsWorkspaceOwnerGuard } from "../../core/guards/isWorkspaceOwner.guard.js";
-import { IsUserWorkspaceParticipantGuard } from "../../core/guards/isUserWorkspaceParticipant.guard.js";
-
+import { WorkspaceUserRole } from "#generated/enums.js";
+import { WorkspaceRoleGuard } from "../../core/guards/workspace-role.guard.js";
+import { MinRole } from "../../core/decorators/min-role.decorator.js";
 @UseGuards(AccessTokenGuard)
 @Controller("workspaces")
 export class WorkspaceInvitationController {
   constructor(
     private readonly workspaceInvitationService: WorkspaceInvitationService,
-  ) { }
+  ) {}
 
-  private logger = new Logger(WorkspaceInvitationController.name)
+  private logger = new Logger(WorkspaceInvitationController.name);
 
-  @UseGuards(IsWorkspaceOwnerGuard, IsUserWorkspaceParticipantGuard)
+  @MinRole(WorkspaceUserRole.OWNER)
+  @UseGuards(WorkspaceRoleGuard)
   @Post("/:workspaceId/invitation")
   async createOne(
     @Body() dto: CreateWorkspaceInvitationBodyDto,
@@ -34,6 +39,7 @@ export class WorkspaceInvitationController {
     return this.workspaceInvitationService.createOne({ ...dto, workspaceId });
   }
 
+  // TODO: REFACTOR
   @Get("invitation")
   async findManyWorkspaceInvitations(
     @CurrentUser("id") userId: string,
