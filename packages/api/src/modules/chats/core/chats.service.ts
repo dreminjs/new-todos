@@ -17,7 +17,7 @@ export class ChatsService {
 
   async create(data: CreateChatDto): Promise<Chat> {
     return this.chatsRepository.create({
-      ...data,
+      name: data.name,
       workspace: {
         connect: { id: data.workspaceId },
       },

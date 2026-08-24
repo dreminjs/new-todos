@@ -222,7 +222,7 @@ export class WorkspaceService {
     });
   }
 
-  async findWorkspceChats(workspaceId: string): Promise<TChat[]> {
+  async findWorkspaceChats(workspaceId: string): Promise<TChat[]> {
     return this.chatsService.findChatsByWorkspaceId(workspaceId);
   }
 }

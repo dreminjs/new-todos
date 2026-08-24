@@ -4,7 +4,7 @@ import { todoGroupSchema } from "../todo-groups/todo-groups.schema.js";
 
 export const chatsSchema = z.object({
   id: z.uuid(),
-  name: z.uuid(),
+  name: z.string(),
   workspaceId: z.uuid(),
 });
 

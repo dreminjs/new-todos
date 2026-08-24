@@ -1,6 +1,7 @@
 import type {
   IExtendedWorkspaceParticipant,
   TActionWorkspaceInvitation,
+  TChat,
   TCreateWorkspace,
   TCreateWorkspaceInvitationBody,
   TExtendedWorkspaceInvitation,
@@ -97,6 +98,12 @@ export const findParticipantsByWorkspaceId = async (
   workspaceId: string,
 ): Promise<IExtendedWorkspaceParticipant[]> => {
   return (await instance.get(`${BASE_URL}/${workspaceId}/participants`)).data;
+};
+
+export const findWorkspaceChats = async (
+  workspaceId: string,
+): Promise<TChat[]> => {
+  return (await instance.get(`${BASE_URL}/${workspaceId}/chats`)).data;
 };
 
 export const kickParticipant = async (

@@ -18,9 +18,7 @@ import type { IWsChatMessageDeletedPayload, TExtendedChatMessage } from "types";
   },
 })
 export class ChatMessagesGateway {
-  constructor(
-    private readonly wsAuthMiddleware: WsAuthMiddleware,
-  ) {}
+  constructor(private readonly wsAuthMiddleware: WsAuthMiddleware) {}
 
   @WebSocketServer()
   server: Server;
@@ -35,17 +33,17 @@ export class ChatMessagesGateway {
     server.use(this.wsAuthMiddleware.use);
   }
 
-  @SubscribeMessage("chat-message:send")
-  handleMessageSendMessage(client: Socket, payload: TExtendedChatMessage) {
+  @SubscribeMessage("chat-message:recieve")
+  handleMessageRecieveMessage(client: Socket, payload: TExtendedChatMessage) {
     return this.server
       .to(`chat-room:${payload.chatId}`)
-      .emit("chat-message:send", payload);
+      .emit("chat-message:recieve", payload);
   }
 
   handleSendMessage(payload: TExtendedChatMessage) {
     return this.server
       .to(`chat-room:${payload.chatId}`)
-      .emit("chat-message:send", payload);
+      .emit("chat-message:recieve", payload);
   }
 
   @SubscribeMessage("chat-message:delete")

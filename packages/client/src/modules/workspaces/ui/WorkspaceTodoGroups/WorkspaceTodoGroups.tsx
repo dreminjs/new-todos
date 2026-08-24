@@ -17,10 +17,12 @@ export const WorkspaceTodoGroups = () => {
     <>
       <WorkspaceTodoGroupList
         addTodoGroupButton={
-          <CreateItemButton
-            onClick={handleTodoGroupToggle}
-            title={"Create Todo Group"}
-          />
+          <>
+            <CreateItemButton
+              onClick={handleTodoGroupToggle}
+              title={"Create Todo Group"}
+            />
+          </>
         }
       />
       {isTodoGroupOpen && (
