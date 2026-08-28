@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ChatMessagesRepository } from "./chat-messages.repository.js";
-import { TExtendedChatMessage } from "types";
+import { IWsChatMessageDeletedPayload, TExtendedChatMessage } from "types";
 import {
   GetChatMessagesQuery,
   TCreateMessageDto,
@@ -36,9 +36,12 @@ export class ChatMessagesService {
     return chatMessage;
   }
 
-  async deleteOneById(id: string, userId: string) {
-    await this.chatMessagesRepository.deleteByIdForUser(id, userId);
-    this.chatMessagesGateway.handleDeleteMessage({ chatMessageId: id });
+  async deleteOneById(
+    { chatId, chatMessageId }: IWsChatMessageDeletedPayload,
+    userId: string,
+  ) {
+    await this.chatMessagesRepository.deleteByIdForUser(chatMessageId, userId);
+    this.chatMessagesGateway.handleDeleteMessage({ chatMessageId, chatId });
   }
 
   async updateOneById(id: string, dto: TUpdateMessageDto) {

@@ -5,7 +5,7 @@ import { AccessTokenGuard } from "../../../token/guards/accees-token.guard.js";
 import { WorkspaceRoleGuard } from "../../core/guards/workspace-role.guard.js";
 import { MinRole } from "../../core/decorators/min-role.decorator.js";
 import { WorkspaceUserRole } from "#generated/enums.js";
-import { CurrentUser } from "src/modules/user/decorators/user.decorator.js";
+import { CurrentUser } from "../../../user/decorators/user.decorator.js";
 @UseGuards(AccessTokenGuard)
 @Controller("workspaces")
 export class WorkspaceParticipantController {

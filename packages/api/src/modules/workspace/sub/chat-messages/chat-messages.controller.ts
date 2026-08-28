@@ -23,10 +23,10 @@ import { MinRole } from "../../core/decorators/min-role.decorator.js";
 import { WorkspaceUserRole } from "#generated/enums.js";
 @MinRole(WorkspaceUserRole.MEMBER)
 @UseGuards(AccessTokenGuard, WorkspaceRoleGuard)
-@Controller("/workspaces/:workspaceId/chat-messages")
+@Controller("/workspaces/:workspaceId/chats/:chatId/chat-messages")
 export class ChatMessagesController {
   constructor(private readonly chatMessagesService: ChatMessagesService) {}
-  @Get(":chatId")
+  @Get()
   async findMany(
     @Param("chatId") chatId: string,
     @Query() query: GetChatMessagesQuery,
@@ -36,18 +36,24 @@ export class ChatMessagesController {
 
   @Post()
   async createOne(
+    @Param("chatId") chatId: string,
     @CurrentUser("id") userId: string,
     @Body() dto: CreateMessageBodyDto,
   ) {
-    return this.chatMessagesService.createOne({ userId, ...dto });
+    return this.chatMessagesService.createOne({ userId, ...dto, chatId });
   }
 
   @Delete(":messageId")
   async deleteOne(
     @Param("messageId") messageId: string,
+    @Param("chatId") chatId: string,
+
     @CurrentUser("id") userId: string,
   ) {
-    return this.chatMessagesService.deleteOneById(messageId, userId);
+    return this.chatMessagesService.deleteOneById(
+      { chatId, chatMessageId: messageId },
+      userId,
+    );
   }
 
   @Put(":messageId")

@@ -41,8 +41,9 @@ export class TodoController {
   @Get()
   async findAll(
     @Query() query: FindTodoQueryParamsDto,
+    @CurrentUser("id") userId: string,
   ): Promise<IItemsResponse<TExtendedTodo>> {
-    return await this.todoService.findAll(query);
+    return await this.todoService.findAll(userId, query);
   }
 
   @Patch("/:id/update-status")

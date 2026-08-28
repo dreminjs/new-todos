@@ -290,7 +290,7 @@ export class TodoService {
     userId: string,
     query: FindMyDayDto,
   ): Promise<IItemsResponse<TExtendedTodo>> {
-    return await this.findAll({
+    return await this.findAll(userId, {
       ...query,
       isMyToday: true,
       assignedUserId: userId,
