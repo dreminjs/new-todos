@@ -177,7 +177,7 @@ export class TodoService {
     const todos = (await this.todoRepository.findMany({
       where,
       ...(query.cursor && { cursor: { id: query.cursor }, skip: 1 }),
-      take: query.limit + 1,
+      take: +query.limit + 1,
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

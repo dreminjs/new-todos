@@ -13,7 +13,8 @@
     "client:dev": "lerna run start:dev --scope=client",
     "types:build": "lerna run build --scope=types",
     "client:build": "lerna run build --scope=client",
-    "api:build": "lerna run build --scope=api"
+    "api:build": "lerna run build --scope=api",
+    "api:test": "lerna run test:e2e --scope=api"
   },
   "dependencies": {
     "@nest-lab/throttler-storage-redis": "^1.2.0",
@@ -23,7 +24,8 @@
     "ioredis": "^6.0.0",
     "nestjs-cls": "^6.2.1",
     "nestjs-pino": "^4.6.1",
-    "react-virtualized": "^9.22.6"
+    "react-virtualized": "^9.22.6",
+    "supertest": "^7.2.2"
   },
   "devDependencies": {
     "@types/react-virtualized": "^9.22.3",

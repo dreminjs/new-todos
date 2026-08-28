@@ -6,7 +6,13 @@ import { Redis } from "ioredis";
   imports: [
     ThrottlerModule.forRootAsync({
       useFactory: () => ({
-        throttlers: [{ name: "default", ttl: 60000, limit: 100 }],
+        throttlers: [
+          {
+            name: "default",
+            ttl: 60000,
+            limit: process.env.NODE_ENV === "test" ? 10000 : 100,
+          },
+        ],
         storage: new ThrottlerStorageRedisService(
           new Redis(process.env.REDIS_URL!),
         ),
