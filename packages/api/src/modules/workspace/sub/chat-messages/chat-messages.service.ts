@@ -36,26 +36,29 @@ export class ChatMessagesService {
     return chatMessage;
   }
 
-  async deleteOneById(id: string) {
-    await this.chatMessagesRepository.deleteById(id);
+  async deleteOneById(id: string, userId: string) {
+    await this.chatMessagesRepository.deleteByIdForUser(id, userId);
     this.chatMessagesGateway.handleDeleteMessage({ chatMessageId: id });
   }
 
   async updateOneById(id: string, dto: TUpdateMessageDto) {
     const { chatId, content, userId } = dto;
-    const chatMessage = (await this.chatMessagesRepository.updateExtended(id, {
-      chat: {
-        connect: {
-          id: chatId,
+    const chatMessage = (await this.chatMessagesRepository.updateExtended(
+      { id, userId },
+      {
+        chat: {
+          connect: {
+            id: chatId,
+          },
         },
-      },
-      user: {
-        connect: {
-          id: userId,
+        user: {
+          connect: {
+            id: userId,
+          },
         },
+        content,
       },
-      content,
-    })) as unknown as TExtendedChatMessage;
+    )) as unknown as TExtendedChatMessage;
 
     this.chatMessagesGateway.handleEditMessage(chatMessage);
     return chatMessage;

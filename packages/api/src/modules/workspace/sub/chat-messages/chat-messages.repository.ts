@@ -63,11 +63,11 @@ export class ChatMessagesRepository {
   }
 
   async updateExtended(
-    id: string,
+    { id, userId }: { id: string; userId: string },
     data: Prisma.ChatMessageUpdateInput,
   ): Promise<TExtendedChatMessage> {
     return this.prisma.chatMessage.update({
-      where: { id },
+      where: { id, userId },
       data,
       include: {
         user: {
@@ -83,9 +83,9 @@ export class ChatMessagesRepository {
     }) as unknown as TExtendedChatMessage;
   }
 
-  async deleteById(id: string) {
+  async deleteByIdForUser(id: string, userId: string) {
     return this.prisma.chatMessage.delete({
-      where: { id },
+      where: { id, userId },
     });
   }
 }

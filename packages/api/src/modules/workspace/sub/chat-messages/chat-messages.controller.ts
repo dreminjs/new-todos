@@ -18,12 +18,14 @@ import {
 } from "./dto/chat-messages.types.js";
 import { IItemsResponse, TExtendedChatMessage } from "types";
 import { CurrentUser } from "../../../user/decorators/user.decorator.js";
-
-@UseGuards(AccessTokenGuard)
-@Controller("chat-messages")
+import { WorkspaceRoleGuard } from "../../core/guards/workspace-role.guard.js";
+import { MinRole } from "../../core/decorators/min-role.decorator.js";
+import { WorkspaceUserRole } from "#generated/enums.js";
+@MinRole(WorkspaceUserRole.MEMBER)
+@UseGuards(AccessTokenGuard, WorkspaceRoleGuard)
+@Controller("/workspaces/:workspaceId/chat-messages")
 export class ChatMessagesController {
   constructor(private readonly chatMessagesService: ChatMessagesService) {}
-
   @Get(":chatId")
   async findMany(
     @Param("chatId") chatId: string,
@@ -31,6 +33,7 @@ export class ChatMessagesController {
   ): Promise<IItemsResponse<TExtendedChatMessage>> {
     return this.chatMessagesService.findManyByChatId(chatId, query);
   }
+
   @Post()
   async createOne(
     @CurrentUser("id") userId: string,
@@ -40,8 +43,11 @@ export class ChatMessagesController {
   }
 
   @Delete(":messageId")
-  async deleteOne(@Param("messageId") messageId: string) {
-    return this.chatMessagesService.deleteOneById(messageId);
+  async deleteOne(
+    @Param("messageId") messageId: string,
+    @CurrentUser("id") userId: string,
+  ) {
+    return this.chatMessagesService.deleteOneById(messageId, userId);
   }
 
   @Put(":messageId")

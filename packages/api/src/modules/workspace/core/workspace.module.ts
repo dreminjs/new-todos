@@ -10,7 +10,7 @@ import { TokenModule } from "../../token/token.module.js";
 import { WorkspaceRepository } from "./workspace.repository.js";
 import { TodoGroupsModule } from "../../todo/sub/todo-groups/todo-groups.module.js";
 import { TodoModule } from "../../todo/core/todo.module.js";
-import { ChatsModule } from "../../chats/core/chats.module.js";
+import { ChatsModule } from "../sub/chats/chats.module.js";
 
 @Module({
   imports: [
