@@ -264,8 +264,14 @@ export class TodoService {
     }
 
     const updatedTodo = await this.updateOne(id, { status: dto.status });
-    if (updatedTodo.workspace?.id) {
-      this.todoGateway.handleTodoStatusChanged(updatedTodo);
+    if (updatedTodo.workspace?.id && updatedTodo.todoGroup?.id) {
+      this.todoGateway.handleTodoStatusChanged(
+        {
+          todoGroupId: updatedTodo.todoGroup.id,
+          workspaceId: updatedTodo.workspace.id,
+        },
+        updatedTodo,
+      );
     }
     return updatedTodo;
   }

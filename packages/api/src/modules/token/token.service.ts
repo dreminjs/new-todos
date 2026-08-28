@@ -1,7 +1,6 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { Prisma, Token } from "api/generated/prisma/client.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import type {
   IAuthTokenPayload,
@@ -9,6 +8,7 @@ import type {
   ITokens,
 } from "../token/token.interface.js";
 import { FastifyReply } from "fastify";
+import * as crypto from "crypto";
 import type { IStandartResponse } from "types";
 
 @Injectable()
@@ -19,92 +19,124 @@ export class TokenService {
     private readonly configService: ConfigService,
   ) {}
 
-  public async deleteOne(args: Prisma.TokenDeleteArgs): Promise<Token> {
-    return await this.prisma.token.delete(args);
-  }
-
   public async generateAuthTokens(
     payload: IAuthTokenPayload,
     res: FastifyReply,
   ): Promise<IStandartResponse> {
-    const oldToken = await this.findOne({ userId: payload.userId });
-
-    if (oldToken) {
-      await this.deleteOne({
-        where: {
-          userId: payload.userId,
-          token: oldToken.token,
-        },
-      });
-    }
-
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: "1d",
-      secret: this.configService.get("ACCESS_TOKEN"),
-    });
-    const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: "1w",
-      secret: this.configService.get("REFRESH_TOKEN"),
-    });
-
-    await this.saveRefreshToken({
-      user: {
-        connect: {
-          id: payload.userId,
-        },
+    const accessToken = this.jwtService.sign(
+      { userId: payload.userId },
+      {
+        expiresIn: "15m",
+        secret: this.configService.get<string>("ACCESS_TOKEN"),
       },
-      token: refreshToken,
+    );
+
+    const refreshToken = this.jwtService.sign(
+      { userId: payload.userId },
+      {
+        expiresIn: "7d",
+        secret: this.configService.get<string>("REFRESH_TOKEN"),
+      },
+    );
+
+    const hashedToken = this.hashToken(refreshToken);
+
+    await this.prisma.token.deleteMany({
+      where: { userId: payload.userId },
+    });
+
+    await this.prisma.token.create({
+      data: {
+        userId: payload.userId,
+        token: hashedToken,
+      },
     });
 
     return this.buildTokensResponse({ accessToken, refreshToken }, res);
   }
 
-  public async validateAuthToken(token: string): Promise<IAuthTokenPayload> {
-    return this.jwtService.verify(token, {
-      secret: this.configService.get("ACCESS_TOKEN"),
+  public async refreshTokens(
+    rawRefreshToken: string,
+    res: FastifyReply,
+  ): Promise<IStandartResponse> {
+    let payload: IAuthTokenPayload;
+    try {
+      payload = this.jwtService.verify(rawRefreshToken, {
+        secret: this.configService.get<string>("REFRESH_TOKEN"),
+      });
+    } catch {
+      throw new UnauthorizedException("Invalid or expired refresh token");
+    }
+
+    const hashedToken = this.hashToken(rawRefreshToken);
+    const existingToken = await this.prisma.token.findFirst({
+      where: {
+        userId: payload.userId,
+        token: hashedToken,
+      },
     });
+
+    if (!existingToken) {
+      await this.prisma.token.deleteMany({
+        where: { userId: payload.userId },
+      });
+      throw new UnauthorizedException(
+        "Access revoked due to security violation",
+      );
+    }
+
+    return this.generateAuthTokens(
+      { userId: payload.userId, email: payload.email },
+      res,
+    );
   }
 
-  private async saveRefreshToken(
-    payload: Prisma.TokenCreateInput,
-  ): Promise<Token> {
-    return await this.prisma.token.create({ data: payload });
-  }
-
-  public async findOne(where: Prisma.TokenWhereInput): Promise<Token | null> {
-    return await this.prisma.token.findFirst({
-      where,
+  public async logout(
+    userId: string,
+    res: FastifyReply,
+  ): Promise<IStandartResponse> {
+    await this.prisma.token.deleteMany({
+      where: { userId },
     });
+
+    res.clearCookie("accessToken", { path: "/" });
+    res.clearCookie("refreshToken", { path: "/" });
+
+    return { message: "Logged out successfully" };
   }
 
-  public async deleteRefreshToken(where: Prisma.TokenWhereUniqueInput) {
-    return await this.prisma.token.delete({ where });
+  private hashToken(token: string): string {
+    return crypto.createHash("sha256").update(token).digest("hex");
   }
 
   private buildTokensResponse(
     dto: ITokens,
     res: FastifyReply,
   ): IStandartResponse {
+    const isProduction = this.configService.get("NODE_ENV") === "production";
+    res.clearCookie("accessToken", { path: "/" });
+    res.clearCookie("refreshToken", { path: "/" });
+
     res.setCookie("accessToken", dto.accessToken, {
       httpOnly: true,
+      secure: isProduction,
       sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 15 * 60 * 1000,
       path: "/",
     });
 
     res.setCookie("refreshToken", dto.refreshToken, {
       httpOnly: true,
+      secure: isProduction,
       sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     });
 
-    return {
-      message: "OK.",
-    };
+    return { message: "OK." };
   }
 
-  generateEmailConfirmationToken(email: string): string {
+  public generateEmailConfirmationToken(email: string): string {
     return this.jwtService.sign(
       { email },
       {
@@ -114,9 +146,15 @@ export class TokenService {
     );
   }
 
-  verifyEmailConfirmationToken(token: string): IEmailConfirmationTokenPayload {
+  public verifyEmailConfirmationToken(token: string): { email: string } {
     return this.jwtService.verify(token, {
       secret: this.configService.get("EMAIL_CONFIRMATION_TOKEN"),
+    });
+  }
+
+  public async validateAuthToken(token: string): Promise<IAuthTokenPayload> {
+    return this.jwtService.verify(token, {
+      secret: this.configService.get("JWT_SECRET"),
     });
   }
 }

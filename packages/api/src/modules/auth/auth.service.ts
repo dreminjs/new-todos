@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -44,7 +45,7 @@ export class AuthService {
     });
 
     if (!(await comparePasswords(dto.password, user!.hashedPassword))) {
-      throw new UnauthorizedException("Invalid password");
+      throw new BadRequestException("Invalid password");
     }
 
     return await this.tokenService.generateAuthTokens(
@@ -93,11 +94,7 @@ export class AuthService {
     return await this.userService.confirmEmail(email);
   }
 
-  async logout(userId: string): Promise<void> {
-    await this.tokenService.deleteOne({
-      where: {
-        userId,
-      },
-    });
+  async logout(userId: string, res: FastifyReply): Promise<void> {
+    await this.tokenService.logout(userId, res);
   }
 }

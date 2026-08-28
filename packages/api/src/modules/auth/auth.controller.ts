@@ -15,11 +15,12 @@ import type { FastifyReply } from "fastify";
 import { IStandartResponse } from "types";
 import { CurrentUser } from "../user/decorators/user.decorator.js";
 import { AccessTokenGuard } from "../token/guards/accees-token.guard.js";
+import { minutes, Throttle } from "@nestjs/throttler";
 
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
-
+  @Throttle({ default: { limit: 10, ttl: minutes(5) } })
   @Post("login")
   async login(
     @Body() authDto: AuthDto,
@@ -28,6 +29,7 @@ export class AuthController {
     return await this.authService.login(authDto, res);
   }
 
+  @Throttle({ default: { limit: 10, ttl: minutes(5) } })
   @Post("register")
   async register(
     @Body() authDto: SignUpDto,
@@ -53,7 +55,10 @@ export class AuthController {
 
   @UseGuards(AccessTokenGuard)
   @Delete("logout")
-  async logout(@CurrentUser("id") id: string): Promise<void> {
-    await this.authService.logout(id);
+  async logout(
+    @CurrentUser("id") id: string,
+    @Res({ passthrough: true }) res: FastifyReply,
+  ): Promise<void> {
+    await this.authService.logout(id, res);
   }
 }

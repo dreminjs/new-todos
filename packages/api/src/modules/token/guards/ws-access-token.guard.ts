@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, Logger } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+} from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
 import { Socket } from "socket.io";
 import { TokenService } from "../token.service.js";
@@ -30,7 +35,9 @@ export class WsAccessTokenGuard implements CanActivate {
 
       if (!user) throw new WsException("Unauthorized");
 
-      this.logger.log(`User authenticated: ${user.id} { email: ${user.email} }`);
+      this.logger.log(
+        `User authenticated: ${user.id} { email: ${user.email} }`,
+      );
       client.data.user = user;
       return true;
     } catch {
