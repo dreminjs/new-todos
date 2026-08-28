@@ -128,7 +128,8 @@ export class TodoService {
   }
 
   async findAll(
-    query: FindTodoQueryParamsDto & { isMyToday?: boolean },
+    userId: string,
+    query: FindTodoQueryParamsDto & { isMyToday?: boolean }
   ): Promise<IItemsResponse<TExtendedTodo>> {
     const deadlineFilter = query.deadline
       ? {
@@ -139,13 +140,12 @@ export class TodoService {
 
     const isMyDayRequest = query.isMyToday && deadlineFilter;
 
-    const where: Prisma.TodoWhereInput = {
+    const clientFilters: Prisma.TodoWhereInput = {
       ...(query.assignedUserId && { assigneeId: query.assignedUserId }),
       ...(query.workspaceId && { workspaceId: query.workspaceId }),
       ...(query.todoGroupId && { todoGroupId: query.todoGroupId }),
       ...(query.priority && { priority: query.priority }),
       ...(query.status && { status: query.status }),
-
       ...(isMyDayRequest
         ? {
             OR: [{ isMyToday: true }, { deadline: deadlineFilter }],
@@ -154,6 +154,24 @@ export class TodoService {
             ...(query.isMyToday && { isMyToday: query.isMyToday }),
             ...(deadlineFilter && { deadline: deadlineFilter }),
           }),
+    };
+
+    const aclFilter: Prisma.TodoWhereInput = {
+      OR: [
+        { userId },
+        { assigneeId: userId },
+        {
+          workspace: {
+            participants: {
+              some: { userId },
+            },
+          },
+        },
+      ],
+    };
+
+    const where: Prisma.TodoWhereInput = {
+      AND: [clientFilters, aclFilter],
     };
 
     const todos = (await this.todoRepository.findMany({

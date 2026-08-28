@@ -47,7 +47,13 @@ export class NotificationsRepository {
     await this.prisma.notification.delete({ where: { id } });
   }
 
-  async updateOneById(id: string, dto: Prisma.NotificationUpdateInput) {
-    return await this.prisma.notification.update({ where: { id }, data: dto });
+  async updateOneByIdForUser(
+    { id, userId }: { id: string; userId: string },
+    dto: Prisma.NotificationUpdateInput,
+  ) {
+    return await this.prisma.notification.update({
+      where: { id, userId },
+      data: dto,
+    });
   }
 }

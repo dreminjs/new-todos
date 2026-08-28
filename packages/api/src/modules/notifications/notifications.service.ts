@@ -28,14 +28,20 @@ export class NotificationsService {
     await this.notificationsRepository.deleteManyByIds(ids);
   }
 
-  async readOneById(id: string) {
-    return await this.notificationsRepository.updateOneById(id, { read: true });
+  async readOneById(id: string, userId: string) {
+    return await this.notificationsRepository.updateOneByIdForUser(
+      { id, userId },
+      { read: true },
+    );
   }
 
-  async unreadOneById(id: string) {
-    return await this.notificationsRepository.updateOneById(id, {
-      read: false,
-    });
+  async unreadOneById(id: string, userId: string) {
+    return await this.notificationsRepository.updateOneByIdForUser(
+      { id, userId },
+      {
+        read: false,
+      },
+    );
   }
 
   async findMy(
