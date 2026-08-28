@@ -13,7 +13,7 @@ export const WorkspaceChatsListItem: FC<IWorkspaceChatListItemProps> = ({
 }) => {
   return (
     <li className={styles.workspaceChatsListItem}>
-      <Link to={`${id}/chats`}>
+      <Link to={`${id}`}>
         <span className={styles.workspaceChatsListItemName}>{title}</span>
       </Link>
     </li>

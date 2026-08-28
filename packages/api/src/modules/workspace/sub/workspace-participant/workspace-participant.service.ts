@@ -1,4 +1,9 @@
-import { Injectable, Logger } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { WorkspaceParticipantRepository } from "./workspace-participant.repository.js";
 import {
   IExtendedWorkspaceParticipant,
@@ -8,7 +13,6 @@ import {
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { SendCreateNotification } from "../../../notifications/dto/notifactions.dto.js";
 import { UserService } from "../../../user/user.service.js";
-import { NotFoundError } from "rxjs";
 import { Prisma, WorkspaceParticipant } from "generated/prisma/browser.js";
 import { WorkspaceRepository } from "../../core/workspace.repository.js";
 
@@ -55,10 +59,15 @@ export class WorkspaceParticipantService {
     });
   }
 
-  async kickParticipant(
-    workspaceId: string,
-    participantId: string,
-  ): Promise<void> {
+  async kickParticipant({
+    participantId,
+    workspaceId,
+    kickerId,
+  }: {
+    workspaceId: string;
+    participantId: string;
+    kickerId: string;
+  }): Promise<void> {
     const foundUserQuery = this.userService.findOne({
       where: {
         workspaceParticipants: {
@@ -81,13 +90,21 @@ export class WorkspaceParticipantService {
     ]);
 
     if (!workspace) {
-      throw new NotFoundError(`Workspace with id ${workspaceId} not found`);
+      throw new NotFoundException(`Workspace with id ${workspaceId} not found`);
     }
 
     if (!foundUser) {
-      throw new NotFoundError(
+      throw new NotFoundException(
         `User with workspace participant id ${participantId} not found`,
       );
+    }
+
+    if (foundUser.id === workspace.ownerId) {
+      throw new BadRequestException(`Cannot kick the owner of the workspace`);
+    }
+
+    if (foundUser.id === kickerId) {
+      throw new BadRequestException(`Cannot kick yourself`);
     }
 
     await this.workspaceParticipantRepository.deleteMany({

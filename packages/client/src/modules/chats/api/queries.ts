@@ -1,6 +1,15 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createOne } from "./services";
-import type { TChat, TCreateChatBodyDto } from "types";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { createMessage, createOne, getChatMessages } from "./services";
+import type {
+  TChat,
+  TCreateChatBodyDto,
+  TExtendedChatMessage,
+  IItemsResponse,
+} from "types";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 
 export const useCreateChat = () => {
@@ -51,4 +60,37 @@ export const useCreateChat = () => {
   };
 
   return { mutate: handleMutate, isPending };
+};
+
+export const useChatMessages = (chatId: string) => {
+  return useInfiniteQuery<IItemsResponse<TExtendedChatMessage>>({
+    queryKey: ["chats", chatId, "messages"],
+    queryFn: ({ pageParam }) => getChatMessages(chatId, pageParam as string),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+  });
+};
+
+export const useCreateChatMessage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createMessage,
+    onSuccess: (newMessage) => {
+      queryClient.setQueryData(
+        ["chats", newMessage.chatId, "messages"],
+        (old: { pages: IItemsResponse<TExtendedChatMessage>[]; pageParams: (string | undefined)[] } | undefined) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page, i) =>
+              i === 0
+                ? { ...page, items: [newMessage, ...page.items] }
+                : page,
+            ),
+          };
+        },
+      );
+    },
+  });
 };
