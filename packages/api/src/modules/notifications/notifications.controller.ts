@@ -25,12 +25,18 @@ export class NotificationsController {
   }
 
   @Patch(":id/read")
-  async read(@Param("id") id: string, @CurrentUser("id") currentUserId: string): Promise<TNotification> {
+  async read(
+    @Param("id") id: string,
+    @CurrentUser("id") currentUserId: string,
+  ): Promise<TNotification> {
     return await this.notificationsService.readOneById(id, currentUserId);
   }
 
   @Patch(":id/unread")
-  async unread(@Param("id") id: string, @CurrentUser("id") currentUserId: string): Promise<TNotification> {
+  async unread(
+    @Param("id") id: string,
+    @CurrentUser("id") currentUserId: string,
+  ): Promise<TNotification> {
     return await this.notificationsService.unreadOneById(id, currentUserId);
   }
 }

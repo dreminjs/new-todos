@@ -28,6 +28,7 @@ export type TCreateChatMessageBodyDto = z.infer<
 
 export interface IWsChatMessageDeletedPayload {
   chatMessageId: string;
+  chatId: string;
 }
 
 export type TUpdateChatMessageBodyDto = z.infer<

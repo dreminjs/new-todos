@@ -129,7 +129,7 @@ export class TodoService {
 
   async findAll(
     userId: string,
-    query: FindTodoQueryParamsDto & { isMyToday?: boolean }
+    query: FindTodoQueryParamsDto & { isMyToday?: boolean },
   ): Promise<IItemsResponse<TExtendedTodo>> {
     const deadlineFilter = query.deadline
       ? {

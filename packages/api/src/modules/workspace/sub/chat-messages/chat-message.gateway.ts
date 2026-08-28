@@ -2,6 +2,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from "@nestjs/websockets";
 import { ChatMessagesService } from "./chat-messages.service.js";
 import { UseGuards } from "@nestjs/common";
@@ -10,6 +11,8 @@ import { JoinChatRoomDto } from "./dto/chat-messages.types.js";
 import { Server, Socket } from "socket.io";
 import { WsAuthMiddleware } from "../../../token/ws-auth.middleware.js";
 import type { IWsChatMessageDeletedPayload, TExtendedChatMessage } from "types";
+import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
+import { ChatsService } from "../chats/chats.service.js";
 @UseGuards(WsAccessTokenGuard)
 @WebSocketGateway({
   cors: {
@@ -18,14 +21,35 @@ import type { IWsChatMessageDeletedPayload, TExtendedChatMessage } from "types";
   },
 })
 export class ChatMessagesGateway {
-  constructor(private readonly wsAuthMiddleware: WsAuthMiddleware) {}
+  constructor(
+    private readonly wsAuthMiddleware: WsAuthMiddleware,
+    private readonly workspaceParticipantService: WorkspaceParticipantService,
+    private readonly chatsService: ChatsService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
 
   @SubscribeMessage("join-chat-room")
-  handleJoinChatRoom(client: Socket, payload: JoinChatRoomDto) {
+  async handleJoinChatRoom(client: Socket, payload: JoinChatRoomDto) {
     const { id } = payload;
+
+    const candidateId = client.data.userId;
+    const chat = await this.chatsService.findById(id);
+    if (!chat) {
+      throw new WsException("Chat not found");
+    }
+    const candidate = await this.workspaceParticipantService.findOne({
+      where: {
+        workspaceId: chat.workspaceId,
+        userId: candidateId,
+      },
+    });
+
+    if (!candidate) {
+      throw new WsException("You are not a participant in this chat");
+    }
+
     client.join(`chat-room:${id}`);
   }
 
@@ -52,13 +76,13 @@ export class ChatMessagesGateway {
     payload: IWsChatMessageDeletedPayload,
   ) {
     return this.server
-      .to(`chat-room:${payload.chatMessageId}`)
+      .to(`chat-room:${payload.chatId}`)
       .emit("chat-message:delete", payload);
   }
 
   handleDeleteMessage(payload: IWsChatMessageDeletedPayload) {
     return this.server
-      .to(`chat-room:${payload.chatMessageId}`)
+      .to(`chat-room:${payload.chatId}`)
       .emit("chat-message:delete", payload);
   }
 

@@ -7,6 +7,7 @@ import {
   WebSocketServer,
   ConnectedSocket,
   MessageBody,
+  WsException,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import type {
@@ -16,15 +17,19 @@ import type {
   TodoDragEndPayload,
 } from "types";
 import { JoinGroupTodosRoomDto } from "./dto/todo.dto.js";
-import { Logger, UseGuards } from "@nestjs/common";
+import { ForbiddenException, Logger, UseGuards } from "@nestjs/common";
 import { WsAccessTokenGuard } from "../../token/guards/ws-access-token.guard.js";
 import { WsAuthMiddleware } from "../../token/ws-auth.middleware.js";
+import { WorkspaceParticipantService } from "../../workspace/sub/workspace-participant/workspace-participant.service.js";
 @UseGuards(WsAccessTokenGuard)
 @WebSocketGateway()
 export class TodoGateway
   implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
-  constructor(private readonly wsAuthMiddleware: WsAuthMiddleware) {}
+  constructor(
+    private readonly wsAuthMiddleware: WsAuthMiddleware,
+    private readonly workspaceParticipantService: WorkspaceParticipantService,
+  ) {}
 
   private logger = new Logger(TodoGateway.name);
 
@@ -42,12 +47,21 @@ export class TodoGateway
   }
 
   @SubscribeMessage("join-group-todos-room")
-  handleJoinGroupTodosRoomMessage(
+  async handleJoinGroupTodosRoomMessage(
     client: Socket,
     payload: JoinGroupTodosRoomDto,
   ) {
     const { todoGroupId, workspaceId } = payload;
-    this.logger.log(`${client.id} - ${todoGroupId}, ${workspaceId}`);
+    const candidateId = client.data.userId;
+    const candidate = await this.workspaceParticipantService.findOne({
+      where: { userId: candidateId, workspaceId },
+    });
+    if (!candidate) {
+      throw new WsException(
+        "You are not a participant of this workspace",
+      );
+    }
+
     client.join(`todos-group-${todoGroupId}:workspace-${workspaceId}`);
   }
 
