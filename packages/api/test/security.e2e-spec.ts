@@ -9,7 +9,6 @@ import request from "supertest";
 import { AppModule } from "../src/modules/app/app.module.js";
 import { PrismaService } from "../src/modules/prisma/prisma.service.js";
 
-
 describe("Security regression suite (e2e)", () => {
   let app: NestFastifyApplication;
   let prisma: PrismaService;
@@ -39,7 +38,6 @@ describe("Security regression suite (e2e)", () => {
   afterAll(async () => {
     await app.close();
   }, 15000);
-
 
   async function registerAndLogin(email: string) {
     const registerRes = await request(app.getHttpServer())
@@ -222,6 +220,36 @@ describe("Security regression suite (e2e)", () => {
       where: { workspaceId, userId: victim.userId },
     });
     expect(stillMember).not.toBeNull();
+  });
+
+  it("manager workspace A cannot get chat from workspace B (403/404, not data)", async () => {
+    // Workspace A + manager
+    const managerA = await registerAndLogin("manager-a-chat@test.com");
+    const workspaceA = await createWorkspaceViaApi(
+      managerA.cookies,
+      "WS A Chat Test",
+    );
+    await addParticipant(workspaceA, managerA.userId, "MANAGER");
+
+    const ownerB = await registerAndLogin("owner-b-chat@test.com");
+    const workspaceB = await createWorkspaceViaApi(
+      ownerB.cookies,
+      "WS B Chat Test",
+    );
+
+    const chatB = await prisma.chat.create({
+      data: {
+        workspaceId: workspaceB,
+        name: "Secret chat in workspace B",
+      },
+    });
+
+    const res = await request(app.getHttpServer())
+      .get(`/chats/${chatB.id}`)
+      .set("Cookie", managerA.cookies);
+
+    expect([403, 404]).toContain(res.status);
+    expect(res.body?.title).not.toBe("Secret chat in workspace B");
   });
 
   it("member of workspace A cannot read a chat in workspace B", async () => {

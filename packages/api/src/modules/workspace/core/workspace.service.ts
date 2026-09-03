@@ -54,7 +54,7 @@ export class WorkspaceService {
       throw new NotFoundException("Workspace not found");
     }
 
-    if (userId === workspace.id && participantsCount > 1) {
+    if (userId === workspace.ownerId && participantsCount > 1) {
       throw new BadRequestException(
         "Cannot leave workspace as owner and have other participants",
       );
@@ -150,19 +150,32 @@ export class WorkspaceService {
     previousOwnerId: string,
   ): Promise<TWorkspace> {
     await this.findOne({ where: { id: workspaceId } });
-    const candidateParticipant =
-      await this.workspaceParticipantRepository.findOne({
+    const candidateParticipantQuery =
+      this.workspaceParticipantRepository.findOne({
         where: { id: participantId },
       });
+
+    const ownerParticipantQuery = this.workspaceParticipantRepository.findOne({
+      where: { userId: previousOwnerId },
+    });
+
+    const [candidateParticipant, ownerParticipant] = await Promise.all([
+      candidateParticipantQuery,
+      ownerParticipantQuery,
+    ]);
 
     if (!candidateParticipant) {
       throw new NotFoundException("Candidate participant not found");
     }
 
+    if (!ownerParticipant) {
+      throw new NotFoundException("Owner not found");
+    }
+
     const [updatedWorkspace] = await Promise.all([
       this.workspaceRepository.updateOne({
         where: { id: workspaceId },
-        data: { ownerId: participantId },
+        data: { ownerId: candidateParticipant.userId },
       }),
       this.workspaceParticipantRepository.updateOne({
         where: {
@@ -174,7 +187,11 @@ export class WorkspaceService {
         },
       }),
       this.workspaceParticipantRepository.updateOne({
-        where: { id: previousOwnerId, workspaceId },
+        where: {
+          userId: previousOwnerId,
+          workspaceId,
+          id: ownerParticipant.id,
+        },
         data: { role: "MEMBER" },
       }),
     ]);

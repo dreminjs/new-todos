@@ -12,6 +12,8 @@ import {
 import { AccessTokenGuard } from "../../../token/guards/accees-token.guard.js";
 import { ChatMessagesService } from "./chat-messages.service.js";
 import {
+  ChatMessagesPathParams,
+  CreateChatMessagePathParams,
   CreateMessageBodyDto,
   GetChatMessagesQuery,
   UpdateMessageBodyDto,
@@ -28,41 +30,41 @@ export class ChatMessagesController {
   constructor(private readonly chatMessagesService: ChatMessagesService) {}
   @Get()
   async findMany(
-    @Param("chatId") chatId: string,
+    @Param() pathParams: ChatMessagesPathParams,
     @Query() query: GetChatMessagesQuery,
   ): Promise<IItemsResponse<TExtendedChatMessage>> {
-    return this.chatMessagesService.findManyByChatId(chatId, query);
+    return this.chatMessagesService.findMany(pathParams, query);
   }
 
   @Post()
   async createOne(
-    @Param("chatId") chatId: string,
+    @Param() pathParams: CreateChatMessagePathParams,
     @CurrentUser("id") userId: string,
     @Body() dto: CreateMessageBodyDto,
   ) {
-    return this.chatMessagesService.createOne({ userId, ...dto, chatId });
+    return this.chatMessagesService.createOne({
+      ...dto,
+      userId,
+      chatId: pathParams.chatId,
+      workspaceId: pathParams.workspaceId,
+    });
   }
 
   @Delete(":messageId")
   async deleteOne(
-    @Param("messageId") messageId: string,
-    @Param("chatId") chatId: string,
-
+    @Param() params: ChatMessagesPathParams,
     @CurrentUser("id") userId: string,
   ) {
-    return this.chatMessagesService.deleteOneById(
-      { chatId, chatMessageId: messageId },
-      userId,
-    );
+    return this.chatMessagesService.deleteOneById(params, userId);
   }
 
   @Put(":messageId")
   async updateOne(
-    @Param("messageId") messageId: string,
+    @Param() params: ChatMessagesPathParams,
     @Body() dto: UpdateMessageBodyDto,
     @CurrentUser("id") userId: string,
   ) {
-    return this.chatMessagesService.updateOneById(messageId, {
+    return this.chatMessagesService.updateOne(params, {
       ...dto,
       userId,
     });

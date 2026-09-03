@@ -9,7 +9,11 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ChatsService } from "./chats.service.js";
-import { CreateChatDto, UpdateChatDto } from "./dto/chats.types.js";
+import {
+  CreateChatDto,
+  FindWorkspaceChatsPathParams,
+  UpdateChatDto,
+} from "./dto/chats.types.js";
 import { AccessTokenGuard } from "../../../token/guards/accees-token.guard.js";
 import { WorkspaceRoleGuard } from "../../core/guards/workspace-role.guard.js";
 import { MinRole } from "../../core/decorators/min-role.decorator.js";
@@ -25,15 +29,18 @@ export class ChatsController {
     return await this.chatsService.create(body);
   }
   @Delete(":id")
-  async deleteOne(@Param("id") id: string) {
-    return await this.chatsService.delete(id);
+  async deleteOne(@Param() pathParamas: FindWorkspaceChatsPathParams) {
+    return await this.chatsService.delete(pathParamas);
   }
   @Get(":id")
-  async findOne(@Param("id") id: string) {
-    return await this.chatsService.findById(id);
+  async findOne(@Param() pathParamas: FindWorkspaceChatsPathParams) {
+    return await this.chatsService.findByIdAndWorkspaceId(pathParamas);
   }
   @Put(":id")
-  async updateOne(@Param("id") id: string, @Body() body: UpdateChatDto) {
-    return await this.chatsService.update(id, body);
+  async updateOne(
+    @Param() pathParamas: FindWorkspaceChatsPathParams,
+    @Body() body: UpdateChatDto,
+  ) {
+    return await this.chatsService.update(pathParamas, body);
   }
 }

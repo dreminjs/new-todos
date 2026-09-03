@@ -33,7 +33,6 @@ export class ChatMessagesGateway {
   @SubscribeMessage("join-chat-room")
   async handleJoinChatRoom(client: Socket, payload: JoinChatRoomDto) {
     const { id } = payload;
-
     const candidateId = client.data.userId;
     const chat = await this.chatsService.findById(id);
     if (!chat) {

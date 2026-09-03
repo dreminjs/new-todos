@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ChatMessagesRepository } from "./chat-messages.repository.js";
 import { IWsChatMessageDeletedPayload, TExtendedChatMessage } from "types";
 import {
+  ChatMessagesPathParams,
   GetChatMessagesQuery,
   TCreateMessageDto,
   TUpdateMessageDto,
@@ -29,6 +30,11 @@ export class ChatMessagesService {
           id: userId,
         },
       },
+      workspace: {
+        connect: {
+          id: dto.workspaceId,
+        }
+      },
       content,
     });
 
@@ -36,24 +42,24 @@ export class ChatMessagesService {
     return chatMessage;
   }
 
-  async deleteOneById(
-    { chatId, chatMessageId }: IWsChatMessageDeletedPayload,
-    userId: string,
-  ) {
-    await this.chatMessagesRepository.deleteByIdForUser(chatMessageId, userId);
-    this.chatMessagesGateway.handleDeleteMessage({ chatMessageId, chatId });
+  async deleteOneById(dto: IWsChatMessageDeletedPayload, userId: string) {
+    await this.chatMessagesRepository.deleteByIdForUser(
+      dto.chatMessageId,
+      userId,
+    );
+    this.chatMessagesGateway.handleDeleteMessage(dto);
   }
 
-  async updateOneById(id: string, dto: TUpdateMessageDto) {
-    const { chatId, content, userId } = dto;
+  async updateOne(params: ChatMessagesPathParams, dto: TUpdateMessageDto) {
+    const { content, userId } = dto;
     const chatMessage = (await this.chatMessagesRepository.updateExtended(
-      { id, userId },
       {
-        chat: {
-          connect: {
-            id: chatId,
-          },
-        },
+        chatMessageId: params.chatMessageId,
+        workspaceId: params.workspaceId,
+        chatId: params.chatId,
+        userId,
+      },
+      {
         user: {
           connect: {
             id: userId,
@@ -67,14 +73,11 @@ export class ChatMessagesService {
     return chatMessage;
   }
 
-  async findManyByChatId(chatId: string, query: GetChatMessagesQuery) {
-    const foundMessages = await this.chatMessagesRepository.findAllByChatId(
-      chatId,
-      {
-        take: query.take,
-        cursor: query.cursor,
-      },
-    );
+  async findMany(params: ChatMessagesPathParams, query: GetChatMessagesQuery) {
+    const foundMessages = await this.chatMessagesRepository.findAll(params, {
+      take: query.take,
+      cursor: query.cursor,
+    });
     return buildInfinityScrollResponse(foundMessages, query.take);
   }
 }

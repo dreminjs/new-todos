@@ -14,6 +14,7 @@ model Workspace {
   roles                WorkspaceStatus[]
   tags                 WorkspaceTag[]
   todoGroups           TodoGroup[]
+  chatMessages         ChatMessage[]
 }
 
 model WorkspaceRequest {

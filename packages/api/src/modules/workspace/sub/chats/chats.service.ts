@@ -1,7 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { Chat, Prisma } from "generated/prisma/client.js";
 import { ChatsRepository } from "./chats.repository.js";
-import { CreateChatDto, UpdateChatDto } from "./dto/chats.types.js";
+import {
+  CreateChatDto,
+  FindWorkspaceChatsPathParams,
+  UpdateChatDto,
+} from "./dto/chats.types.js";
 
 @Injectable()
 export class ChatsService {
@@ -15,6 +19,10 @@ export class ChatsService {
     return this.chatsRepository.findById(id);
   }
 
+  async findByIdAndWorkspaceId(dto: FindWorkspaceChatsPathParams) {
+    return this.chatsRepository.findByIdAndWorkspaceId(dto);
+  }
+
   async create(data: CreateChatDto): Promise<Chat> {
     return this.chatsRepository.create({
       name: data.name,
@@ -24,12 +32,15 @@ export class ChatsService {
     });
   }
 
-  async update(id: string, data: UpdateChatDto): Promise<Chat> {
-    return this.chatsRepository.update(id, data);
+  async update(
+    dto: FindWorkspaceChatsPathParams,
+    data: UpdateChatDto,
+  ): Promise<Chat> {
+    return this.chatsRepository.update(dto, data);
   }
 
-  async delete(id: string): Promise<Chat> {
-    return this.chatsRepository.delete(id);
+  async delete(dto: FindWorkspaceChatsPathParams): Promise<Chat> {
+    return this.chatsRepository.delete(dto);
   }
 
   async findChatsByWorkspaceId(workspaceId: string): Promise<Chat[]> {

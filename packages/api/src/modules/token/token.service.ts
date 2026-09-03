@@ -55,6 +55,14 @@ export class TokenService {
     return this.buildTokensResponse({ accessToken, refreshToken }, res);
   }
 
+  public findUserRefreshTokenByUserId(userId: string) {
+    return this.prisma.token.findFirst({
+      where: {
+        userId,
+      },
+    });
+  }
+
   public async refreshTokens(
     rawRefreshToken: string,
     res: FastifyReply,
@@ -141,20 +149,20 @@ export class TokenService {
       { email },
       {
         expiresIn: "1d",
-        secret: this.configService.get("EMAIL_CONFIRMATION_TOKEN"),
+        secret: this.configService.getOrThrow("EMAIL_CONFIRMATION_TOKEN"),
       },
     );
   }
 
   public verifyEmailConfirmationToken(token: string): { email: string } {
     return this.jwtService.verify(token, {
-      secret: this.configService.get("EMAIL_CONFIRMATION_TOKEN"),
+      secret: this.configService.getOrThrow("EMAIL_CONFIRMATION_TOKEN"),
     });
   }
 
   public async validateAuthToken(token: string): Promise<IAuthTokenPayload> {
     return this.jwtService.verify(token, {
-      secret: this.configService.get("JWT_SECRET"),
+      secret: this.configService.getOrThrow("ACCESS_TOKEN"),
     });
   }
 }

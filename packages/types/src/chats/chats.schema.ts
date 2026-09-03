@@ -43,7 +43,9 @@ export const createChatMessageBodySchema = chatMessageSchema.omit({
   createdAt: true,
   updatedAt: true,
   userId: true,
+  chatId: true,
 });
+
 
 export const updateChatMessageBodySchema = createChatMessageBodySchema.omit({
   replyToId: true,

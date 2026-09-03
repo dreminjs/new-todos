@@ -2,7 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service.js";
 import { ChatMessage, Prisma } from "generated/prisma/client.js";
 import { TExtendedChatMessage } from "types";
-import { GetChatMessagesQuery } from "./dto/chat-messages.types.js";
+import {
+  ChatMessagesPathParams,
+  GetChatMessagesQuery,
+} from "./dto/chat-messages.types.js";
 
 @Injectable()
 export class ChatMessagesRepository {
@@ -27,12 +30,12 @@ export class ChatMessagesRepository {
     })) as unknown as TExtendedChatMessage;
   }
 
-  async findAllByChatId(
-    chatId: string,
+  async findAll(
+    params: ChatMessagesPathParams,
     query: GetChatMessagesQuery,
   ): Promise<TExtendedChatMessage[]> {
     return this.prisma.chatMessage.findMany({
-      where: { chatId },
+      where: { ...params },
       include: {
         user: {
           select: {
@@ -63,11 +66,15 @@ export class ChatMessagesRepository {
   }
 
   async updateExtended(
-    { id, userId }: { id: string; userId: string },
+    {
+      workspaceId,
+      chatMessageId,
+      chatId,
+    }: ChatMessagesPathParams & { userId: string },
     data: Prisma.ChatMessageUpdateInput,
   ): Promise<TExtendedChatMessage> {
     return this.prisma.chatMessage.update({
-      where: { id, userId },
+      where: { workspaceId, chatId, id: chatMessageId },
       data,
       include: {
         user: {

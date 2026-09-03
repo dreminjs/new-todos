@@ -5,7 +5,13 @@ import {
   joinChatRoomBodySchema,
   TCreateChatMessageBodyDto,
   TUpdateChatMessageBodyDto,
+  updateChatMessageBodySchema,
 } from "types";
+import {
+  chatMessagePathSchema,
+  createChatMessagePathSchema,
+} from "./chat-messages.schemas.js";
+import z from "zod";
 
 export class JoinChatRoomDto extends createZodDto(joinChatRoomBodySchema) {}
 
@@ -14,13 +20,30 @@ export class CreateMessageBodyDto extends createZodDto(
 ) {}
 
 export class UpdateMessageBodyDto extends createZodDto(
-  createChatMessageBodySchema,
+  updateChatMessageBodySchema,
 ) {}
 
-export type TCreateMessageDto = TCreateChatMessageBodyDto & { userId: string };
+export type TCreateMessageDto = TCreateChatMessageBodyDto & {
+  userId: string;
+  workspaceId: string;
+  chatId: string
+};
 
 export type TUpdateMessageDto = TUpdateChatMessageBodyDto & { userId: string };
 
 export class GetChatMessagesQuery extends createZodDto(
   infinityQueryParamsSchema,
 ) {}
+
+export class ChatMessagesPathParams extends createZodDto(
+  chatMessagePathSchema,
+) {}
+export class CreateChatMessagePathParams extends createZodDto(
+  createChatMessagePathSchema,
+) {}
+
+export type TChatMessagesPathParams = z.infer<typeof chatMessagePathSchema>;
+
+export type TCreateChatMessagesPathParams = z.infer<
+  typeof createChatMessagePathSchema
+>;
