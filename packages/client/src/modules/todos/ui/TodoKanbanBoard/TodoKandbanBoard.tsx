@@ -7,11 +7,8 @@ import { useIsOnline } from "../../../../hooks/useIsOnline";
 import { useCanUserChangeStatusOfTodo } from "../../model/hooks/useCanUserChangeStatusOfTodo";
 import { useSocket } from "../../../../app/model/useSocket";
 import { useDraggingTodosStore } from "../../model/drag-todos.store";
-import type {
-  TFindAllQuery,
-  TTodoDtoContext,
-} from "../../model/todo.types";
-import type { TExtendedTodo, TTodo } from "types";
+import type { TFindAllQuery, TTodoDtoContext } from "../../model/todo.types";
+import type { TExtendedTodo } from "types";
 import styles from "./TodoKanbanBoard.module.css";
 import clsx from "clsx";
 import { useEmitTodoDragPosition } from "../../model/hooks/useEmitTodoDragPosition";
@@ -37,7 +34,6 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
   const socket = useSocket();
   const startPos = useRef<{ x: number; y: number } | null>(null);
   const emitDragPosition = useEmitTodoDragPosition(dtoContext);
-
   useRemoteTodoDragSync();
 
   return (
@@ -54,7 +50,8 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
             title: data?.title,
             priority: data?.priority,
             status: data?.status,
-          } as TTodo);
+            assignee: data.assignee,
+          } as unknown as TExtendedTodo);
         }
       }}
       onDragMove={(e) => {
@@ -119,7 +116,14 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
         />
       </ul>
       <DragOverlay>
-        {activeTodo && <TodoItem {...activeTodo} isOverlay={true} />}
+        {activeTodo && (
+          <TodoItem
+            currentUserId={currentUserId}
+            isOverlay={true}
+            assignee={activeTodo.assignee}
+            {...activeTodo}
+          />
+        )}
       </DragOverlay>
     </DragDropProvider>
   );

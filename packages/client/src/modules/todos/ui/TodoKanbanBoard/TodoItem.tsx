@@ -15,6 +15,7 @@ type TProps = TExtendedTodo & {
   isOverlay?: boolean;
   onChoose?: () => void;
   isLoading?: boolean;
+  currentUserId: string;
 };
 export const TodoItem: FC<TProps> = ({
   title,
@@ -60,7 +61,6 @@ export const TodoItem: FC<TProps> = ({
     todoId: id,
     todoGroupId: props.todoGroup?.id,
   });
-
   return (
     <>
       <TodoItemView
@@ -80,6 +80,7 @@ export const TodoItem: FC<TProps> = ({
         workspace={props.workspace}
         className={clsx(isMutating && styles.todoItemLoading)}
         isDescriptionVisible={Boolean(props.description)}
+        disableToClick={props.currentUserId != props.assignee.id}
       />
 
       {draggingUser && originRect && (

@@ -13,7 +13,7 @@ interface ITodoItemViewProps {
   deadline?: string;
   isExpired?: boolean;
   ref?: (el: Element) => void;
-  liRef?: RefObject<HTMLLIElement>
+  liRef?: RefObject<HTMLLIElement>;
   onClick?: () => void;
   todoGroup: TTodoGroup | null;
   workspace: TWorkspace | null;
@@ -21,6 +21,7 @@ interface ITodoItemViewProps {
   isDescriptionVisible: boolean;
   className?: string;
   isBeingDraggedRemotely?: boolean;
+  disableToClick: boolean;
 }
 
 export const TodoItemView: FC<ITodoItemViewProps> = ({
@@ -40,12 +41,13 @@ export const TodoItemView: FC<ITodoItemViewProps> = ({
   isDescriptionVisible,
   className,
   isBeingDraggedRemotely,
+  disableToClick,
 }) => {
   return (
     <>
       <li ref={liRef} className={clsx(styles.TodoItem, className)}>
         <button
-          onClick={onClick}
+          onClick={disableToClick ? undefined : onClick}
           ref={isOverlay ? undefined : ref}
           style={{
             opacity: isOverlay

@@ -13,6 +13,7 @@ import { EditTodoModal } from "../TodoModal/EditTodoModal";
 import { TodoKanbanHeader } from "./TodoKanbanHeader";
 import { useOnInView } from "react-intersection-observer";
 import type { TTodo } from "types";
+import { useGetMe } from "../../../users";
 import styles from "./TodoKanbanBoard.module.css";
 type TKanbanColumn = IKanbanColumn & {
   showAssignee: boolean;
@@ -47,6 +48,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
       rootMargin: "200px",
     },
   );
+  const currentUserId = useGetMe("id").data;
 
   const [editingTodo, setEditingTodo] = useState<TTodo>(null);
 
@@ -82,6 +84,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
                 })
                 .map((item) => (
                   <TodoItem
+                    currentUserId={currentUserId}
                     onChoose={handleSetEditTodo.bind(null, item)}
                     key={`draggable-${item.id}-${queryFilters.status}`}
                     {...item}

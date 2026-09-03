@@ -148,7 +148,7 @@ export const useGetTodos = (query: TFindAllQuery, endpoint?: string) => {
 export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
   const client = useQueryClient();
   const abortControllerRef = useRef<AbortController | null>(null);
-  const [activeTodo, setActiveTodo] = useState<TTodo | null>(null);
+  const [activeTodo, setActiveTodo] = useState<TExtendedTodo | null>(null);
 
   const handleDragEnd = (e: DragEndEvent) => {
     const todoId = e.operation.source?.id.toString().split("_")[1] as string;
