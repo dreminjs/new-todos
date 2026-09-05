@@ -108,7 +108,7 @@ export const useSyncWorkspaceTodoGroupTodos = ({
               {
                 ...firstPage,
                 items: [
-                  { ...movedTodo, status: changedStatusTodo.status } as TTodo,
+                  changedStatusTodo as TTodo,
                   ...firstPage.items,
                 ],
                 total: firstPage.items.length + 1,
@@ -118,8 +118,6 @@ export const useSyncWorkspaceTodoGroupTodos = ({
           };
         },
       );
-
-      return { previousData };
     });
 
     socket.on("todos:updated", (newTodo: TExtendedTodo) => {

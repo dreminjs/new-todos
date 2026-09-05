@@ -3,7 +3,7 @@ import { PrismaService } from "../../prisma/prisma.service.js";
 import { Prisma, Status } from "generated/prisma/client.js";
 import { CreateTodoDto } from "./dto/todo.dto.js";
 import { EXTENDED_TODO_SELECT } from "./dto/todo.constants.js";
-import { TExtendedTodo } from "types";
+import { extendedTodoSchema, TExtendedTodo } from "types";
 
 @Injectable()
 export class TodoRepository {
@@ -49,19 +49,13 @@ export class TodoRepository {
     id: string,
     data: Prisma.TodoUpdateInput,
   ): Promise<TExtendedTodo> {
-    return this.prisma.todo.update({
+    const updatedTodo = await this.prisma.todo.update({
       where: { id },
       data,
       select: EXTENDED_TODO_SELECT,
     });
-  }
 
-  async updateStatus(id: string, status: Status) {
-    return this.prisma.todo.update({
-      where: { id },
-      data: { status },
-      select: EXTENDED_TODO_SELECT,
-    }) as unknown as TExtendedTodo;
+    return extendedTodoSchema.parse(updatedTodo);
   }
 
   async delete(id: string) {

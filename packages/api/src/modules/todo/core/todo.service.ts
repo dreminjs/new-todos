@@ -20,6 +20,7 @@ import { TodoRepository } from "./todo.repository.js";
 import { WorkspaceParticipantService } from "../../workspace/sub/workspace-participant/workspace-participant.service.js";
 import { TodoGateway } from "./todo.gateway.js";
 import { TUpdateTodoStatusDto } from "./dto/todo.types.js";
+import { PUBLIC_USER_SELECT } from "../../user/index.js";
 
 @Injectable()
 export class TodoService {
@@ -179,35 +180,14 @@ export class TodoService {
       ...(query.cursor && { cursor: { id: query.cursor }, skip: 1 }),
       take: +query.limit + 1,
       orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        priority: true,
-        status: true,
-        isMyToday: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         workspace: true,
         todoGroup: true,
-        deadline: true,
         user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            avatarUrl: true,
-          },
+          select: PUBLIC_USER_SELECT,
         },
         assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            avatarUrl: true,
-          },
+          select: PUBLIC_USER_SELECT,
         },
       },
     })) as unknown as TExtendedTodo[];
@@ -223,7 +203,17 @@ export class TodoService {
     id: string,
     dto: Prisma.TodoUpdateInput,
   ): Promise<TExtendedTodo> {
-    return this.todoRepository.update(id, dto);
+    const updatedTodo = await this.todoRepository.update(id, dto);
+    if (updatedTodo.workspace?.id && updatedTodo.todoGroup?.id) {
+      this.todoGateway.handleTodoUpdated(
+        {
+          todoGroupId: updatedTodo.todoGroup.id,
+          workspaceId: updatedTodo.workspace.id,
+        },
+        updatedTodo,
+      );
+    }
+    return updatedTodo;
   }
 
   async updateStatus(
@@ -263,7 +253,10 @@ export class TodoService {
       );
     }
 
-    const updatedTodo = await this.updateOne(id, { status: dto.status });
+    const updatedTodo = await this.todoRepository.update(id, {
+      status: dto.status,
+    });
+
     if (updatedTodo.workspace?.id && updatedTodo.todoGroup?.id) {
       this.todoGateway.handleTodoStatusChanged(
         {
@@ -273,6 +266,7 @@ export class TodoService {
         updatedTodo,
       );
     }
+
     return updatedTodo;
   }
 

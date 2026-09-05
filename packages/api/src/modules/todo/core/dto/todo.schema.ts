@@ -13,7 +13,7 @@ export const createTodoSchema = todoSchema
     id: z.string(),
   });
 
-export const updateTodoSchema = createTodoSchema;
+export const updateTodoSchema = createTodoSchema
 
 export const findMyDayTodosSchema = findTodosSchema.pick({
   deadline: true,

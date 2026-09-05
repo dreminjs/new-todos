@@ -17,7 +17,7 @@ import type {
   TodoDragEndPayload,
 } from "types";
 import { JoinGroupTodosRoomDto } from "./dto/todo.dto.js";
-import { ForbiddenException, Logger, UseGuards } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import { WsAccessTokenGuard } from "../../token/guards/ws-access-token.guard.js";
 import { WsAuthMiddleware } from "../../token/ws-auth.middleware.js";
 import { WorkspaceParticipantService } from "../../workspace/sub/workspace-participant/workspace-participant.service.js";
