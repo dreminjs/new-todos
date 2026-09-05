@@ -3,6 +3,7 @@ import { ChatMessagesRepository } from "./chat-messages.repository.js";
 import { IWsChatMessageDeletedPayload, TExtendedChatMessage } from "types";
 import {
   ChatMessagesPathParams,
+  GetChatMessagePathParams,
   GetChatMessagesQuery,
   TCreateMessageDto,
   TUpdateMessageDto,
@@ -73,7 +74,7 @@ export class ChatMessagesService {
     return chatMessage;
   }
 
-  async findMany(params: ChatMessagesPathParams, query: GetChatMessagesQuery) {
+  async findMany(params: GetChatMessagePathParams, query: GetChatMessagesQuery) {
     const foundMessages = await this.chatMessagesRepository.findAll(params, {
       take: query.take,
       cursor: query.cursor,

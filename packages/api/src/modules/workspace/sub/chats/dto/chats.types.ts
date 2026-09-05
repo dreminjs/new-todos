@@ -5,6 +5,7 @@ import {
   updateChatBodySchema,
 } from "types";
 import { findWorkspaceChatsPathParams } from "./chats.schemas.js";
+import z from "zod";
 
 export class GetChatsQuery extends createZodDto(infinityQueryParamsSchema) {}
 
@@ -15,3 +16,9 @@ export class UpdateChatDto extends createZodDto(updateChatBodySchema) {}
 export class FindWorkspaceChatsPathParams extends createZodDto(
   findWorkspaceChatsPathParams,
 ) {}
+
+export type TCreateChatBodyDto = z.infer<typeof createChatBodySchema>
+
+export type TCreateChatDto = TCreateChatBodyDto & {
+  workspaceId: string
+}

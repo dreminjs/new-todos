@@ -25,8 +25,11 @@ import { WorkspaceUserRole } from "#generated/enums.js";
 export class ChatsController {
   constructor(private readonly chatsService: ChatsService) {}
   @Post()
-  async createOne(@Body() body: CreateChatDto) {
-    return await this.chatsService.create(body);
+  async createOne(
+    @Body() body: CreateChatDto,
+    @Param("workspaceId") workspaceId: string,
+  ) {
+    return await this.chatsService.create({ ...body, workspaceId });
   }
   @Delete(":id")
   async deleteOne(@Param() pathParamas: FindWorkspaceChatsPathParams) {

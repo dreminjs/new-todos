@@ -1,29 +1,42 @@
 import {
   useInfiniteQuery,
   useMutation,
+  useQuery,
   useQueryClient,
+  type InfiniteData,
 } from "@tanstack/react-query";
-import { createMessage, createOne, getChatMessages } from "./services";
+import {
+  createMessage,
+  createOne,
+  findWorkspaceChats,
+  getChatMessages,
+} from "./services";
 import type {
   TChat,
   TCreateChatBodyDto,
   TExtendedChatMessage,
   IItemsResponse,
+  TCreateChatContext,
+  TCreateChatMessageBodyDto,
 } from "types";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
+import type { IChatContext } from "../model/chats.types";
 
-export const useCreateChat = () => {
+export const useCreateChat = (dtoContext: TCreateChatContext) => {
   const queryClient = useQueryClient();
   const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
   const { mutate, isPending } = useMutation({
-    mutationFn: createOne,
+    mutationFn: (dto: TCreateChatBodyDto) => createOne(dto, dtoContext),
     onMutate: (dto) => {
       const temporaryId = crypto.randomUUID();
       queryClient.setQueryData<TChat[]>(
-        ["workspace", dto.workspaceId, "chats"],
-        (chats) => [...chats, { ...dto, id: temporaryId }],
+        ["workspaces", dtoContext.workspaceId, "chats"],
+        (chats) => [
+          ...chats,
+          { ...dto, id: temporaryId, workspaceId: dtoContext.workspaceId },
+        ],
       );
       return { temporaryId };
     },
@@ -33,7 +46,7 @@ export const useCreateChat = () => {
         message: `Chat "${newChat.name}" has been created successfully.`,
       });
       queryClient.setQueryData<TChat[]>(
-        ["workspace", newChat.workspaceId, "chats"],
+        ["workspaces", newChat.workspaceId, "chats"],
         (chats) =>
           chats.map((chat) =>
             chat.id === context.temporaryId ? newChat : chat,
@@ -41,13 +54,18 @@ export const useCreateChat = () => {
       );
     },
     onError: (_error, _dto, context) => {
+      console.log(_error);
       addNotification({
         type: "error",
         message: `Failed to create chat "${_dto.name}".`,
       });
       queryClient.setQueryData<TChat[]>(
-        ["workspace", _dto.workspaceId, "chats"],
-        (chats) => chats.filter((chat) => chat.id !== context.temporaryId),
+        ["workspaces", dtoContext.workspaceId, "chats"],
+        (chats) => {
+          console.log(chats);
+
+          return chats.filter((chat) => chat.id !== context.temporaryId);
+        },
       );
     },
   });
@@ -62,35 +80,57 @@ export const useCreateChat = () => {
   return { mutate: handleMutate, isPending };
 };
 
-export const useChatMessages = (chatId: string) => {
+export const useGetChatMessages = (chatId: string, workspaceId: string) => {
   return useInfiniteQuery<IItemsResponse<TExtendedChatMessage>>({
-    queryKey: ["chats", chatId, "messages"],
-    queryFn: ({ pageParam }) => getChatMessages(chatId, pageParam as string),
+    queryKey: ["workspaces", workspaceId, "chats", chatId, "messages"],
+    queryFn: ({ pageParam }) =>
+      getChatMessages({ chatId, workspaceId }, pageParam as string),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
 };
 
-export const useCreateChatMessage = () => {
+export const useCreateChatMessage = (dtoContext: IChatContext) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createMessage,
+    mutationFn: (dto: TCreateChatMessageBodyDto) =>
+      createMessage(dto, dtoContext),
     onSuccess: (newMessage) => {
-      queryClient.setQueryData(
-        ["chats", newMessage.chatId, "messages"],
-        (old: { pages: IItemsResponse<TExtendedChatMessage>[]; pageParams: (string | undefined)[] } | undefined) => {
+      queryClient.setQueryData<
+        InfiniteData<IItemsResponse<TExtendedChatMessage>>
+      >(
+        [
+          "workspaces",
+          dtoContext.workspaceId,
+          "chats",
+          dtoContext.chatId,
+          "messages",
+        ],
+        (
+          old:
+            | {
+                pages: IItemsResponse<TExtendedChatMessage>[];
+                pageParams: (string | undefined)[];
+              }
+            | undefined,
+        ) => {
           if (!old) return old;
           return {
             ...old,
             pages: old.pages.map((page, i) =>
-              i === 0
-                ? { ...page, items: [newMessage, ...page.items] }
-                : page,
+              i === 0 ? { ...page, items: [newMessage, ...page.items] } : page,
             ),
           };
         },
       );
     },
+  });
+};
+
+export const useGetWorkspaceChats = (workspaceId: string) => {
+  return useQuery({
+    queryFn: () => findWorkspaceChats(workspaceId),
+    queryKey: ["workspaces", workspaceId, "chats"],
   });
 };

@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { WorkspaceChatsList } from "./WorkspaceChatsList";
 import { CreateChatModal } from "../../../chats";
 import { CreateItemButton } from "../../views/CreateItemButton/CreateItemButton";
+import type { TCreateChatContext } from "types";
 
 export const WorkspaceChats = () => {
   const [isCreateChatOpen, setIsCreateChatOpen] = useState(false);
@@ -11,7 +12,9 @@ export const WorkspaceChats = () => {
     setIsCreateChatOpen((prev) => !prev);
   };
 
-  const { workspaceId } = useParams();
+  const params = useParams<TCreateChatContext>();
+
+  console.log(params);
 
   return (
     <>
@@ -23,7 +26,7 @@ export const WorkspaceChats = () => {
       <CreateChatModal
         isOpen={isCreateChatOpen}
         onClose={handleChatToggle}
-        chatContext={{ workspaceId }}
+        chatContext={params}
       />
     </>
   );

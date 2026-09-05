@@ -4,6 +4,7 @@ import { ChatsRepository } from "./chats.repository.js";
 import {
   CreateChatDto,
   FindWorkspaceChatsPathParams,
+  TCreateChatDto,
   UpdateChatDto,
 } from "./dto/chats.types.js";
 
@@ -23,7 +24,7 @@ export class ChatsService {
     return this.chatsRepository.findByIdAndWorkspaceId(dto);
   }
 
-  async create(data: CreateChatDto): Promise<Chat> {
+  async create(data: TCreateChatDto): Promise<Chat> {
     return this.chatsRepository.create({
       name: data.name,
       workspace: {

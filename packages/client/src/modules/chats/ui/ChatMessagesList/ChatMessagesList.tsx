@@ -1,17 +1,19 @@
 import { useEffect, useRef } from "react";
 import type { FC } from "react";
-import { useChatMessages } from "../../api/queries";
+import { useGetChatMessages } from "../../api/queries";
 import { ChatMessagesListItem } from "../ChatMessagesListItem/ChatMessagesListItem";
 import styles from "./ChatMessagesList.module.css";
 import { useGetMe } from "../../../users";
+import type { IChatContext } from "../../model/chats.types";
 
-interface IChatMessagesListProps {
-  chatId: string;
-}
+type TChatMessagesListProps = IChatContext;
 
-export const ChatMessagesList: FC<IChatMessagesListProps> = ({ chatId }) => {
+export const ChatMessagesList: FC<TChatMessagesListProps> = ({
+  chatId,
+  workspaceId,
+}) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useChatMessages(chatId);
+    useGetChatMessages(chatId, workspaceId);
   const currentUserId = useGetMe("id").data;
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -52,13 +54,14 @@ export const ChatMessagesList: FC<IChatMessagesListProps> = ({ chatId }) => {
         </button>
       )}
       <ul className={styles.list}>
-        {messages.map((message) => (
-          <ChatMessagesListItem
-            key={message.id}
-            message={message}
-            isMine={currentUserId === message.user.id}
-          />
-        ))}
+        {messages
+          .map((message) => (
+            <ChatMessagesListItem
+              key={message.id}
+              message={message}
+              isMine={currentUserId === message.user.id}
+            />
+          ))}
       </ul>
       <div ref={bottomRef} />
     </div>

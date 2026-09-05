@@ -10,11 +10,10 @@ export const chatsSchema = z.object({
 
 export const createChatBodySchema = chatsSchema.omit({
   id: true,
+  workspaceId: true
 });
 
-export const updateChatBodySchema = createChatBodySchema.pick({
-  name: true,
-});
+export const updateChatBodySchema = createChatBodySchema
 
 export const joinChatRoomBodySchema = chatsSchema.pick({
   id: true,
@@ -27,12 +26,13 @@ export const chatMessageSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   chatId: z.uuid(),
-  replyToId: z.uuid().optional(),
+  replyToId: z.uuid().optional()
 });
 
 export const extendedChatMessageSchema = chatMessageSchema
   .omit({
     userId: true,
+    replyToId: true
   })
   .extend({
     user: userSchema.nullable(),

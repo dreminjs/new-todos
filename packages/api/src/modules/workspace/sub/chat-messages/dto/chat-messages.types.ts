@@ -26,7 +26,7 @@ export class UpdateMessageBodyDto extends createZodDto(
 export type TCreateMessageDto = TCreateChatMessageBodyDto & {
   userId: string;
   workspaceId: string;
-  chatId: string
+  chatId: string;
 };
 
 export type TUpdateMessageDto = TUpdateChatMessageBodyDto & { userId: string };
@@ -38,6 +38,12 @@ export class GetChatMessagesQuery extends createZodDto(
 export class ChatMessagesPathParams extends createZodDto(
   chatMessagePathSchema,
 ) {}
+export class GetChatMessagePathParams extends createZodDto(
+  chatMessagePathSchema.omit({
+    chatMessageId: true,
+  }),
+) {}
+
 export class CreateChatMessagePathParams extends createZodDto(
   createChatMessagePathSchema,
 ) {}

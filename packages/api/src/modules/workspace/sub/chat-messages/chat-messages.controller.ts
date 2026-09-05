@@ -15,6 +15,7 @@ import {
   ChatMessagesPathParams,
   CreateChatMessagePathParams,
   CreateMessageBodyDto,
+  GetChatMessagePathParams,
   GetChatMessagesQuery,
   UpdateMessageBodyDto,
 } from "./dto/chat-messages.types.js";
@@ -30,7 +31,7 @@ export class ChatMessagesController {
   constructor(private readonly chatMessagesService: ChatMessagesService) {}
   @Get()
   async findMany(
-    @Param() pathParams: ChatMessagesPathParams,
+    @Param() pathParams: GetChatMessagePathParams,
     @Query() query: GetChatMessagesQuery,
   ): Promise<IItemsResponse<TExtendedChatMessage>> {
     return this.chatMessagesService.findMany(pathParams, query);

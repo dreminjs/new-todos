@@ -10,9 +10,7 @@ import {
   createOne,
   findManyMyWorkspaces,
   findMembership,
-  findParticipants,
   findParticipantsByWorkspaceId,
-  findWorkspaceChats,
   findWorkspaceInfo,
   findWorkspaceTodoGroups,
   inviteMember,
@@ -337,12 +335,5 @@ export const useGetWorkspaceTodoGroups = (workspaceId: string) => {
   return useQuery({
     queryFn: () => findWorkspaceTodoGroups(workspaceId),
     queryKey: ["workspaces", workspaceId, "todo-groups"],
-  });
-};
-
-export const useGetWorkspaceChats = (workspaceId: string) => {
-  return useQuery({
-    queryFn: () => findWorkspaceChats(workspaceId),
-    queryKey: ["workspaces", workspaceId, "chats"],
   });
 };

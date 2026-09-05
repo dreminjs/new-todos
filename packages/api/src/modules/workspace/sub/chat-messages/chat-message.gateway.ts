@@ -56,17 +56,17 @@ export class ChatMessagesGateway {
     server.use(this.wsAuthMiddleware.use);
   }
 
-  @SubscribeMessage("chat-message:recieve")
+  @SubscribeMessage("chat-messages:recieve")
   handleMessageRecieveMessage(client: Socket, payload: TExtendedChatMessage) {
     return this.server
       .to(`chat-room:${payload.chatId}`)
-      .emit("chat-message:recieve", payload);
+      .emit("chat-messages:recieve", payload);
   }
 
   handleSendMessage(payload: TExtendedChatMessage) {
     return this.server
       .to(`chat-room:${payload.chatId}`)
-      .emit("chat-message:recieve", payload);
+      .emit("chat-messages:recieve", payload);
   }
 
   @SubscribeMessage("chat-message:delete")
@@ -76,25 +76,25 @@ export class ChatMessagesGateway {
   ) {
     return this.server
       .to(`chat-room:${payload.chatId}`)
-      .emit("chat-message:delete", payload);
+      .emit("chat-messages:delete", payload);
   }
 
   handleDeleteMessage(payload: IWsChatMessageDeletedPayload) {
     return this.server
       .to(`chat-room:${payload.chatId}`)
-      .emit("chat-message:delete", payload);
+      .emit("chat-messages:delete", payload);
   }
 
   @SubscribeMessage("chat-message:edit")
   handleMessageEditMessage(client: Socket, payload: TExtendedChatMessage) {
     return this.server
       .to(`chat-room:${payload.chatId}`)
-      .emit("chat-message:edit", payload);
+      .emit("chat-messages:edit", payload);
   }
 
   handleEditMessage(payload: TExtendedChatMessage) {
     return this.server
       .to(`chat-room:${payload.chatId}`)
-      .emit("chat-message:edit", payload);
+      .emit("chat-messages:edit", payload);
   }
 }

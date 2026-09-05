@@ -4,6 +4,7 @@ import { Prisma } from "generated/prisma/client.js";
 import { extendedChatMessageSchema, TExtendedChatMessage } from "types";
 import {
   ChatMessagesPathParams,
+  GetChatMessagePathParams,
   GetChatMessagesQuery,
 } from "./dto/chat-messages.types.js";
 import { PUBLIC_USER_SELECT } from "../../../user/index.js";
@@ -28,7 +29,7 @@ export class ChatMessagesRepository {
   }
 
   async findAll(
-    params: ChatMessagesPathParams,
+    params: GetChatMessagePathParams,
     query: GetChatMessagesQuery,
   ): Promise<TExtendedChatMessage[]> {
     return this.prisma.chatMessage.findMany({
@@ -39,7 +40,7 @@ export class ChatMessagesRepository {
         },
       },
       take: query.take + 1,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "asc" },
       skip: query.cursor ? 1 : 0,
       ...(query.cursor && {
         cursor: {

@@ -2,23 +2,19 @@ import { useState, type KeyboardEvent } from "react";
 import type { FC } from "react";
 import { useCreateChatMessage } from "../../api/queries";
 import styles from "./ChatInput.module.css";
+import type { IChatContext } from "../../model/chats.types";
 
-interface IChatInputProps {
-  chatId: string;
-}
+type TChatInputProps = IChatContext;
 
-export const ChatInput: FC<IChatInputProps> = ({ chatId }) => {
+export const ChatInput: FC<TChatInputProps> = (props) => {
   const [content, setContent] = useState("");
-  const { mutate, isPending } = useCreateChatMessage();
+  const { mutate, isPending } = useCreateChatMessage(props);
 
   const handleSend = () => {
     const trimmed = content.trim();
     if (!trimmed || isPending) return;
 
-    mutate(
-      { content: trimmed, chatId },
-      { onSuccess: () => setContent("") },
-    );
+    mutate({ content: trimmed }, { onSuccess: () => setContent("") });
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {

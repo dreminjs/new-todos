@@ -50,7 +50,11 @@ instance.interceptors.response.use(
       return instance(originalRequest);
     } catch (refreshError) {
       processQueue(refreshError);
-      window.location.href = "/login";
+
+      if (window.location.pathname !== "/auth/signin") {
+        window.location.href = "/auth/signin";
+      }
+
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
