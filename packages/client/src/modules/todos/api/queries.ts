@@ -19,7 +19,6 @@ import type {
   ICreateTodoContext,
   TCreateTodo,
   TFindAllQuery,
-  TUpdateTodoStatusDto,
 } from "../model/todo.types";
 import type {
   IItemsResponse,
@@ -342,11 +341,9 @@ export const useUpdateTodo = (
     },
     mutationKey: ["todo", "update", todoId],
     networkMode: "always",
-    onSuccess: (newTodo) => {
-      addNotification({
-        message: "Todo updated successfully",
-        type: "success",
-      });
+
+    onMutate: (newTodo: TExtendedTodo) => {
+      cb();
 
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         getTodosQueryKey(queryFilter),
@@ -372,10 +369,14 @@ export const useUpdateTodo = (
       >({
         queryKey: ["todos"],
       });
+      console.log(previous);
       return { previous };
     },
-    onMutate: (newTodo: TExtendedTodo) => {
-      cb();
+    onSuccess: (newTodo) => {
+      addNotification({
+        message: "Todo updated successfully",
+        type: "success",
+      });
 
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         getTodosQueryKey(queryFilter),

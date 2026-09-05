@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service.js";
-import { ChatMessage, Prisma } from "generated/prisma/client.js";
-import { TExtendedChatMessage } from "types";
+import { Prisma } from "generated/prisma/client.js";
+import { extendedChatMessageSchema, TExtendedChatMessage } from "types";
 import {
   ChatMessagesPathParams,
   GetChatMessagesQuery,
 } from "./dto/chat-messages.types.js";
+import { PUBLIC_USER_SELECT } from "../../../user/index.js";
 
 @Injectable()
 export class ChatMessagesRepository {
@@ -14,20 +15,16 @@ export class ChatMessagesRepository {
   async createExtended(
     data: Prisma.ChatMessageCreateInput,
   ): Promise<TExtendedChatMessage> {
-    return (await this.prisma.chatMessage.create({
+    const chatMessage = await this.prisma.chatMessage.create({
       data,
       include: {
         user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            avatarUrl: true,
-          },
+          select: PUBLIC_USER_SELECT,
         },
       },
-    })) as unknown as TExtendedChatMessage;
+    });
+
+    return extendedChatMessageSchema.parse(chatMessage);
   }
 
   async findAll(
@@ -38,13 +35,7 @@ export class ChatMessagesRepository {
       where: { ...params },
       include: {
         user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            avatarUrl: true,
-          },
+          select: PUBLIC_USER_SELECT,
         },
       },
       take: query.take + 1,
@@ -78,13 +69,7 @@ export class ChatMessagesRepository {
       data,
       include: {
         user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            avatarUrl: true,
-          },
+          select: PUBLIC_USER_SELECT,
         },
       },
     }) as unknown as TExtendedChatMessage;
