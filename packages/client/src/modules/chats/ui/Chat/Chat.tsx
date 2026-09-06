@@ -4,6 +4,7 @@ import { ChatInput } from "../ChatInput/ChatInput";
 import { ChatMessagesList } from "../ChatMessagesList/ChatMessagesList";
 import styles from "./Chat.module.css";
 import { useSyncChatMessages } from "../../model/useSyncChatMessages";
+import { ChatHeader } from "../ChatHeader/ChatHeader";
 
 export const Chat: FC = () => {
   const { chatId, workspaceId } = useParams<{
@@ -14,6 +15,7 @@ export const Chat: FC = () => {
   useSyncChatMessages({ chatId, workspaceId });
   return (
     <div className={styles.chat}>
+      <ChatHeader />
       <ChatMessagesList chatId={chatId} workspaceId={workspaceId} />
       <ChatInput workspaceId={workspaceId} chatId={chatId} />
     </div>

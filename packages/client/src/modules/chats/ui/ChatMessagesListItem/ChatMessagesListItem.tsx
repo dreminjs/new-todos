@@ -40,7 +40,7 @@ export const ChatMessagesListItem: FC<IChatMessagesListItemProps> = ({
       </div>
       <div className={styles.body}>
         <div className={styles.header}>
-          <span className={styles.userName}>{displayName}</span>
+          <span className={styles.userName}>{isMine ? "You" : displayName}</span>
           <span className={styles.timestamp}>{time}</span>
         </div>
         <p className={styles.content}>{message.content}</p>

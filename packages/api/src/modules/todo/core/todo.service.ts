@@ -180,6 +180,12 @@ export class TodoService {
       ...(query.cursor && { cursor: { id: query.cursor }, skip: 1 }),
       take: +query.limit + 1,
       orderBy: { createdAt: "desc" },
+      omit: {
+        userId: true,
+        assigneeId: true,
+        workspaceId: true,
+        todoGroupId: true
+      },
       include: {
         workspace: true,
         todoGroup: true,

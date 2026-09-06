@@ -105,9 +105,8 @@ export const useCreateTodo = ({
             pages: old.pages.map((page) => ({
               ...page,
               items: page.items
-                .filter((el) => el.id === context.temporaryTodoId)
                 .map((todo) =>
-                  todo.id === createdTodo.id ? createdTodo : todo,
+                  todo.id === context.temporaryTodoId ? createdTodo : todo,
                 ),
             })),
           };

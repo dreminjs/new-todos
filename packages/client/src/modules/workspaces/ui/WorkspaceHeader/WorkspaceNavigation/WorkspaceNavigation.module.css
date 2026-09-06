@@ -2,14 +2,14 @@
 
 
 .workspaceNavigation {
-    padding: 12px;
+    padding: 5px;
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
 .workspaceNavigationItem {
-    padding: 6px 12px;
+    padding: 3px 12px;
     border-radius: 8px;
     font-size: 18px;
 }

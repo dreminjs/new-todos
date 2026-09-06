@@ -14,49 +14,61 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
   workspaceId,
 }) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useGetChatMessages(chatId, workspaceId);
-  const currentUserId = useGetMe("id").data;
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+     useGetChatMessages(chatId, workspaceId);
+   const currentUserId = useGetMe("id").data;
+   const bottomRef = useRef<HTMLDivElement>(null);
+   const containerRef = useRef<HTMLDivElement>(null);
+   const isPaginatingRef = useRef(false);
+   const prevScrollHeightRef = useRef(0);
+   const isNearBottomRef = useRef(true);
 
-  const isFirstLoadRef = useRef(true);
-  const isPaginatingRef = useRef(false);
-  const prevScrollHeightRef = useRef(0);
+   const NEAR_BOTTOM_THRESHOLD = 150; // px
 
-  const messages = data?.pages.flatMap((page) => page.items) ?? [];
+   const messages = data?.pages.flatMap((page) => page.items) ?? [];
 
-  const inViewRef = useOnInView(
-    (inView) => {
-      if (inView && hasNextPage && !isFetchingNextPage) {
-        isPaginatingRef.current = true;
-        if (containerRef.current) {
-          prevScrollHeightRef.current = containerRef.current.scrollHeight;
-        }
-        fetchNextPage();
-      }
-    },
-    { scrollMargin: "250px" },
-  );
+   const inViewRef = useOnInView(
+     (inView) => {
+       if (inView && hasNextPage && !isFetchingNextPage) {
+         isPaginatingRef.current = true;
+         if (containerRef.current) {
+           prevScrollHeightRef.current = containerRef.current.scrollHeight;
+         }
+         fetchNextPage();
+       }
+     },
+     { scrollMargin: "250px" },
+   );
 
-  useLayoutEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+   useEffect(() => {
+     const container = containerRef.current;
+     if (!container) return;
 
-    if (isFirstLoadRef.current) {
-      bottomRef.current?.scrollIntoView({ behavior: "auto" });
-      isFirstLoadRef.current = false;
-      return;
-    }
+     const handleScroll = () => {
+       const distanceFromBottom =
+         container.scrollHeight - container.scrollTop - container.clientHeight;
+       isNearBottomRef.current = distanceFromBottom < NEAR_BOTTOM_THRESHOLD;
+     };
 
-    if (isPaginatingRef.current) {
-      const diff = container.scrollHeight - prevScrollHeightRef.current;
-      container.scrollTop += diff;
-      isPaginatingRef.current = false;
-      return;
-    }
+     handleScroll();
+     container.addEventListener("scroll", handleScroll);
+     return () => container.removeEventListener("scroll", handleScroll);
+   }, []);
 
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]);
+   useLayoutEffect(() => {
+     const container = containerRef.current;
+     if (!container) return;
+
+     if (isPaginatingRef.current) {
+       const diff = container.scrollHeight - prevScrollHeightRef.current;
+       container.scrollTop += diff;
+       isPaginatingRef.current = false;
+       return;
+     }
+
+     if (isNearBottomRef.current) {
+       bottomRef.current?.scrollIntoView({ behavior: "auto" });
+     }
+   }, [messages.length]);
 
   if (isLoading) {
     return <div className={styles.loading}>Loading messages...</div>;

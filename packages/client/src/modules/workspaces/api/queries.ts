@@ -235,6 +235,7 @@ export const useGetWorkspaceInfo = (workspaceId: string) => {
   return useQuery({
     queryKey: ["workspaces", workspaceId, "info"],
     queryFn: () => findWorkspaceInfo(workspaceId),
+    enabled: !!workspaceId,
   });
 };
 

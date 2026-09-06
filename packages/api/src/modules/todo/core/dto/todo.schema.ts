@@ -10,7 +10,6 @@ export const createTodoSchema = todoSchema
   })
   .extend({
     deadline: z.string().datetime().nullable().optional(),
-    id: z.string(),
   });
 
 export const updateTodoSchema = createTodoSchema

@@ -118,6 +118,7 @@ export const TodoKanbanBoard: FC<TTodoKanbanBoardProps> = ({
       <DragOverlay>
         {activeTodo && (
           <TodoItem
+            id={activeTodo.id}
             currentUserId={currentUserId}
             isOverlay={true}
             assignee={activeTodo.assignee}

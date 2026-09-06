@@ -35,10 +35,10 @@ export const extendedTodoSchema = todoSchema
     assigneeId: true
   })
   .extend({
-    workspace: workspaceSchema.nullable(),
-    todoGroup: todoGroupSchema.nullable(),
-    user: userSchema.nullable(),
-    assignee: userSchema.nullable(),
+    workspace: workspaceSchema.nullable().optional(),
+    todoGroup: todoGroupSchema.nullable().optional(),
+    user: userSchema.nullable().optional(),
+    assignee: userSchema.nullable().optional(),
   });
 
 export const findTodosSchema = z.object({

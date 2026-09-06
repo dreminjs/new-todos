@@ -77,10 +77,10 @@ export const TodoItem: FC<TProps> = ({
         onClick={onChoose}
         status={status}
         priority={priority}
-        todoGroup={props.todoGroup}
-        workspace={props.workspace}
+        todoGroup={props?.todoGroup}
+        workspace={props?.workspace}
         className={clsx(isMutating && styles.todoItemLoading)}
-        disableToClick={props.currentUserId != props.assignee.id}
+        disableToClick={props.currentUserId != props?.assignee?.id}
         description={props.description}
       />
 
