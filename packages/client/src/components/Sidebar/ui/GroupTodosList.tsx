@@ -33,7 +33,7 @@ export const GroupTodosList = () => {
               to={`/todo-groups/${el.id}/todos`}
             />
           ))}
-        </ul>2
+        </ul>
       </CustomAccordion>
       {isCreateTodoGroupOpen && (
         <CreateTodoGroupModal

@@ -1,15 +1,14 @@
 import { useForm } from "react-hook-form";
 import { FormBottom, FormField, Modal } from "../../../../shared";
-import { type TCreateTodoGroupBody } from "types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateTodoGroup } from "../../api/queries";
 import { type FC } from "react";
 import type {
   TCreateTodoGroupContext,
-  TCreateTodoGroupForm,
 } from "../../model/todo-group.dto";
 import { createTodoGroupFormSchema } from "../../model/todo-group.schema";
 import styles from "./CreateTodoGroupModal.module.css";
+import type { TCreateTodoGroupBody } from "types";
 
 interface ICreateTodoGroupModalProps {
   isOpen: boolean;
@@ -26,12 +25,12 @@ export const CreateTodoGroupModal: FC<ICreateTodoGroupModalProps> = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TCreateTodoGroupForm>({
+  } = useForm<TCreateTodoGroupBody>({
     resolver: zodResolver(createTodoGroupFormSchema),
   });
 
   const { mutate, isPending } = useCreateTodoGroup();
-  const handleCreateTodoGroup = (data: TCreateTodoGroupForm) => {
+  const handleCreateTodoGroup = (data: TCreateTodoGroupBody) => {
     mutate(
       {
         ...data,
@@ -47,7 +46,7 @@ export const CreateTodoGroupModal: FC<ICreateTodoGroupModalProps> = ({
         className={styles.createTodoGroupForm}
         onSubmit={handleSubmit(handleCreateTodoGroup)}
       >
-        <FormField<TCreateTodoGroup>
+        <FormField<TCreateTodoGroupBody>
           name={"name"}
           register={register}
           error={errors.name?.message}

@@ -22,7 +22,7 @@ import { Todo } from "api/generated/prisma/client.js";
 import { FindTodoQueryParamsDto } from "./dto/todo.dto.js";
 import { CurrentUser } from "../../user/decorators/user.decorator.js";
 import { IItemsResponse, TExtendedTodo } from "types";
-import { IsTodoOnwerGuard } from "./isTodoOwner.guard.js";
+import { CanEditTodoGuard } from "./CanEditTodo.guard.js";
 
 @UseGuards(AccessTokenGuard)
 @Controller("todos")
@@ -46,6 +46,7 @@ export class TodoController {
     return await this.todoService.findAll(userId, query);
   }
 
+  @UseGuards(CanEditTodoGuard)
   @Patch("/:id/update-status")
   async updateStatus(
     @CurrentUser("id") userId: string,
@@ -66,7 +67,7 @@ export class TodoController {
     return await this.todoService.findMyDay(userId, query);
   }
 
-  @UseGuards(IsTodoOnwerGuard)
+  @UseGuards(CanEditTodoGuard)
   @Put(":id")
   async updateOne(
     @Param("id") todoId: string,
@@ -75,7 +76,7 @@ export class TodoController {
     return await this.todoService.updateOne(todoId, dto);
   }
 
-  @UseGuards(IsTodoOnwerGuard)
+  @UseGuards(CanEditTodoGuard)
   @Delete(":id")
   async deleteOne(@Param("id") todoId: string): Promise<void> {
     await this.todoService.deleteOne(todoId);
