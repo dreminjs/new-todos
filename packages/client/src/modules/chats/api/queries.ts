@@ -116,11 +116,22 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
             | undefined,
         ) => {
           if (!old) return old;
+          const alreadyExists = old.pages.some((page) =>
+            page.items.some((msg) => msg.id === newMessage.id),
+          );
+          if (alreadyExists) return old;
+
+          const lastPage = old.pages[old.pages.length - 1];
+          const restPages = old.pages.slice(0, -1);
           return {
             ...old,
-            pages: old.pages.map((page, i) =>
-              i === 0 ? { ...page, items: [newMessage, ...page.items] } : page,
-            ),
+            pages: [
+              ...restPages,
+              {
+                ...lastPage,
+                items: [...lastPage.items, newMessage],
+              },
+            ],
           };
         },
       );

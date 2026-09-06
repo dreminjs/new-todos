@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import type { FC } from "react";
 import { useGetChatMessages } from "../../api/queries";
 import { ChatMessagesListItem } from "../ChatMessagesListItem/ChatMessagesListItem";
 import styles from "./ChatMessagesList.module.css";
 import { useGetMe } from "../../../users";
 import type { IChatContext } from "../../model/chats.types";
+import { useOnInView } from "react-intersection-observer";
 
 type TChatMessagesListProps = IChatContext;
 
@@ -18,23 +19,42 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const isFirstLoadRef = useRef(true);
+  const isPaginatingRef = useRef(false);
+  const prevScrollHeightRef = useRef(0);
+
   const messages = data?.pages.flatMap((page) => page.items) ?? [];
 
-  useEffect(() => {
+  const inViewRef = useOnInView(
+    (inView) => {
+      if (inView && hasNextPage && !isFetchingNextPage) {
+        isPaginatingRef.current = true;
+        if (containerRef.current) {
+          prevScrollHeightRef.current = containerRef.current.scrollHeight;
+        }
+        fetchNextPage();
+      }
+    },
+    { scrollMargin: "250px" },
+  );
+
+  useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const handleScroll = () => {
-      if (container.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    };
+    if (isFirstLoadRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+      isFirstLoadRef.current = false;
+      return;
+    }
 
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+    if (isPaginatingRef.current) {
+      const diff = container.scrollHeight - prevScrollHeightRef.current;
+      container.scrollTop += diff;
+      isPaginatingRef.current = false;
+      return;
+    }
 
-  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
 
@@ -44,24 +64,15 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
 
   return (
     <div ref={containerRef} className={styles.container}>
-      {hasNextPage && (
-        <button
-          className={styles.loadMore}
-          onClick={() => fetchNextPage()}
-          disabled={isFetchingNextPage}
-        >
-          {isFetchingNextPage ? "Loading..." : "Load older messages"}
-        </button>
-      )}
       <ul className={styles.list}>
-        {messages
-          .map((message) => (
-            <ChatMessagesListItem
-              key={message.id}
-              message={message}
-              isMine={currentUserId === message.user.id}
-            />
-          ))}
+        <li style={{ height: 1 }} ref={inViewRef} />
+        {messages.map((message) => (
+          <ChatMessagesListItem
+            key={message.id}
+            message={message}
+            isMine={currentUserId === message.user.id}
+          />
+        ))}
       </ul>
       <div ref={bottomRef} />
     </div>

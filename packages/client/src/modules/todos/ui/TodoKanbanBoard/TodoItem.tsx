@@ -59,7 +59,8 @@ export const TodoItem: FC<TProps> = ({
     : undefined;
   const isMutating = useIsTodoMutating({
     todoId: id,
-    todoGroupId: props.todoGroup?.id,
+    todoGroupId: props?.todoGroup?.id,
+    workspaceId: props?.workspace?.id,
   });
   return (
     <>
@@ -79,8 +80,8 @@ export const TodoItem: FC<TProps> = ({
         todoGroup={props.todoGroup}
         workspace={props.workspace}
         className={clsx(isMutating && styles.todoItemLoading)}
-        isDescriptionVisible={Boolean(props.description)}
         disableToClick={props.currentUserId != props.assignee.id}
+        description={props.description}
       />
 
       {draggingUser && originRect && (

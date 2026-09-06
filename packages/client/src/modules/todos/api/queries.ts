@@ -46,7 +46,7 @@ export const useCreateTodo = ({
   const queryKey = getTodosQueryKey(queryKeyFilters);
 
   const { mutate, ...rest } = useMutation({
-    mutationFn: (data: TCreateTodo & ICreateTodoContext) => createOne(data),
+    mutationFn: (data: TCreateTodo) => createOne({ ...data, ...todoContext }),
     mutationKey: ["todo", "create"],
     onMutate: async (newTodo) => {
       cb();
@@ -55,6 +55,8 @@ export const useCreateTodo = ({
 
       const previousData =
         client.getQueryData<InfiniteData<IItemsResponse<TTodo>>>(queryKey);
+
+      const temporaryTodoId = crypto.randomUUID();
 
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
         queryKey,
@@ -71,6 +73,7 @@ export const useCreateTodo = ({
                 items: [
                   {
                     ...newTodo,
+                    id: temporaryTodoId,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                   } as TTodo,
@@ -84,10 +87,10 @@ export const useCreateTodo = ({
         },
       );
 
-      return { previousData };
+      return { previousData, temporaryTodoId };
     },
 
-    onSuccess: (serverTodo) => {
+    onSuccess: (createdTodo, _dto, context) => {
       addNotification({
         message: "Todo created successfully",
         type: "success",
@@ -101,9 +104,11 @@ export const useCreateTodo = ({
             ...old,
             pages: old.pages.map((page) => ({
               ...page,
-              items: page.items.map((todo) =>
-                todo.id === serverTodo.id ? serverTodo : todo,
-              ),
+              items: page.items
+                .filter((el) => el.id === context.temporaryTodoId)
+                .map((todo) =>
+                  todo.id === createdTodo.id ? createdTodo : todo,
+                ),
             })),
           };
         },
@@ -125,7 +130,7 @@ export const useCreateTodo = ({
   });
 
   const handleMutate = (data: TCreateTodoForm) => {
-    mutate({ ...data, ...todoContext, id: crypto.randomUUID() });
+    mutate({ ...data, ...todoContext });
   };
 
   return {

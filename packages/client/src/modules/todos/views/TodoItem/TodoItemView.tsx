@@ -18,7 +18,7 @@ interface ITodoItemViewProps {
   todoGroup: TTodoGroup | null;
   workspace: TWorkspace | null;
   isMyToday: boolean;
-  isDescriptionVisible: boolean;
+  description?: string;
   className?: string;
   isBeingDraggedRemotely?: boolean;
   disableToClick: boolean;
@@ -38,10 +38,10 @@ export const TodoItemView: FC<ITodoItemViewProps> = ({
   todoGroup,
   workspace,
   isMyToday,
-  isDescriptionVisible,
   className,
   isBeingDraggedRemotely,
   disableToClick,
+  description,
 }) => {
   return (
     <>
@@ -76,7 +76,7 @@ export const TodoItemView: FC<ITodoItemViewProps> = ({
               {todoGroup && <span>{todoGroup.name}</span>}
               {workspace && <span>{workspace.name}</span>}
               {isMyToday && <LuSun />}
-              {isDescriptionVisible && <LuBookText />}
+              {description && <LuBookText />}
               {deadline && (
                 <div
                   className={clsx(
