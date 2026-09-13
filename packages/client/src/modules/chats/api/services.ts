@@ -57,3 +57,12 @@ export const findWorkspaceChats = async (
   return (await instance.get(`${BASE_WORKSPACES_URL}/${workspaceId}/chats`))
     .data;
 };
+
+export const deleteMessageChat = async (
+  chatMessageId: string,
+  { chatId, workspaceId }: IChatContext,
+) => {
+  return (await instance.delete(
+    `${BASE_WORKSPACES_URL}/${workspaceId}/${CHATS_URL}/${chatId}/${MESSAGES_URL}/${chatMessageId}`,
+  )).data;
+};

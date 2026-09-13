@@ -8,6 +8,7 @@ import {
 import {
   createMessage,
   createOne,
+  deleteMessageChat,
   findWorkspaceChats,
   getChatMessages,
 } from "./services";
@@ -21,6 +22,9 @@ import type {
 } from "types";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 import type { IChatContext } from "../model/chats.types";
+import { useChatStore } from "../model/chat.store";
+import { useGetMe } from "../../users";
+import { useClearReplyMessageId } from "../model/hooks/useClearReplyMessageId";
 
 export const useCreateChat = (dtoContext: TCreateChatContext) => {
   const queryClient = useQueryClient();
@@ -92,11 +96,16 @@ export const useGetChatMessages = (chatId: string, workspaceId: string) => {
 
 export const useCreateChatMessage = (dtoContext: IChatContext) => {
   const queryClient = useQueryClient();
+  const replyMessageId = useChatStore((state) => state.replyMessageId);
+  const clearReplyMessageId = useClearReplyMessageId();
 
+  const currentUser = useGetMe();
   return useMutation({
     mutationFn: (dto: TCreateChatMessageBodyDto) =>
-      createMessage(dto, dtoContext),
-    onSuccess: (newMessage) => {
+      createMessage({ ...dto, replyToId: replyMessageId }, dtoContext),
+    onMutate: (dto) => {
+      const temporaryId = crypto.randomUUID();
+
       queryClient.setQueryData<
         InfiniteData<IItemsResponse<TExtendedChatMessage>>
       >(
@@ -116,10 +125,6 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
             | undefined,
         ) => {
           if (!old) return old;
-          const alreadyExists = old.pages.some((page) =>
-            page.items.some((msg) => msg.id === newMessage.id),
-          );
-          if (alreadyExists) return old;
 
           const lastPage = old.pages[old.pages.length - 1];
           const restPages = old.pages.slice(0, -1);
@@ -129,10 +134,47 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
               ...restPages,
               {
                 ...lastPage,
-                items: [...lastPage.items, newMessage],
+                items: [
+                  ...lastPage.items,
+                  {
+                    ...dto,
+                    id: temporaryId,
+                    chatId: dtoContext.chatId,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    user: currentUser.data,
+                  },
+                ],
               },
             ],
           };
+        },
+      );
+
+      return {
+        temporaryId,
+      };
+    },
+    onSuccess: (newMessage, _dto, context) => {
+      clearReplyMessageId();
+
+      queryClient.setQueryData<
+        InfiniteData<IItemsResponse<TExtendedChatMessage>>
+      >(
+        [
+          "workspaces",
+          dtoContext.workspaceId,
+          "chats",
+          dtoContext.chatId,
+          "messages",
+        ],
+        (old) => {
+          if (!old) return old;
+
+          const pages = old.pages.map((page) => ({
+            ...page,
+            items: page.items.filter((msg) => msg.id !== context.temporaryId),
+          }));          return { ...old, pages };
         },
       );
     },
@@ -143,5 +185,90 @@ export const useGetWorkspaceChats = (workspaceId: string) => {
   return useQuery({
     queryFn: () => findWorkspaceChats(workspaceId),
     queryKey: ["workspaces", workspaceId, "chats"],
+  });
+};
+
+export const useDeleteChatMessage = (dtoContext: IChatContext) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (chatMessageId: string) =>
+      deleteMessageChat(chatMessageId, dtoContext),
+    onSuccess: (chatMessage: TExtendedChatMessage) => {
+      queryClient.setQueryData<
+        InfiniteData<IItemsResponse<TExtendedChatMessage>>
+      >(
+        [
+          "workspaces",
+          dtoContext.workspaceId,
+          "chats",
+          dtoContext.chatId,
+          "messages",
+        ],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            items: old.pages.map((el) =>
+              el.items.filter((msg) => msg.id !== chatMessage.id),
+            ),
+          };
+        },
+      );
+    },
+    onMutate: (chatMessageId: string) => {
+      const previousData = queryClient.getQueryData<
+        InfiniteData<IItemsResponse<TExtendedChatMessage>>
+      >([
+        "workspaces",
+        dtoContext.workspaceId,
+        "chats",
+        dtoContext.chatId,
+        "messages",
+      ]);
+
+      queryClient.setQueryData<
+        InfiniteData<IItemsResponse<TExtendedChatMessage>>
+      >(
+        [
+          "workspaces",
+          dtoContext.workspaceId,
+          "chats",
+          dtoContext.chatId,
+          "messages",
+        ],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            items: old.pages.map((el) =>
+              el.items.filter((msg) => msg.id !== chatMessageId),
+            ),
+          };
+        },
+      );
+
+      return {
+        previousData,
+      };
+    },
+    onError: (_err, _dto, context) => {
+      console.log(_err);
+      queryClient.setQueryData<
+        InfiniteData<IItemsResponse<TExtendedChatMessage>>
+      >(
+        [
+          "workspaces",
+          dtoContext.workspaceId,
+          "chats",
+          dtoContext.chatId,
+          "messages",
+        ],
+        (old) => {
+          if (!old) return old;
+          return context.previousData;
+        },
+      );
+    },
   });
 };

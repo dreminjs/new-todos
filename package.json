@@ -29,7 +29,8 @@
   },
   "devDependencies": {
     "@types/react-virtualized": "^9.22.3",
-    "lerna": "^9.0.3"
+    "lerna": "^9.0.3",
+    "pretty-print-json": "^3.0.8"
   },
   "workspaces": [
     "packages/*"

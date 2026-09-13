@@ -7,3 +7,4 @@ export * from "./ui/Button/Button";
 export * from "./ui/FormBottom/FormBottom";
 export * from "./ui/CustomCheckbox/CustomCheckbox";
 export * from "./ui/CustomAccordion/CustomAccordion";
+export * from "./model/hooks/useEscapeToClose";

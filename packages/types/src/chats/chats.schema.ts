@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { userSchema } from "../user/user.schema.js";
 import { todoGroupSchema } from "../todo-groups/todo-groups.schema.js";
+import { TExtendedChatMessage } from "./chats.types.js";
 
 export const chatsSchema = z.object({
   id: z.uuid(),
@@ -10,10 +11,10 @@ export const chatsSchema = z.object({
 
 export const createChatBodySchema = chatsSchema.omit({
   id: true,
-  workspaceId: true
+  workspaceId: true,
 });
 
-export const updateChatBodySchema = createChatBodySchema
+export const updateChatBodySchema = createChatBodySchema;
 
 export const joinChatRoomBodySchema = chatsSchema.pick({
   id: true,
@@ -26,17 +27,19 @@ export const chatMessageSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   chatId: z.uuid(),
-  replyToId: z.uuid().optional()
+  replyToId: z.uuid().nullish(),
 });
 
-export const extendedChatMessageSchema = chatMessageSchema
-  .omit({
-    userId: true,
-    replyToId: true
-  })
-  .extend({
-    user: userSchema.nullable(),
-  });
+export const extendedChatMessageSchema: z.ZodType<TExtendedChatMessage> =
+  chatMessageSchema
+    .omit({
+      userId: true,
+      replyToId: true,
+    })
+    .extend({
+      user: userSchema.nullable(),
+      replyTo: z.lazy(() => extendedChatMessageSchema).nullish(),
+    });
 
 export const createChatMessageBodySchema = chatMessageSchema.omit({
   id: true,
@@ -45,7 +48,6 @@ export const createChatMessageBodySchema = chatMessageSchema.omit({
   userId: true,
   chatId: true,
 });
-
 
 export const updateChatMessageBodySchema = createChatMessageBodySchema.omit({
   replyToId: true,

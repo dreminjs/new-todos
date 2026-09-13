@@ -31,10 +31,18 @@ export class ChatMessagesService {
           id: userId,
         },
       },
+
+      replyTo: dto.replyToId
+        ? {
+            connect: {
+              id: dto.replyToId,
+            },
+          }
+        : undefined,
       workspace: {
         connect: {
           id: dto.workspaceId,
-        }
+        },
       },
       content,
     });
@@ -61,11 +69,6 @@ export class ChatMessagesService {
         userId,
       },
       {
-        user: {
-          connect: {
-            id: userId,
-          },
-        },
         content,
       },
     )) as unknown as TExtendedChatMessage;
@@ -74,7 +77,10 @@ export class ChatMessagesService {
     return chatMessage;
   }
 
-  async findMany(params: GetChatMessagePathParams, query: GetChatMessagesQuery) {
+  async findMany(
+    params: GetChatMessagePathParams,
+    query: GetChatMessagesQuery,
+  ) {
     const foundMessages = await this.chatMessagesRepository.findAll(params, {
       take: query.take,
       cursor: query.cursor,

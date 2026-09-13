@@ -1,4 +1,3 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
 import type { FC } from "react";
 import { useGetChatMessages } from "../../api/queries";
 import { ChatMessagesListItem } from "../ChatMessagesListItem/ChatMessagesListItem";
@@ -6,6 +5,9 @@ import styles from "./ChatMessagesList.module.css";
 import { useGetMe } from "../../../users";
 import type { IChatContext } from "../../model/chats.types";
 import { useOnInView } from "react-intersection-observer";
+import { useChatMessageSelection } from "../../model/hooks/useChatMessageSelection";
+import { useChatScrollBehavior } from "../../model/hooks/useChatScrollBehavior";
+import { useChatStore } from "../../model/chat.store";
 
 type TChatMessagesListProps = IChatContext;
 
@@ -14,61 +16,29 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
   workspaceId,
 }) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-     useGetChatMessages(chatId, workspaceId);
-   const currentUserId = useGetMe("id").data;
-   const bottomRef = useRef<HTMLDivElement>(null);
-   const containerRef = useRef<HTMLDivElement>(null);
-   const isPaginatingRef = useRef(false);
-   const prevScrollHeightRef = useRef(0);
-   const isNearBottomRef = useRef(true);
+    useGetChatMessages(chatId, workspaceId);
+  const messages = data?.pages.flatMap((page) => page.items) ?? [];
 
-   const NEAR_BOTTOM_THRESHOLD = 150; // px
+  const currentUserId = useGetMe("id").data;
 
-   const messages = data?.pages.flatMap((page) => page.items) ?? [];
+  const { chatMessageId, chooseMessageId, closeManagementMenu } =
+    useChatMessageSelection();
 
-   const inViewRef = useOnInView(
-     (inView) => {
-       if (inView && hasNextPage && !isFetchingNextPage) {
-         isPaginatingRef.current = true;
-         if (containerRef.current) {
-           prevScrollHeightRef.current = containerRef.current.scrollHeight;
-         }
-         fetchNextPage();
-       }
-     },
-     { scrollMargin: "250px" },
-   );
+  const { containerRef, bottomRef, markPaginationStart } =
+    useChatScrollBehavior({ itemsCount: messages.length });
 
-   useEffect(() => {
-     const container = containerRef.current;
-     if (!container) return;
+  const onSetReplyId = useChatStore((state) => state.onSetReplyId);
+  const onSetEditMessageId = useChatStore((state) => state.onSetEditMessageId);
 
-     const handleScroll = () => {
-       const distanceFromBottom =
-         container.scrollHeight - container.scrollTop - container.clientHeight;
-       isNearBottomRef.current = distanceFromBottom < NEAR_BOTTOM_THRESHOLD;
-     };
-
-     handleScroll();
-     container.addEventListener("scroll", handleScroll);
-     return () => container.removeEventListener("scroll", handleScroll);
-   }, []);
-
-   useLayoutEffect(() => {
-     const container = containerRef.current;
-     if (!container) return;
-
-     if (isPaginatingRef.current) {
-       const diff = container.scrollHeight - prevScrollHeightRef.current;
-       container.scrollTop += diff;
-       isPaginatingRef.current = false;
-       return;
-     }
-
-     if (isNearBottomRef.current) {
-       bottomRef.current?.scrollIntoView({ behavior: "auto" });
-     }
-   }, [messages.length]);
+  const inViewRef = useOnInView(
+    (inView) => {
+      if (inView && hasNextPage && !isFetchingNextPage) {
+        markPaginationStart();
+        fetchNextPage();
+      }
+    },
+    { scrollMargin: "250px" },
+  );
 
   if (isLoading) {
     return <div className={styles.loading}>Loading messages...</div>;
@@ -83,6 +53,11 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
             key={message.id}
             message={message}
             isMine={currentUserId === message.user.id}
+            currentChoosedChatMessageId={chatMessageId}
+            onCloseManagementMenu={closeManagementMenu}
+            onChooseChatMessageId={chooseMessageId}
+            onSetReplyId={onSetReplyId}
+            onSetEditMessageId={onSetEditMessageId}
           />
         ))}
       </ul>

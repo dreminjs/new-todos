@@ -2,10 +2,14 @@
   display: flex;
   gap: 12px;
   padding: 8px 16px;
-
+  position: relative;
+  z-index: 1;
+  user-select: none;
   &:hover {
     background-color: rgba(0, 0, 0, 0.03);
   }
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
 }
 
 .avatar {
@@ -65,5 +69,42 @@
 }
 
 .mineMessage {
-    margin-left: auto;
+  margin-left: auto;
+}
+
+.ChatMessageListItemReply {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  border-left: 3px solid #94a3b8;
+  background-color: rgba(148, 163, 184, 0.08);
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  transition: background-color 0.15s ease;
+}
+
+.ChatMessageListItemReply:hover {
+  background-color: rgba(148, 163, 184, 0.15);
+}
+
+.replyAuthor {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.replyContent {
+  font-size: 13px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
 }

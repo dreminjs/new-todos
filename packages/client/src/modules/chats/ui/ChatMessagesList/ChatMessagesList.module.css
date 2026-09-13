@@ -23,24 +23,3 @@
   color: #94a3b8;
   font-size: 14px;
 }
-
-.loadMore {
-  display: block;
-  margin: 12px auto;
-  padding: 6px 16px;
-  background: transparent;
-  border: 1px solid #e2e8f0;
-  border-radius: var(--border-radius);
-  color: #64748b;
-  font-size: 13px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #f8fafc;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}

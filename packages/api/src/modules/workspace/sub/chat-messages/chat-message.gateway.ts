@@ -69,9 +69,9 @@ export class ChatMessagesGateway {
       .emit("chat-messages:recieve", payload);
   }
 
-  @SubscribeMessage("chat-message:delete")
+  @SubscribeMessage("chat-messages:delete")
   handleMessageDeletMessage(
-    client: Socket,
+    _client: Socket,
     payload: IWsChatMessageDeletedPayload,
   ) {
     return this.server
@@ -85,7 +85,7 @@ export class ChatMessagesGateway {
       .emit("chat-messages:delete", payload);
   }
 
-  @SubscribeMessage("chat-message:edit")
+  @SubscribeMessage("chat-messages:edit")
   handleMessageEditMessage(client: Socket, payload: TExtendedChatMessage) {
     return this.server
       .to(`chat-room:${payload.chatId}`)

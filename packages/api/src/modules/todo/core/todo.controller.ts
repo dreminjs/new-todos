@@ -18,7 +18,6 @@ import {
   FindMyDayDto,
   UpdateTodoStatusBodyDto,
 } from "./dto/todo.dto.js";
-import { Todo } from "api/generated/prisma/client.js";
 import { FindTodoQueryParamsDto } from "./dto/todo.dto.js";
 import { CurrentUser } from "../../user/decorators/user.decorator.js";
 import { IItemsResponse, TExtendedTodo } from "types";

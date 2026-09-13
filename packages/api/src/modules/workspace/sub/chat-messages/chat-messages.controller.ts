@@ -36,7 +36,6 @@ export class ChatMessagesController {
   ): Promise<IItemsResponse<TExtendedChatMessage>> {
     return this.chatMessagesService.findMany(pathParams, query);
   }
-
   @Post()
   async createOne(
     @Param() pathParams: CreateChatMessagePathParams,
@@ -51,7 +50,7 @@ export class ChatMessagesController {
     });
   }
 
-  @Delete(":messageId")
+  @Delete(":chatMessageId")
   async deleteOne(
     @Param() params: ChatMessagesPathParams,
     @CurrentUser("id") userId: string,
@@ -59,7 +58,7 @@ export class ChatMessagesController {
     return this.chatMessagesService.deleteOneById(params, userId);
   }
 
-  @Put(":messageId")
+  @Put(":chatMessageId")
   async updateOne(
     @Param() params: ChatMessagesPathParams,
     @Body() dto: UpdateMessageBodyDto,

@@ -9,6 +9,7 @@ import {
   updateChatBodySchema,
   updateChatMessageBodySchema,
 } from "./chats.schema.js";
+import { userSchema } from "../user/user.schema.js";
 
 export type TChat = z.infer<typeof chatsSchema>;
 
@@ -18,7 +19,13 @@ export type TUpdateChatBodyDto = z.infer<typeof updateChatBodySchema>;
 
 export type TJoinChatRoomBodyDto = z.infer<typeof joinChatRoomBodySchema>;
 
-export type TExtendedChatMessage = z.infer<typeof extendedChatMessageSchema>;
+export type TExtendedChatMessage = Omit<
+  z.infer<typeof chatMessageSchema>,
+  "userId" | "replyToId"
+> & {
+  user: z.infer<typeof userSchema> | null;
+  replyTo?: TExtendedChatMessage | null;
+};
 
 export type TChatMessage = z.infer<typeof chatMessageSchema>;
 

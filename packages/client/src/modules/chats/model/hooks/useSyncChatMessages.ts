@@ -1,8 +1,12 @@
 import { useEffect } from "react";
-import { useSocket } from "../../../app/model/useSocket";
-import type { IItemsResponse, TExtendedChatMessage } from "types";
+import { useSocket } from "../../../../app/model/useSocket";
+import type {
+  IItemsResponse,
+  IWsChatMessageDeletedPayload,
+  TExtendedChatMessage,
+} from "types";
 import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
-import type { IChatContext } from "./chats.types";
+import type { IChatContext } from "../chats.types";
 
 export const useSyncChatMessages = (dtoContext: IChatContext) => {
   const queryClient = useQueryClient();
@@ -44,6 +48,31 @@ export const useSyncChatMessages = (dtoContext: IChatContext) => {
                 items: [...lastPage.items, newMessage],
               },
             ],
+          };
+        },
+      );
+    });
+
+    socket.on("chat-messages:delete", (dto: IWsChatMessageDeletedPayload) => {
+      queryClient.setQueryData<
+        InfiniteData<IItemsResponse<TExtendedChatMessage>>
+      >(
+        [
+          "workspaces",
+          dtoContext.workspaceId,
+          "chats",
+          dtoContext.chatId,
+          "messages",
+        ],
+        (old) => {
+          if (!old) return old;
+          const updatedPages = old.pages.map((page) => ({
+            ...page,
+            items: page.items.filter((msg) => msg.id !== dto.chatMessageId),
+          }));
+          return {
+            ...old,
+            pages: updatedPages,
           };
         },
       );
