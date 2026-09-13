@@ -5,6 +5,7 @@ import type {
   TExtendedChatMessage,
   IItemsResponse,
   TCreateChatContext,
+  TUpdateChatMessageBodyDto,
 } from "types";
 import { instance } from "../../../shared/api/api.instance";
 import { BASE_WORKSPACES_URL } from "../../workspaces/api/services";
@@ -24,6 +25,7 @@ export const createOne = async (
     )
   ).data;
 };
+
 
 export const getChatMessages = async (
   { chatId, workspaceId }: IChatContext,
@@ -46,6 +48,19 @@ export const createMessage = async (
   return (
     await instance.post(
       `${BASE_WORKSPACES_URL}/${workspaceId}/${CHATS_URL}/${chatId}/${MESSAGES_URL}`,
+      data,
+    )
+  ).data;
+};
+
+export const editMessage = async (
+  data: TUpdateChatMessageBodyDto,
+  editMessageId: string,
+  { chatId, workspaceId }: IChatContext,
+): Promise<TExtendedChatMessage> => {
+  return (
+    await instance.put(
+      `${BASE_WORKSPACES_URL}/${workspaceId}/${CHATS_URL}/${chatId}/${MESSAGES_URL}/${editMessageId}`,
       data,
     )
   ).data;

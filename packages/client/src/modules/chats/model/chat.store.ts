@@ -11,5 +11,7 @@ export const useChatStore = create<IChatStore>((set) => ({
   replyMessageId: null,
   onSetReplyId: (id: string | null) => set({ replyMessageId: id }),
   editMessageId: null,
-  onSetEditMessageId: (id: string | null) => set({ editMessageId: id }),
+  onSetEditMessageId: (id: string | null) => {
+    set({ editMessageId: id });
+  },
 }));

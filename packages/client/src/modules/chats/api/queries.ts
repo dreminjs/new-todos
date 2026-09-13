@@ -9,6 +9,7 @@ import {
   createMessage,
   createOne,
   deleteMessageChat,
+  editMessage,
   findWorkspaceChats,
   getChatMessages,
 } from "./services";
@@ -21,10 +22,11 @@ import type {
   TCreateChatMessageBodyDto,
 } from "types";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
-import type { IChatContext } from "../model/chats.types";
+import type { IChatContext, TEditMessageDto } from "../model/chats.types";
 import { useChatStore } from "../model/chat.store";
 import { useGetMe } from "../../users";
 import { useClearReplyMessageId } from "../model/hooks/useClearReplyMessageId";
+import { useGetCurrentEditMessage } from "../model/hooks/useGetCurrentEditMessage";
 
 export const useCreateChat = (dtoContext: TCreateChatContext) => {
   const queryClient = useQueryClient();
@@ -58,7 +60,6 @@ export const useCreateChat = (dtoContext: TCreateChatContext) => {
       );
     },
     onError: (_error, _dto, context) => {
-      console.log(_error);
       addNotification({
         type: "error",
         message: `Failed to create chat "${_dto.name}".`,
@@ -92,6 +93,83 @@ export const useGetChatMessages = (chatId: string, workspaceId: string) => {
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
+};
+
+export const useUpdateChatMessage = (dtoContext: IChatContext) => {
+  const queryClient = useQueryClient();
+  const { mutate: handleMutate, isPending } = useMutation({
+    mutationFn: (dto: TEditMessageDto) =>
+      editMessage({ content: dto.content }, dto.id, dtoContext),
+    onMutate: (dto) => {
+      queryClient.setQueryData(
+        [
+          "workspaces",
+          dtoContext.workspaceId,
+          "chats",
+          dtoContext.chatId,
+          "messages",
+        ],
+        (
+          old:
+            | {
+                pages: IItemsResponse<TExtendedChatMessage>[];
+                pageParams: (string | undefined)[];
+              }
+            | undefined,
+        ) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === dto.id ? { ...item, content: dto.content } : item,
+              ),
+            })),
+          };
+        },
+      );
+    },
+    onSuccess: (newMessage, dto) => {
+      queryClient.setQueryData(
+        [
+          "workspaces",
+          dtoContext.workspaceId,
+          "chats",
+          dtoContext.chatId,
+          "messages",
+        ],
+        (
+          old:
+            | {
+                pages: IItemsResponse<TExtendedChatMessage>[];
+                pageParams: (string | undefined)[];
+              }
+            | undefined,
+        ) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === dto.id
+                  ? {
+                      ...item,
+                      content: newMessage.content,
+                      user: newMessage.user,
+                    }
+                  : item,
+              ),
+            })),
+          };
+        },
+      );
+    },
+  });
+
+  return { mutate: handleMutate, isPending };
 };
 
 export const useCreateChatMessage = (dtoContext: IChatContext) => {
@@ -173,8 +251,11 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
 
           const pages = old.pages.map((page) => ({
             ...page,
-            items: page.items.filter((msg) => msg.id !== context.temporaryId),
-          }));          return { ...old, pages };
+            items: page.items.map((msg) =>
+              msg.id === context.temporaryId ? newMessage : msg,
+            ),
+          }));
+          return { ...old, pages };
         },
       );
     },

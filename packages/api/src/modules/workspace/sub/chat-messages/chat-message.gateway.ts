@@ -5,7 +5,7 @@ import {
   WsException,
 } from "@nestjs/websockets";
 import { ChatMessagesService } from "./chat-messages.service.js";
-import { UseGuards } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import { WsAccessTokenGuard } from "../../../token/guards/ws-access-token.guard.js";
 import { JoinChatRoomDto } from "./dto/chat-messages.types.js";
 import { Server, Socket } from "socket.io";
@@ -26,6 +26,8 @@ export class ChatMessagesGateway {
     private readonly workspaceParticipantService: WorkspaceParticipantService,
     private readonly chatsService: ChatsService,
   ) {}
+
+  private logger = new Logger(ChatMessagesGateway.name);
 
   @WebSocketServer()
   server: Server;
@@ -87,12 +89,16 @@ export class ChatMessagesGateway {
 
   @SubscribeMessage("chat-messages:edit")
   handleMessageEditMessage(client: Socket, payload: TExtendedChatMessage) {
+    this.logger.log("handleEditMessage event", payload);
+
     return this.server
       .to(`chat-room:${payload.chatId}`)
       .emit("chat-messages:edit", payload);
   }
 
   handleEditMessage(payload: TExtendedChatMessage) {
+    this.logger.log("handleEditMessage method", payload);
+
     return this.server
       .to(`chat-room:${payload.chatId}`)
       .emit("chat-messages:edit", payload);

@@ -5,8 +5,13 @@
   position: relative;
   z-index: 1;
   user-select: none;
+  max-width: 70%;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background-color: #fff;
   &:hover {
     background-color: rgba(0, 0, 0, 0.03);
+    border-color: #cbd5e1;
   }
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -69,7 +74,15 @@
 }
 
 .mineMessage {
+  flex-direction: row-reverse;
   margin-left: auto;
+
+  .header {
+    flex-direction: row-reverse;
+  }
+  .content {
+    text-align: right;
+  }
 }
 
 .ChatMessageListItemReply {
@@ -82,13 +95,11 @@
   background-color: rgba(148, 163, 184, 0.08);
   border-radius: 0 6px 6px 0;
   cursor: pointer;
-  max-width: 100%;
   overflow: hidden;
   transition: background-color 0.15s ease;
-}
-
-.ChatMessageListItemReply:hover {
-  background-color: rgba(148, 163, 184, 0.15);
+  &:hover {
+    background-color: rgba(148, 163, 184, 0.15);
+  }
 }
 
 .replyAuthor {

@@ -18,9 +18,14 @@ export const ChatMessagesListItemDeleteButton: FC<
 
   return (
     <>
-      <Menu.Item onClick={() => {
-        mutate(messageId)
-      }} value="Delete">Delete</Menu.Item>
+      <Menu.Item
+        onClick={() => {
+          mutate(messageId);
+        }}
+        value="Delete"
+      >
+        Delete
+      </Menu.Item>
     </>
   );
 };

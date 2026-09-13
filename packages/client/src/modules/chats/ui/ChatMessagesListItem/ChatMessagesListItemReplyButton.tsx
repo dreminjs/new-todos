@@ -13,7 +13,7 @@ export const ChatMessagesListItemReplyButton: FC<
 
   return (
     <>
-      <Menu.Item value="edit" onClick={() => onSetReplyId(messageId)}>
+      <Menu.Item value="reply" onClick={() => onSetReplyId(messageId)}>
         Reply
       </Menu.Item>
     </>

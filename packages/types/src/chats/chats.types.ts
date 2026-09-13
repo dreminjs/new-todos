@@ -33,6 +33,7 @@ export type TCreateChatMessageBodyDto = z.infer<
   typeof createChatMessageBodySchema
 >;
 
+
 export interface IWsChatMessageDeletedPayload {
   chatMessageId: string;
   workspaceId: string;

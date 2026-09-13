@@ -1,11 +1,11 @@
 import { useRef, type FC } from "react";
-import type { TExtendedChatMessage } from "types";
-import styles from "./ChatMessagesListItem.module.css";
-import clsx from "clsx";
 import { useMessageInteraction } from "../../../../shared/model/hooks/useMessageInteraction";
 import { ChatMessageListItemManagement } from "./ChatMessageListItemManagement";
 import { Menu } from "@chakra-ui/react";
-import { ChatMessageListItemReply } from "./ChatMessagesListItemRepleMessage";
+import { ChatMessageListItemReplyMessage } from "./ChatMessagesListItemReplyMessage";
+import type { TExtendedChatMessage } from "types";
+import clsx from "clsx";
+import styles from "./ChatMessagesListItem.module.css";
 
 interface IChatMessagesListItemProps {
   message: TExtendedChatMessage;
@@ -13,8 +13,6 @@ interface IChatMessagesListItemProps {
   currentChoosedChatMessageId: string | null;
   onCloseManagementMenu: () => void;
   onChooseChatMessageId: (chatMessageId: string) => void;
-  onSetReplyId: (chatMessageId: string) => void;
-  onSetEditMessageId: (chatMessageId: string) => void;
 }
 
 export const ChatMessagesListItem: FC<IChatMessagesListItemProps> = ({
@@ -23,8 +21,6 @@ export const ChatMessagesListItem: FC<IChatMessagesListItemProps> = ({
   currentChoosedChatMessageId,
   onCloseManagementMenu,
   onChooseChatMessageId,
-  onSetReplyId,
-  onSetEditMessageId,
 }) => {
   const user = message.user;
   const messageId = message.id;
@@ -91,11 +87,12 @@ export const ChatMessagesListItem: FC<IChatMessagesListItemProps> = ({
               <span className={styles.timestamp}>{time}</span>
             </header>
             {message.replyTo && (
-              <ChatMessageListItemReply
+              <ChatMessageListItemReplyMessage
                 message={message.replyTo.content}
                 repliedUser={message.replyTo.user}
               />
             )}
+
             <p className={styles.content}>{message.content}</p>
           </div>
         </li>

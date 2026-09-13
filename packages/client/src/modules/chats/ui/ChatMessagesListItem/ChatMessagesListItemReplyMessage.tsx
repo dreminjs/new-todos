@@ -7,10 +7,9 @@ interface IChatMessageListItemReplyProps {
   repliedUser: TUser;
 }
 
-export const ChatMessageListItemReply: FC<IChatMessageListItemReplyProps> = ({
-  message,
-  repliedUser,
-}) => {
+export const ChatMessageListItemReplyMessage: FC<
+  IChatMessageListItemReplyProps
+> = ({ message, repliedUser }) => {
   const authorName = repliedUser
     ? `${repliedUser.firstName} ${repliedUser.lastName}`
     : "Пользователь удалён";

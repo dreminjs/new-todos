@@ -66,14 +66,39 @@ export const useSyncChatMessages = (dtoContext: IChatContext) => {
         ],
         (old) => {
           if (!old) return old;
-          const updatedPages = old.pages.map((page) => ({
+          const pages = old.pages.map((page) => ({
             ...page,
             items: page.items.filter((msg) => msg.id !== dto.chatMessageId),
           }));
           return {
             ...old,
-            pages: updatedPages,
+            pages,
           };
+        },
+      );
+    });
+
+    socket.on("chat-messages:edit", (newMessage: TExtendedChatMessage) => {
+      queryClient.setQueryData<
+        InfiniteData<IItemsResponse<TExtendedChatMessage>>
+      >(
+        [
+          "workspaces",
+          dtoContext.workspaceId,
+          "chats",
+          dtoContext.chatId,
+          "messages",
+        ],
+        (old) => {
+          if (!old) return old;
+
+          const pages = old.pages.map((page) => ({
+            ...page,
+            items: page.items.map((msg) =>
+              msg.id === newMessage.id ? newMessage : msg,
+            ),
+          }));
+          return { ...old, pages };
         },
       );
     });

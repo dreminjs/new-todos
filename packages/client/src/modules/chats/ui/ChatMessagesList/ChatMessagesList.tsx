@@ -7,7 +7,6 @@ import type { IChatContext } from "../../model/chats.types";
 import { useOnInView } from "react-intersection-observer";
 import { useChatMessageSelection } from "../../model/hooks/useChatMessageSelection";
 import { useChatScrollBehavior } from "../../model/hooks/useChatScrollBehavior";
-import { useChatStore } from "../../model/chat.store";
 
 type TChatMessagesListProps = IChatContext;
 
@@ -27,9 +26,6 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
   const { containerRef, bottomRef, markPaginationStart } =
     useChatScrollBehavior({ itemsCount: messages.length });
 
-  const onSetReplyId = useChatStore((state) => state.onSetReplyId);
-  const onSetEditMessageId = useChatStore((state) => state.onSetEditMessageId);
-
   const inViewRef = useOnInView(
     (inView) => {
       if (inView && hasNextPage && !isFetchingNextPage) {
@@ -39,6 +35,8 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
     },
     { scrollMargin: "250px" },
   );
+
+  console.log({ messages });
 
   if (isLoading) {
     return <div className={styles.loading}>Loading messages...</div>;
@@ -56,8 +54,6 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
             currentChoosedChatMessageId={chatMessageId}
             onCloseManagementMenu={closeManagementMenu}
             onChooseChatMessageId={chooseMessageId}
-            onSetReplyId={onSetReplyId}
-            onSetEditMessageId={onSetEditMessageId}
           />
         ))}
       </ul>
