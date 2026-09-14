@@ -25,6 +25,10 @@ export const useSyncChatMessages = (dtoContext: IChatContext) => {
 
     type TCache = InfiniteData<IItemsResponse<TExtendedChatMessage>>;
 
+    const joinRoom = () => {
+      socket.emit("join-chat-room", { id: dtoContext.chatId });
+    };
+
     const updatePages = (
       updater: (
         page: IItemsResponse<TExtendedChatMessage>,
@@ -80,7 +84,7 @@ export const useSyncChatMessages = (dtoContext: IChatContext) => {
         ),
       }));
     };
-
+    socket.on("connect",joinRoom )
     socket.emit("join-chat-room", { id: dtoContext.chatId });
     socket.on("chat-messages:recieve", onReceive);
     socket.on("chat-messages:delete", onDelete);
