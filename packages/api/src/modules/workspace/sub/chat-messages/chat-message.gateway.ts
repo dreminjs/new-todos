@@ -89,7 +89,6 @@ export class ChatMessagesGateway {
 
   @SubscribeMessage("chat-messages:edit")
   handleMessageEditMessage(client: Socket, payload: TExtendedChatMessage) {
-    this.logger.log("handleEditMessage event", payload);
 
     return this.server
       .to(`chat-room:${payload.chatId}`)
@@ -97,7 +96,6 @@ export class ChatMessagesGateway {
   }
 
   handleEditMessage(payload: TExtendedChatMessage) {
-    this.logger.log("handleEditMessage method", payload);
 
     return this.server
       .to(`chat-room:${payload.chatId}`)
