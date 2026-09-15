@@ -24,7 +24,6 @@ export class ChatMessagesGateway {
   constructor(
     private readonly wsAuthMiddleware: WsAuthMiddleware,
     private readonly workspaceParticipantService: WorkspaceParticipantService,
-    private readonly chatsService: ChatsService,
     private readonly chatMessagesService: ChatMessagesService,
   ) {}
 

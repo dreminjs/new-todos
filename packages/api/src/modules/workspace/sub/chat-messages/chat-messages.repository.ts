@@ -13,7 +13,7 @@ import { PUBLIC_USER_SELECT } from "../../../user/index.js";
 export class ChatMessagesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  logger = new Logger(ChatMessagesRepository.name)
+  logger = new Logger(ChatMessagesRepository.name);
 
   async createExtended(
     data: Prisma.ChatMessageCreateInput,
@@ -34,7 +34,9 @@ export class ChatMessagesRepository {
       },
     });
 
-    this.logger.log(`Created chat message: ${JSON.stringify(chatMessage,  null, 2)}`)
+    this.logger.log(
+      `Created chat message: ${JSON.stringify(chatMessage, null, 2)}`,
+    );
 
     return extendedChatMessageSchema.parse(chatMessage);
   }
@@ -82,11 +84,12 @@ export class ChatMessagesRepository {
       workspaceId,
       chatMessageId,
       chatId,
+      userId,
     }: ChatMessagesPathParams & { userId: string },
     data: Prisma.ChatMessageUpdateInput,
   ): Promise<TExtendedChatMessage> {
     return this.prisma.chatMessage.update({
-      where: { workspaceId, chatId, id: chatMessageId },
+      where: { workspaceId, chatId, id: chatMessageId, userId: userId },
       data,
       include: {
         user: {
