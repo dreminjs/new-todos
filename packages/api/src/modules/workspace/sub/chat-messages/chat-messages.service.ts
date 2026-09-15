@@ -10,12 +10,17 @@ import {
 } from "./dto/chat-messages.types.js";
 import { ChatMessagesGateway } from "./chat-message.gateway.js";
 import { buildInfinityScrollResponse } from "../../../../libs/buildInfinityScrollResponse.js";
+import { ChatsService } from "../chats/chats.service.js";
+import { WsException } from "@nestjs/websockets";
+import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
 
 @Injectable()
 export class ChatMessagesService {
   constructor(
     private readonly chatMessagesRepository: ChatMessagesRepository,
     private readonly chatMessagesGateway: ChatMessagesGateway,
+    private readonly chatsService: ChatsService,
+    private readonly workspaceParticipantService: WorkspaceParticipantService,
   ) {}
 
   async createOne(dto: TCreateMessageDto) {
@@ -86,5 +91,16 @@ export class ChatMessagesService {
       cursor: query.cursor,
     });
     return buildInfinityScrollResponse(foundMessages, query.take);
+  }
+
+  async joinChatRoomViaWs(chatId: string, candidateId: string) {
+    const chat = await this.chatsService.findById(chatId);
+    if (!chat) {
+      throw new WsException("Chat not found");
+    }
+    await this.workspaceParticipantService.validateParticipantViaWs(
+      chat.workspaceId,
+      candidateId,
+    );
   }
 }

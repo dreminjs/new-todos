@@ -2,6 +2,7 @@ import { z } from "zod";
 import { userSchema } from "../user/user.schema.js";
 import { todoGroupSchema } from "../todo-groups/todo-groups.schema.js";
 import { TExtendedChatMessage } from "./chats.types.js";
+import { workspaceSchema } from "../workspace/workspace.schema.js";
 
 export const chatsSchema = z.object({
   id: z.uuid(),
@@ -24,6 +25,7 @@ export const chatMessageSchema = z.object({
   id: z.uuid(),
   content: z.string(),
   userId: z.uuid(),
+  workspaceId: z.uuid(),
   createdAt: z.date(),
   updatedAt: z.date(),
   chatId: z.uuid(),
@@ -35,9 +37,11 @@ export const extendedChatMessageSchema: z.ZodType<TExtendedChatMessage> =
     .omit({
       userId: true,
       replyToId: true,
+      workspaceId: true,
     })
     .extend({
       user: userSchema.nullable(),
+      workspace: workspaceSchema,
       replyTo: z.lazy(() => extendedChatMessageSchema).nullish(),
     });
 

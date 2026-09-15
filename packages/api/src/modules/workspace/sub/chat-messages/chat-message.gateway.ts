@@ -25,41 +25,33 @@ export class ChatMessagesGateway {
     private readonly wsAuthMiddleware: WsAuthMiddleware,
     private readonly workspaceParticipantService: WorkspaceParticipantService,
     private readonly chatsService: ChatsService,
+    private readonly chatMessagesService: ChatMessagesService,
   ) {}
-
-  private logger = new Logger(ChatMessagesGateway.name);
 
   @WebSocketServer()
   server: Server;
-
-  @SubscribeMessage("join-chat-room")
-  async handleJoinChatRoom(client: Socket, payload: JoinChatRoomDto) {
-    const { id } = payload;
-    const candidateId = client.data.userId;
-    const chat = await this.chatsService.findById(id);
-    if (!chat) {
-      throw new WsException("Chat not found");
-    }
-    const candidate = await this.workspaceParticipantService.findOne({
-      where: {
-        workspaceId: chat.workspaceId,
-        userId: candidateId,
-      },
-    });
-
-    if (!candidate) {
-      throw new WsException("You are not a participant in this chat");
-    }
-
-    client.join(`chat-room:${id}`);
-  }
 
   afterInit(server: Server) {
     server.use(this.wsAuthMiddleware.use);
   }
 
+  @SubscribeMessage("join-chat-room")
+  async handleJoinChatRoom(client: Socket, payload: JoinChatRoomDto) {
+    const { id } = payload;
+    await this.chatMessagesService.joinChatRoomViaWs(id, client.data.userId);
+    client.join(`chat-room:${id}`);
+  }
+
   @SubscribeMessage("chat-messages:recieve")
-  handleMessageRecieveMessage(client: Socket, payload: TExtendedChatMessage) {
+  async handleMessageRecieveMessage(
+    client: Socket,
+    payload: TExtendedChatMessage,
+  ) {
+    await this.workspaceParticipantService.validateParticipantViaWs(
+      payload.workspace.id,
+      client.data.userId,
+    );
+
     return this.server
       .to(`chat-room:${payload.chatId}`)
       .emit("chat-messages:recieve", payload);
@@ -72,10 +64,14 @@ export class ChatMessagesGateway {
   }
 
   @SubscribeMessage("chat-messages:delete")
-  handleMessageDeletMessage(
-    _client: Socket,
+  async handleMessageDeletMessage(
+    client: Socket,
     payload: IWsChatMessageDeletedPayload,
   ) {
+    await this.workspaceParticipantService.validateParticipantViaWs(
+      payload.workspaceId,
+      client.data.userId,
+    );
     return this.server
       .to(`chat-room:${payload.chatId}`)
       .emit("chat-messages:delete", payload);
@@ -88,15 +84,20 @@ export class ChatMessagesGateway {
   }
 
   @SubscribeMessage("chat-messages:edit")
-  handleMessageEditMessage(client: Socket, payload: TExtendedChatMessage) {
-
+  async handleMessageEditMessage(
+    client: Socket,
+    payload: TExtendedChatMessage,
+  ) {
+    await this.workspaceParticipantService.validateParticipantViaWs(
+      payload.workspace.id,
+      client.data.userId,
+    );
     return this.server
       .to(`chat-room:${payload.chatId}`)
       .emit("chat-messages:edit", payload);
   }
 
   handleEditMessage(payload: TExtendedChatMessage) {
-
     return this.server
       .to(`chat-room:${payload.chatId}`)
       .emit("chat-messages:edit", payload);

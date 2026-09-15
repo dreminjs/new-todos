@@ -15,6 +15,7 @@ import { SendCreateNotification } from "../../../notifications/dto/notifactions.
 import { UserService } from "../../../user/user.service.js";
 import { Prisma, WorkspaceParticipant } from "generated/prisma/browser.js";
 import { WorkspaceRepository } from "../../core/workspace.repository.js";
+import { WsException } from "@nestjs/websockets";
 
 @Injectable()
 export class WorkspaceParticipantService {
@@ -57,6 +58,24 @@ export class WorkspaceParticipantService {
     return this.workspaceParticipantRepository.deleteMany({
       ...args,
     });
+  }
+
+  async validateParticipantViaWs(
+    workspaceId: string,
+    userId: string,
+  ): Promise<boolean> {
+    const participant = await this.workspaceParticipantRepository.findOne({
+      where: {
+        workspaceId,
+        userId,
+      },
+    });
+
+    if (!participant) {
+      throw new WsException("Participant not found");
+    }
+
+    return !!participant;
   }
 
   async kickParticipant({

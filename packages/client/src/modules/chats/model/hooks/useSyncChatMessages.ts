@@ -84,8 +84,7 @@ export const useSyncChatMessages = (dtoContext: IChatContext) => {
         ),
       }));
     };
-    socket.on("connect",joinRoom )
-    socket.emit("join-chat-room", { id: dtoContext.chatId });
+    socket.on("connect", joinRoom);
     socket.on("chat-messages:recieve", onReceive);
     socket.on("chat-messages:delete", onDelete);
     socket.on("chat-messages:edit", onEdit);

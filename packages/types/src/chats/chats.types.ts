@@ -10,6 +10,7 @@ import {
   updateChatMessageBodySchema,
 } from "./chats.schema.js";
 import { userSchema } from "../user/user.schema.js";
+import { workspaceSchema } from "../workspace/workspace.schema.js";
 
 export type TChat = z.infer<typeof chatsSchema>;
 
@@ -21,9 +22,10 @@ export type TJoinChatRoomBodyDto = z.infer<typeof joinChatRoomBodySchema>;
 
 export type TExtendedChatMessage = Omit<
   z.infer<typeof chatMessageSchema>,
-  "userId" | "replyToId"
+  "userId" | "replyToId" | "workspaceId"
 > & {
   user: z.infer<typeof userSchema> | null;
+  workspace: z.infer<typeof workspaceSchema>;
   replyTo?: TExtendedChatMessage | null;
 };
 
@@ -32,7 +34,6 @@ export type TChatMessage = z.infer<typeof chatMessageSchema>;
 export type TCreateChatMessageBodyDto = z.infer<
   typeof createChatMessageBodySchema
 >;
-
 
 export interface IWsChatMessageDeletedPayload {
   chatMessageId: string;
