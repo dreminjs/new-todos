@@ -93,6 +93,7 @@ export const useSyncChatMessages = (dtoContext: IChatContext) => {
       socket.off("chat-messages:recieve", onReceive);
       socket.off("chat-messages:delete", onDelete);
       socket.off("chat-messages:edit", onEdit);
+      socket.off("connect", joinRoom);
       socket.emit("leave-chat-room", { id: dtoContext.chatId });
     };
   }, [socket, dtoContext.chatId, dtoContext.workspaceId, queryClient]);

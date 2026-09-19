@@ -12,7 +12,6 @@ import { Server, Socket } from "socket.io";
 import { WsAuthMiddleware } from "../../../token/ws-auth.middleware.js";
 import type { IWsChatMessageDeletedPayload, TExtendedChatMessage } from "types";
 import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
-import { ChatsService } from "../chats/chats.service.js";
 @UseGuards(WsAccessTokenGuard)
 @WebSocketGateway({
   cors: {

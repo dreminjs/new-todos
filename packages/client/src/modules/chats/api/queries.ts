@@ -67,8 +67,6 @@ export const useCreateChat = (dtoContext: TCreateChatContext) => {
       queryClient.setQueryData<TChat[]>(
         ["workspaces", dtoContext.workspaceId, "chats"],
         (chats) => {
-          console.log(chats);
-
           return chats.filter((chat) => chat.id !== context.temporaryId);
         },
       );
@@ -99,7 +97,11 @@ export const useUpdateChatMessage = (dtoContext: IChatContext) => {
   const queryClient = useQueryClient();
   const { mutate: handleMutate, isPending } = useMutation({
     mutationFn: (dto: TEditMessageDto) =>
-      editMessage({ content: dto.content }, dto.id, dtoContext),
+      editMessage(
+        { content: dto.content, workspaceId: dtoContext.workspaceId },
+        dto.id,
+        dtoContext,
+      ),
     onMutate: (dto) => {
       queryClient.setQueryData(
         [
@@ -292,9 +294,10 @@ export const useDeleteChatMessage = (dtoContext: IChatContext) => {
           if (!old) return old;
           return {
             ...old,
-            items: old.pages.map((el) =>
-              el.items.filter((msg) => msg.id !== chatMessage.id),
-            ),
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((msg) => msg.id !== chatMessage.id),
+            })),
           };
         },
       );
@@ -324,9 +327,10 @@ export const useDeleteChatMessage = (dtoContext: IChatContext) => {
           if (!old) return old;
           return {
             ...old,
-            items: old.pages.map((el) =>
-              el.items.filter((msg) => msg.id !== chatMessageId),
-            ),
+            pages: old.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((msg) => msg.id !== chatMessageId),
+            })),
           };
         },
       );
