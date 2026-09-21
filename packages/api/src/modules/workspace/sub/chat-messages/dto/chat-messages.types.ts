@@ -13,7 +13,7 @@ import {
 } from "./chat-messages.schemas.js";
 import z from "zod";
 
-export class JoinChatRoomDto extends createZodDto(joinChatRoomBodySchema) {}
+export class JoinChatRoomBodyDto extends createZodDto(joinChatRoomBodySchema) {}
 
 export class CreateMessageBodyDto extends createZodDto(
   createChatMessageBodySchema,
@@ -25,7 +25,6 @@ export class UpdateMessageBodyDto extends createZodDto(
 
 export type TCreateMessageDto = TCreateChatMessageBodyDto & {
   userId: string;
-  workspaceId: string;
   chatId: string;
 };
 

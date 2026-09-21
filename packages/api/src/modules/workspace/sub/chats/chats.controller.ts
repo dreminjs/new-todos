@@ -19,8 +19,7 @@ import { WorkspaceRoleGuard } from "../../core/guards/workspace-role.guard.js";
 import { MinRole } from "../../core/decorators/min-role.decorator.js";
 import { WorkspaceUserRole } from "#generated/enums.js";
 @MinRole(WorkspaceUserRole.MANAGER)
-@UseGuards(WorkspaceRoleGuard)
-@UseGuards(AccessTokenGuard)
+@UseGuards(AccessTokenGuard, WorkspaceRoleGuard)
 @Controller("/workspaces/:workspaceId/chats")
 export class ChatsController {
   constructor(private readonly chatsService: ChatsService) {}
