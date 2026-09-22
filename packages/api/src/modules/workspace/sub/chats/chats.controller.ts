@@ -36,7 +36,7 @@ export class ChatsController {
   }
   @Get(":id")
   async findOne(@Param() pathParamas: FindWorkspaceChatsPathParams) {
-    return await this.chatsService.findByIdAndWorkspaceId(pathParamas);
+    return await this.chatsService.findOneByIdAndWorkspaceId(pathParamas);
   }
   @Put(":id")
   async updateOne(

@@ -17,6 +17,11 @@ import { Prisma, WorkspaceParticipant } from "generated/prisma/browser.js";
 import { WorkspaceRepository } from "../../core/workspace.repository.js";
 import { NotFoundError } from "../../../../classes/app.error.js";
 import { RedisService } from "../../../redis/redis.service.js";
+import {
+  getWorkspaceParticipantKeyByIdAndWorkspaceId,
+  getWorkspaceParticipantKeyByUserIdAndChatId,
+  getWorkspaceParticipantKeyByWorkspaceIdAndUserId,
+} from "./workspace-participant.keys.js";
 
 @Injectable()
 export class WorkspaceParticipantService {
@@ -35,6 +40,14 @@ export class WorkspaceParticipantService {
   ): Promise<TWorkspaceParticipant> {
     const participant =
       await this.workspaceParticipantRepository.createOne(args);
+
+    const key = getWorkspaceParticipantKeyByWorkspaceIdAndUserId(
+      participant.workspaceId,
+      participant.userId,
+    );
+
+    await this.redisService.set(key, participant);
+
     return workspaceParticipantSchema.parse(participant);
   }
 
@@ -50,6 +63,13 @@ export class WorkspaceParticipantService {
     chatId: string,
     userId: string,
   ): Promise<WorkspaceParticipant | null> {
+    const key = getWorkspaceParticipantKeyByUserIdAndChatId(chatId, userId);
+
+    const cached = await this.redisService.get<WorkspaceParticipant | null>(
+      key,
+    );
+    if (cached) return cached;
+
     return this.workspaceParticipantRepository.findOne({
       where: {
         workspace: {
@@ -64,10 +84,42 @@ export class WorkspaceParticipantService {
     });
   }
 
+  async findOneByUserIdAndWorkspaceId(
+    workspaceId: string,
+    userId: string,
+  ): Promise<WorkspaceParticipant | null> {
+    const key = getWorkspaceParticipantKeyByWorkspaceIdAndUserId(
+      workspaceId,
+      userId,
+    );
+
+    const cached = await this.redisService.get<WorkspaceParticipant | null>(
+      key,
+    );
+    if (cached) return cached;
+
+    return this.workspaceParticipantRepository.findOne({
+      where: {
+        workspaceId,
+        userId,
+      },
+    });
+  }
+
   async findOneByIdAndWorkspaceId(
     participantId: string,
     workspaceId: string,
   ): Promise<WorkspaceParticipant | null> {
+    const key = getWorkspaceParticipantKeyByIdAndWorkspaceId(
+      participantId,
+      workspaceId,
+    );
+
+    const cached = await this.redisService.get<WorkspaceParticipant | null>(
+      key,
+    );
+    if (cached) return cached;
+
     return this.workspaceParticipantRepository.findOne({
       where: {
         id: participantId,
@@ -91,12 +143,10 @@ export class WorkspaceParticipantService {
     workspaceId: string,
     userId: string,
   ): Promise<boolean> {
-    const participant = await this.workspaceParticipantRepository.findOne({
-      where: {
-        workspaceId,
-        userId,
-      },
-    });
+    const participant = await this.findOneByUserIdAndWorkspaceId(
+      workspaceId,
+      userId,
+    );
 
     if (!participant) {
       throw new NotFoundError("Participant not found");

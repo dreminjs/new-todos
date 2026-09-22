@@ -2,6 +2,7 @@ import { Prisma, WorkspaceParticipant } from "api/generated/prisma/client.js";
 import { PrismaService } from "../../../prisma/prisma.service.js";
 import { IExtendedWorkspaceParticipant } from "types";
 import { Injectable } from "@nestjs/common";
+import { PUBLIC_USER_SELECT } from "../../../user/index.js";
 
 @Injectable()
 export class WorkspaceParticipantRepository {
@@ -9,7 +10,6 @@ export class WorkspaceParticipantRepository {
   async createOne(
     args: Prisma.WorkspaceParticipantCreateArgs,
   ): Promise<WorkspaceParticipant> {
-
     return this.prisma.workspaceParticipant.create(args);
   }
 
@@ -26,17 +26,11 @@ export class WorkspaceParticipantRepository {
       },
       select: {
         user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-            email: true
-          },
+          select: PUBLIC_USER_SELECT,
         },
         role: true,
         status: true,
-        id: true
+        id: true,
       },
     }) as unknown as IExtendedWorkspaceParticipant[];
   }

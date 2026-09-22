@@ -15,7 +15,7 @@ export class ChatsRepository {
     });
   }
 
-  async findById(id: string): Promise<Chat | null> {
+  async findOneById(id: string): Promise<Chat | null> {
     return this.prisma.chat.findFirst({
       where: {
         id,
@@ -23,7 +23,7 @@ export class ChatsRepository {
     });
   }
 
-  async findByIdAndWorkspaceId(dto: FindWorkspaceChatsPathParams) {
+  async findOneByIdAndWorkspaceId(dto: FindWorkspaceChatsPathParams) {
     return this.prisma.chat.findFirst({
       where: {
         id: dto.id,

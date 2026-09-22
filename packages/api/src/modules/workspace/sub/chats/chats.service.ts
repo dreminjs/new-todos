@@ -23,11 +23,11 @@ export class ChatsService {
   }
 
   async findById(id: string): Promise<Chat | null> {
-    return this.chatsRepository.findById(id);
+    return this.chatsRepository.findOneById(id);
   }
 
-  async findByIdAndWorkspaceId(dto: FindWorkspaceChatsPathParams) {
-    return this.chatsRepository.findByIdAndWorkspaceId(dto);
+  async findOneByIdAndWorkspaceId(dto: FindWorkspaceChatsPathParams) {
+    return this.chatsRepository.findOneByIdAndWorkspaceId(dto);
   }
 
   async create(data: TCreateChatDto): Promise<Chat> {
