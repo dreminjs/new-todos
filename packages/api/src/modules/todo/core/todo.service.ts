@@ -52,12 +52,11 @@ export class TodoService {
       return result as unknown as TExtendedTodo;
     }
 
-    const isCreatorMember = await this.workspaceParticipantService.findOne({
-      where: {
+    const isCreatorMember =
+      await this.workspaceParticipantService.findOneByIdAndWorkspaceId(
+        currentUserId,
         workspaceId,
-        userId: currentUserId,
-      },
-    });
+      );
     if (!isCreatorMember) {
       throw new ForbiddenException("You are not a member of this workspace");
     }
@@ -65,12 +64,11 @@ export class TodoService {
     const targetAssigneeId = assigneeId ?? currentUserId;
 
     if (targetAssigneeId !== currentUserId) {
-      const isAssigneeMember = await this.workspaceParticipantService.findOne({
-        where: {
+      const isAssigneeMember =
+        await this.workspaceParticipantService.findOneByIdAndWorkspaceId(
+          targetAssigneeId,
           workspaceId,
-          userId: targetAssigneeId,
-        },
-      });
+        );
       if (!isAssigneeMember) {
         throw new ForbiddenException(
           "Assignee is not a member of this workspace",
@@ -184,7 +182,7 @@ export class TodoService {
         userId: true,
         assigneeId: true,
         workspaceId: true,
-        todoGroupId: true
+        todoGroupId: true,
       },
       include: {
         workspace: true,
@@ -226,12 +224,11 @@ export class TodoService {
     id: string,
     dto: TUpdateTodoStatusDto,
   ): Promise<TExtendedTodo> {
-    const participantQuery = this.workspaceParticipantService.findOne({
-      where: {
-        userId: dto.userId,
-        workspaceId: dto.workspaceId,
-      },
-    });
+    const participantQuery =
+      this.workspaceParticipantService.findOneByIdAndWorkspaceId(
+        dto.userId,
+        dto.workspaceId ?? "",
+      );
 
     const todoCandidateQuery = this.findOne({ where: { id } });
 

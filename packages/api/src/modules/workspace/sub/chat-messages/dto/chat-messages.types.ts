@@ -4,6 +4,7 @@ import {
   infinityQueryParamsSchema,
   joinChatRoomBodySchema,
   TCreateChatMessageBodyDto,
+  TJoinChatRoomBodyDto,
   TUpdateChatMessageBodyDto,
   updateChatMessageBodySchema,
 } from "types";
@@ -14,6 +15,8 @@ import {
 import z from "zod";
 
 export class JoinChatRoomBodyDto extends createZodDto(joinChatRoomBodySchema) {}
+
+export type TJoinChatRoomDto = TJoinChatRoomBodyDto & { userId: string };
 
 export class CreateMessageBodyDto extends createZodDto(
   createChatMessageBodySchema,

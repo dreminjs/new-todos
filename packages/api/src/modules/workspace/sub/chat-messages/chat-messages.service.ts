@@ -6,21 +6,21 @@ import {
   GetChatMessagePathParams,
   GetChatMessagesQuery,
   TCreateMessageDto,
+  TJoinChatRoomDto,
   TUpdateMessageDto,
 } from "./dto/chat-messages.types.js";
 import { ChatMessagesGateway } from "./chat-message.gateway.js";
 import { buildInfinityScrollResponse } from "../../../../libs/buildInfinityScrollResponse.js";
-import { ChatsService } from "../chats/chats.service.js";
-import { WsException } from "@nestjs/websockets";
 import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
 export class ChatMessagesService {
   constructor(
     private readonly chatMessagesRepository: ChatMessagesRepository,
     private readonly chatMessagesGateway: ChatMessagesGateway,
-    private readonly chatsService: ChatsService,
     private readonly workspaceParticipantService: WorkspaceParticipantService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async createOne(dto: TCreateMessageDto) {
@@ -64,9 +64,12 @@ export class ChatMessagesService {
     this.chatMessagesGateway.handleDeleteMessage(dto);
   }
 
-  async updateOne(params: ChatMessagesPathParams, dto: TUpdateMessageDto) {
+  async updateOne(
+    params: ChatMessagesPathParams,
+    dto: TUpdateMessageDto,
+  ): Promise<TExtendedChatMessage> {
     const { content, userId } = dto;
-    const chatMessage = (await this.chatMessagesRepository.updateExtended(
+    const chatMessage = await this.chatMessagesRepository.updateExtended(
       {
         chatMessageId: params.chatMessageId,
         workspaceId: params.workspaceId,
@@ -76,7 +79,7 @@ export class ChatMessagesService {
       {
         content,
       },
-    )) as unknown as TExtendedChatMessage;
+    );
 
     this.chatMessagesGateway.handleEditMessage(chatMessage);
     return chatMessage;
@@ -91,16 +94,5 @@ export class ChatMessagesService {
       cursor: query.cursor,
     });
     return buildInfinityScrollResponse(foundMessages, query.take);
-  }
-
-  async joinChatRoomViaWs(chatId: string, candidateId: string) {
-    const chat = await this.chatsService.findById(chatId);
-    if (!chat) {
-      throw new WsException("Chat not found");
-    }
-    await this.workspaceParticipantService.validateParticipantViaWs(
-      chat.workspaceId,
-      candidateId,
-    );
   }
 }

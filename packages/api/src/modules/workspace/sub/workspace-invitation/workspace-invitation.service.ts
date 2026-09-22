@@ -39,12 +39,11 @@ export class WorkspaceInvitationService {
       throw new NotFoundException(`User with email ${dto.email} was not found`);
     }
 
-    const participant = await this.workspaceParticipantService.findOne({
-      where: {
-        userId: invitedUser.id,
-        workspaceId: dto.workspaceId,
-      },
-    });
+    const participant =
+      await this.workspaceParticipantService.findOneByIdAndWorkspaceId(
+        invitedUser.id,
+        dto.workspaceId,
+      );
     if (participant) {
       throw new ConflictException(
         `User is already a participant of this workspace`,

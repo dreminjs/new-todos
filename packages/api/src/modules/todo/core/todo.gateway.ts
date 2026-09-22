@@ -56,9 +56,10 @@ export class TodoGateway
     const { todoGroupId, workspaceId } = payload;
     const userId = client.data.userId;
 
-    const isParticipant = await this.workspaceParticipantService.findOne({
-      where: { userId, workspaceId },
-    });
+    const isParticipant = await this.workspaceParticipantService.findOneByIdAndWorkspaceId(
+      userId,
+      workspaceId,
+    );
 
     if (!isParticipant) {
       throw new WsException("You are not a participant of this workspace");

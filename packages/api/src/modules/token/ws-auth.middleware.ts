@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ExtendedError, Socket } from "socket.io";
 import { extractTokenFromSocket } from "./helpers/exctractTokenFromSocket.js";
 import { TokenService } from "./token.service.js";
+import { UnauthorizedError } from "src/classes/app.error.js";
 
 @Injectable()
 export class WsAuthMiddleware {
@@ -11,14 +12,14 @@ export class WsAuthMiddleware {
     try {
       const token = extractTokenFromSocket(socket);
       if (!token) {
-        return next(new Error("UNAUTHORIZED"));
+        return next(new UnauthorizedError("UNAUTHORIZED"));
       }
 
       const tokenPayload = await this.tokenService.validateAuthToken(token);
       socket.data.userId = tokenPayload.userId;
       next();
     } catch (error) {
-      next(new Error("UNAUTHORIZED"));
+      next(new UnauthorizedError("UNAUTHORIZED"));
     }
   };
 }

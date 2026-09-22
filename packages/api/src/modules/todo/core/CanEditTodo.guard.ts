@@ -40,9 +40,11 @@ export class CanEditTodoGuard implements CanActivate {
       return false;
     }
 
-    const participant = await this.workspaceParticipantService.findOne({
-      where: { workspaceId: currentTodo.workspaceId, userId },
-    });
+    const participant =
+      await this.workspaceParticipantService.findOneByIdAndWorkspaceId(
+        todoId,
+        currentTodo.workspaceId,
+      );
 
     return participant?.role === "MANAGER" || participant?.role === "OWNER";
   }

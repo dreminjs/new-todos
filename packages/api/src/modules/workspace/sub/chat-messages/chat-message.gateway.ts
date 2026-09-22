@@ -5,13 +5,15 @@ import {
   WsException,
 } from "@nestjs/websockets";
 import { ChatMessagesService } from "./chat-messages.service.js";
-import { Logger, UseGuards } from "@nestjs/common";
+import { UseGuards } from "@nestjs/common";
 import { WsAccessTokenGuard } from "../../../token/guards/ws-access-token.guard.js";
-import { JoinChatRoomDto } from "./dto/chat-messages.types.js";
+import { JoinChatRoomBodyDto } from "./dto/chat-messages.types.js";
 import { Server, Socket } from "socket.io";
 import { WsAuthMiddleware } from "../../../token/ws-auth.middleware.js";
 import type { IWsChatMessageDeletedPayload, TExtendedChatMessage } from "types";
 import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { ChatsService } from "../chats/chats.service.js";
 @UseGuards(WsAccessTokenGuard)
 @WebSocketGateway({
   cors: {
@@ -22,8 +24,9 @@ import { WorkspaceParticipantService } from "../workspace-participant/workspace-
 export class ChatMessagesGateway {
   constructor(
     private readonly wsAuthMiddleware: WsAuthMiddleware,
-    private readonly workspaceParticipantService: WorkspaceParticipantService,
     private readonly chatMessagesService: ChatMessagesService,
+    private readonly chatsService: ChatsService,
+    private readonly workspaceParticipantService: WorkspaceParticipantService,
   ) {}
 
   @WebSocketServer()
@@ -34,9 +37,12 @@ export class ChatMessagesGateway {
   }
 
   @SubscribeMessage("join-chat-room")
-  async handleJoinChatRoom(client: Socket, payload: JoinChatRoomDto) {
+  async handleJoinChatRoom(client: Socket, payload: JoinChatRoomBodyDto) {
     const { id } = payload;
-    await this.chatMessagesService.joinChatRoomViaWs(id, client.data.userId);
+    await this.chatsService.joinChatRoom({
+      id,
+      userId: client.data.userId,
+    });
     client.join(`chat-room:${id}`);
   }
 
@@ -45,7 +51,7 @@ export class ChatMessagesGateway {
     client: Socket,
     payload: TExtendedChatMessage,
   ) {
-    await this.workspaceParticipantService.validateParticipantViaWs(
+    await this.workspaceParticipantService.validateParticipant(
       payload.workspace.id,
       client.data.userId,
     );
@@ -66,7 +72,7 @@ export class ChatMessagesGateway {
     client: Socket,
     payload: IWsChatMessageDeletedPayload,
   ) {
-    await this.workspaceParticipantService.validateParticipantViaWs(
+    await this.workspaceParticipantService.validateParticipant(
       payload.workspaceId,
       client.data.userId,
     );
@@ -86,7 +92,7 @@ export class ChatMessagesGateway {
     client: Socket,
     payload: TExtendedChatMessage,
   ) {
-    await this.workspaceParticipantService.validateParticipantViaWs(
+    await this.workspaceParticipantService.validateParticipant(
       payload.workspace.id,
       client.data.userId,
     );

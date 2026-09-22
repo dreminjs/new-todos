@@ -15,7 +15,7 @@ import { SendCreateNotification } from "../../../notifications/dto/notifactions.
 import { UserService } from "../../../user/user.service.js";
 import { Prisma, WorkspaceParticipant } from "generated/prisma/browser.js";
 import { WorkspaceRepository } from "../../core/workspace.repository.js";
-import { WsException } from "@nestjs/websockets";
+import { NotFoundError } from "src/classes/app.error.js";
 
 @Injectable()
 export class WorkspaceParticipantService {
@@ -43,10 +43,35 @@ export class WorkspaceParticipantService {
       workspaceId,
     );
   }
-  async findOne(
-    args: Prisma.WorkspaceParticipantFindFirstArgs,
+
+  async findOneByChatIdAndUserId(
+    chatId: string,
+    userId: string,
   ): Promise<WorkspaceParticipant | null> {
-    return this.workspaceParticipantRepository.findOne(args);
+    return this.workspaceParticipantRepository.findOne({
+      where: {
+        workspace: {
+          chats: {
+            some: {
+              id: chatId,
+            },
+          },
+        },
+        userId,
+      },
+    });
+  }
+
+  async findOneByIdAndWorkspaceId(
+    participantId: string,
+    workspaceId: string,
+  ): Promise<WorkspaceParticipant | null> {
+    return this.workspaceParticipantRepository.findOne({
+      where: {
+        id: participantId,
+        workspaceId,
+      },
+    });
   }
   async count(args: Prisma.WorkspaceParticipantCountArgs): Promise<number> {
     return this.workspaceParticipantRepository.count(args);
@@ -60,7 +85,7 @@ export class WorkspaceParticipantService {
     });
   }
 
-  async validateParticipantViaWs(
+  async validateParticipant(
     workspaceId: string,
     userId: string,
   ): Promise<boolean> {
@@ -72,7 +97,7 @@ export class WorkspaceParticipantService {
     });
 
     if (!participant) {
-      throw new WsException("Participant not found");
+      throw new NotFoundError("Participant not found");
     }
 
     return !!participant;

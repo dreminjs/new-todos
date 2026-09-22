@@ -7,10 +7,16 @@ import {
   TCreateChatDto,
   UpdateChatDto,
 } from "./dto/chats.types.js";
+import { TJoinChatRoomDto } from "../chat-messages/dto/chat-messages.types.js";
+import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
+import { NotFoundError } from "src/classes/app.error.js";
 
 @Injectable()
 export class ChatsService {
-  constructor(private readonly chatsRepository: ChatsRepository) {}
+  constructor(
+    private readonly chatsRepository: ChatsRepository,
+    private readonly workspaceParticipantService: WorkspaceParticipantService,
+  ) {}
 
   async findAllByWorkspaceId(workspaceId: string): Promise<Chat[]> {
     return this.chatsRepository.findAllByWorkspaceId(workspaceId);
@@ -44,7 +50,20 @@ export class ChatsService {
     return this.chatsRepository.delete(dto);
   }
 
-  async findChatsByWorkspaceId(workspaceId: string): Promise<Chat[]> {
-    return this.chatsRepository.findAllByWorkspaceId(workspaceId);
+  async joinChatRoom(dto: TJoinChatRoomDto) {
+    const workspace =
+      await this.workspaceParticipantService.findOneByChatIdAndUserId(
+        dto.id,
+        dto.userId,
+      );
+
+    if (!workspace) {
+      throw new NotFoundError("Workspace not found");
+    }
+
+    await this.workspaceParticipantService.validateParticipant(
+      workspace.workspaceId,
+      dto.userId,
+    );
   }
 }
