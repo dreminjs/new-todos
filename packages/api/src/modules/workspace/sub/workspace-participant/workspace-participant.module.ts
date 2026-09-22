@@ -5,9 +5,15 @@ import { WorkspaceParticipantController } from "./workspace-participant.controll
 import { WorkspaceParticipantRepository } from "./workspace-participant.repository.js";
 import { WorkspaceModule } from "../../core/workspace.module.js";
 import { UserModule } from "../../../user/user.module.js";
+import { RedisModule } from "../../../redis/redis.module.js";
 
 @Module({
-  imports: [PrismaModule, UserModule, forwardRef(() => WorkspaceModule)],
+  imports: [
+    PrismaModule,
+    UserModule,
+    forwardRef(() => WorkspaceModule),
+    RedisModule,
+  ],
   controllers: [WorkspaceParticipantController],
   providers: [WorkspaceParticipantService, WorkspaceParticipantRepository],
   exports: [WorkspaceParticipantService, WorkspaceParticipantRepository],
