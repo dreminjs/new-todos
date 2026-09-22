@@ -8,6 +8,7 @@ import { ChatMessagesGateway } from "./chat-message.gateway.js";
 import { UserModule } from "../../../user/user.module.js";
 import { WorkspaceParticipantModule } from "../workspace-participant/workspace-participant.module.js";
 import { ChatsModule } from "../chats/chats.module.js";
+import { ChatMessagesListener } from "./chat-messages.listener.js";
 
 @Module({
   imports: [
@@ -18,7 +19,12 @@ import { ChatsModule } from "../chats/chats.module.js";
     forwardRef(() => ChatsModule),
   ],
   controllers: [ChatMessagesController],
-  providers: [ChatMessagesService, ChatMessagesRepository, ChatMessagesGateway],
+  providers: [
+    ChatMessagesService,
+    ChatMessagesRepository,
+    ChatMessagesGateway,
+    ChatMessagesListener,
+  ],
   exports: [ChatMessagesService],
 })
 export class ChatMessagesModule {}

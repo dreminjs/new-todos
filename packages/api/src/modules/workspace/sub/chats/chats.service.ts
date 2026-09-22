@@ -9,7 +9,7 @@ import {
 } from "./dto/chats.types.js";
 import { TJoinChatRoomDto } from "../chat-messages/dto/chat-messages.types.js";
 import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
-import { NotFoundError } from "src/classes/app.error.js";
+import { NotFoundError } from "../../../../classes/app.error.js";
 
 @Injectable()
 export class ChatsService {

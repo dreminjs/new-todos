@@ -15,7 +15,8 @@ import { SendCreateNotification } from "../../../notifications/dto/notifactions.
 import { UserService } from "../../../user/user.service.js";
 import { Prisma, WorkspaceParticipant } from "generated/prisma/browser.js";
 import { WorkspaceRepository } from "../../core/workspace.repository.js";
-import { NotFoundError } from "src/classes/app.error.js";
+import { NotFoundError } from "../../../../classes/app.error.js";
+import { RedisService } from "../../../redis/redis.service.js";
 
 @Injectable()
 export class WorkspaceParticipantService {
@@ -24,6 +25,7 @@ export class WorkspaceParticipantService {
     private readonly eventEmitter: EventEmitter2,
     private readonly workspaceRepository: WorkspaceRepository,
     private readonly userService: UserService,
+    private readonly redisService: RedisService,
   ) {}
 
   private logger = new Logger(WorkspaceParticipantService.name);

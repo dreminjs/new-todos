@@ -24,12 +24,11 @@ export class WorkspaceRoleGuard implements CanActivate {
     const userId = req.user.id;
     const workspaceId = req.params.workspaceId;
 
-    const participant = await this.workspaceParticipantService.findOne({
-      where: {
-        userId,
+    const participant =
+      await this.workspaceParticipantService.findOneByIdAndWorkspaceId(
         workspaceId,
-      },
-    });
+        userId,
+      );
 
     if (!participant) throw new ForbiddenException("Not a workspace member");
     if (!hasMinRole(participant.role, minRole)) {

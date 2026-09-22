@@ -240,6 +240,6 @@ export class WorkspaceService {
   }
 
   async findWorkspaceChats(workspaceId: string): Promise<TChat[]> {
-    return this.chatsService.findChatsByWorkspaceId(workspaceId);
+    return this.chatsService.findAllByWorkspaceId(workspaceId);
   }
 }

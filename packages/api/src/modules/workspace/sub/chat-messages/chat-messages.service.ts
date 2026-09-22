@@ -18,7 +18,6 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 export class ChatMessagesService {
   constructor(
     private readonly chatMessagesRepository: ChatMessagesRepository,
-    private readonly chatMessagesGateway: ChatMessagesGateway,
     private readonly workspaceParticipantService: WorkspaceParticipantService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
@@ -52,7 +51,7 @@ export class ChatMessagesService {
       content,
     });
 
-    this.chatMessagesGateway.handleSendMessage(chatMessage);
+    this.eventEmitter.emit("chat-messages.created", chatMessage);
     return chatMessage;
   }
 
@@ -61,7 +60,7 @@ export class ChatMessagesService {
       dto.chatMessageId,
       userId,
     );
-    this.chatMessagesGateway.handleDeleteMessage(dto);
+    this.eventEmitter.emit("chat-messages.deleted", dto);
   }
 
   async updateOne(
@@ -81,7 +80,7 @@ export class ChatMessagesService {
       },
     );
 
-    this.chatMessagesGateway.handleEditMessage(chatMessage);
+    this.eventEmitter.emit("chat-messages.updated", chatMessage);
     return chatMessage;
   }
 

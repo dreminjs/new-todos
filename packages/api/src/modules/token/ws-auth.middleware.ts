@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ExtendedError, Socket } from "socket.io";
 import { extractTokenFromSocket } from "./helpers/exctractTokenFromSocket.js";
 import { TokenService } from "./token.service.js";
-import { UnauthorizedError } from "src/classes/app.error.js";
+import { UnauthorizedError } from "../../classes/app.error.js";
 
 @Injectable()
 export class WsAuthMiddleware {
