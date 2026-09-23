@@ -4,6 +4,7 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from "@nestjs/common";
 import { HttpAdapterHost } from "@nestjs/core";
 import { WsException } from "@nestjs/websockets";
@@ -12,9 +13,11 @@ import { WsException } from "@nestjs/websockets";
 export class AppErrorFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
+  private readonly logger = new Logger(AppErrorFilter.name)
+
   catch(exception: unknown, host: ArgumentsHost) {
     const { httpStatus, message } = this.normalize(exception);
-
+    this.logger.log("App Error", host.getType<string>())
     switch (host.getType<string>()) {
       case "http":
         this.handleHttp(host, httpStatus, message);
@@ -29,7 +32,7 @@ export class AppErrorFilter implements ExceptionFilter {
     const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
 
-    httpAdapter.reply(
+      return httpAdapter.reply(
       ctx.getResponse(),
       {
         statusCode: status,

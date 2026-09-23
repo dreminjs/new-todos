@@ -21,6 +21,7 @@ import { WorkspaceParticipantService } from "../../workspace/sub/workspace-parti
 import { TodoGateway } from "./todo.gateway.js";
 import { TUpdateTodoStatusDto } from "./dto/todo.types.js";
 import { PUBLIC_USER_SELECT } from "../../user/index.js";
+import { ForbiddenError, NotFoundError } from "../../../classes/app.error.js";
 
 @Injectable()
 export class TodoService {
@@ -224,36 +225,30 @@ export class TodoService {
     id: string,
     dto: TUpdateTodoStatusDto,
   ): Promise<TExtendedTodo> {
-    const participantQuery =
-      this.workspaceParticipantService.findOneByIdAndWorkspaceId(
-        dto.userId,
-        dto.workspaceId ?? "",
-      );
-
-    const todoCandidateQuery = this.findOne({ where: { id } });
-
-    const [participant, todoCandidate] = await Promise.all([
-      participantQuery,
-      todoCandidateQuery,
-    ]);
+    const todoCandidate = await this.findOne({ where: { id } });
 
     if (!todoCandidate) {
-      throw new NotFoundException(`Todo not found`);
+      throw new NotFoundError(`Todo not found`);
     }
 
-    if (!participant) {
-      throw new ForbiddenException(
-        `You are not a participant in this workspace`,
-      );
-    }
-
-    const isManagerOrOwner = ["OWNER", "MANAGER"].includes(participant.role);
     const isTodoOwner = todoCandidate.userId === dto.userId;
 
-    if (!isManagerOrOwner && !isTodoOwner) {
-      throw new ForbiddenException(
-        `You are not authorized to update this todo`,
-      );
+    if (dto.workspaceId) {
+      const participant =
+        await this.workspaceParticipantService.findOneByUserIdAndWorkspaceId(
+          dto.workspaceId,
+          dto.userId,
+        );
+
+      if (!participant) {
+        throw new ForbiddenError(`You are not a participant in this workspace`);
+      }
+
+      const isManagerOrOwner = ["OWNER", "MANAGER"].includes(participant.role);
+
+      if (!isManagerOrOwner && !isTodoOwner) {
+        throw new ForbiddenError(`You are not authorized to update this todo`);
+      }
     }
 
     const updatedTodo = await this.todoRepository.update(id, {
