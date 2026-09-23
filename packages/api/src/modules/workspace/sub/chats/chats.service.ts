@@ -22,7 +22,7 @@ export class ChatsService {
     return this.chatsRepository.findAllByWorkspaceId(workspaceId);
   }
 
-  async findById(id: string): Promise<Chat | null> {
+  async findOneById(id: string): Promise<Chat | null> {
     return this.chatsRepository.findOneById(id);
   }
 

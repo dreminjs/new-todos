@@ -46,7 +46,9 @@ export class WorkspaceParticipantService {
       participant.userId,
     );
 
-    await this.redisService.set(key, participant);
+    this.redisService.set(key, participant).catch((err) => {
+      this.logger.error("Failed to set participant in Redis", err);
+    });
 
     return workspaceParticipantSchema.parse(participant);
   }
@@ -70,7 +72,7 @@ export class WorkspaceParticipantService {
     );
     if (cached) return cached;
 
-    return this.workspaceParticipantRepository.findOne({
+    const participant = await this.workspaceParticipantRepository.findOne({
       where: {
         workspace: {
           chats: {
@@ -82,6 +84,12 @@ export class WorkspaceParticipantService {
         userId,
       },
     });
+
+    this.redisService.set(key, participant).catch((err) => {
+      this.logger.error("Failed to set participant in Redis", err);
+    });
+
+    return participant;
   }
 
   async findOneByUserIdAndWorkspaceId(
@@ -98,12 +106,18 @@ export class WorkspaceParticipantService {
     );
     if (cached) return cached;
 
-    return this.workspaceParticipantRepository.findOne({
+    const participant = await this.workspaceParticipantRepository.findOne({
       where: {
         workspaceId,
         userId,
       },
     });
+
+    this.redisService.set(key, participant).catch((err) => {
+      this.logger.error("Failed to set participant in Redis", err);
+    });
+
+    return participant;
   }
 
   async findOneByIdAndWorkspaceId(
@@ -120,12 +134,19 @@ export class WorkspaceParticipantService {
     );
     if (cached) return cached;
 
-    return this.workspaceParticipantRepository.findOne({
+    const participant = await this.workspaceParticipantRepository.findOne({
       where: {
         id: participantId,
         workspaceId,
       },
     });
+
+    this.redisService.set(key, participant).catch((err) => {
+      this.logger.error("Failed to set participant in Redis", err);
+    });
+
+
+    return participant;
   }
   async count(args: Prisma.WorkspaceParticipantCountArgs): Promise<number> {
     return this.workspaceParticipantRepository.count(args);

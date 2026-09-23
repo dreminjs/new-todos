@@ -25,7 +25,7 @@ export class WorkspaceRoleGuard implements CanActivate {
     const workspaceId = req.params.workspaceId;
 
     const participant =
-      await this.workspaceParticipantService.findOneByIdAndWorkspaceId(
+      await this.workspaceParticipantService.findOneByUserIdAndWorkspaceId(
         workspaceId,
         userId,
       );

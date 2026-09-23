@@ -13,7 +13,7 @@ import {
   TWorkspaceInfo,
   workspaceSchema,
 } from "types";
-import { Prisma } from "generated/prisma/client.js";
+import type { Prisma, WorkspaceParticipant } from "generated/prisma/client.js";
 import { TodoService } from "../../todo/core/todo.service.js";
 import { WorkspaceRepository } from "./workspace.repository.js";
 import { WorkspaceParticipantRepository } from "../sub/workspace-participant/workspace-participant.repository.js";
@@ -108,38 +108,31 @@ export class WorkspaceService {
   @Transactional()
   async findWorkspaceInfo(
     workspaceId: string,
-    userId: string,
+    currentWorkspaceParticipant: WorkspaceParticipant,
   ): Promise<TWorkspaceInfo> {
     const todosInfoQuery = this.todoService.findWorkspaceTodosInfo(workspaceId);
     const countOfMembersQuery = this.workspaceParticipantRepository.count({
       where: { workspaceId },
     });
-    const participantQuery = this.workspaceParticipantRepository.findOne({
-      where: { workspaceId, userId },
-    });
+
     const workspaceQuery = this.findOne({ where: { id: workspaceId } });
 
-    const [todosInfo, countOfMembers, workspace, participant] =
+    const [todosInfo, countOfMembers, workspace, ] =
       await Promise.all([
         todosInfoQuery,
         countOfMembersQuery,
         workspaceQuery,
-        participantQuery,
       ]);
 
     if (!workspace) {
       throw new NotFoundException("Workspace not found");
     }
-    if (!participant) {
-      throw new NotFoundException("Participant not found");
-    }
-
     return {
       todo: todosInfo,
       countOfMembers,
       title: workspace.name,
       description: workspace.description,
-      role: participant.role,
+      role: currentWorkspaceParticipant!.role,
     };
   }
 

@@ -20,6 +20,8 @@ import { TChat, TTodoGroupResponse, TWorkspace, TWorkspaceInfo } from "types";
 import { MinRole } from "./decorators/min-role.decorator.js";
 import { WorkspaceRoleGuard } from "./guards/workspace-role.guard.js";
 import { WorkspaceUserRole } from "#generated/enums.js";
+import { CurrentWorkspaceParticipant } from "./decorators/current-workspace-participate.js";
+import type { WorkspaceParticipant } from "#generated/client.js";
 @UseGuards(AccessTokenGuard)
 @Controller("workspaces")
 export class WorkspaceController {
@@ -38,9 +40,13 @@ export class WorkspaceController {
   @Get(":workspaceId/info")
   async findWorkspaceInfo(
     @Param("workspaceId") workspaceId: string,
-    @CurrentUser("id") userId: string,
+    @CurrentWorkspaceParticipant()
+    currentWorkspaceParticipant: WorkspaceParticipant,
   ): Promise<TWorkspaceInfo> {
-    return await this.workspaceService.findWorkspaceInfo(workspaceId, userId);
+    return await this.workspaceService.findWorkspaceInfo(
+      workspaceId,
+      currentWorkspaceParticipant,
+    );
   }
 
   @Get("my")
