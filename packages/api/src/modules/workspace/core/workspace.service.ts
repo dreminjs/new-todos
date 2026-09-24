@@ -21,6 +21,7 @@ import { Transactional } from "@nestjs-cls/transactional";
 import { WorkspaceParticipantService } from "../sub/workspace-participant/workspace-participant.service.js";
 import { TodoGroupsService } from "../../todo/sub/todo-groups/todo-groups.service.js";
 import { ChatsService } from "../sub/chats/chats.service.js";
+import { NotFoundError } from "../../../classes/app.error.js";
 
 @Injectable()
 export class WorkspaceService {
@@ -98,6 +99,16 @@ export class WorkspaceService {
     return workspace;
   }
 
+  async findOneById(workspaceId: string): Promise<TWorkspace> {
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+    if (!workspace) {
+      throw new NotFoundError("Workspace not found!");
+    }
+    return workspace;
+  }
+
   async findParticipants(workspaceId: string): Promise<any> {
     return this.workspaceRepository.findParticipants(workspaceId);
   }
@@ -117,22 +128,23 @@ export class WorkspaceService {
 
     const workspaceQuery = this.findOne({ where: { id: workspaceId } });
 
-    const [todosInfo, countOfMembers, workspace, ] =
-      await Promise.all([
-        todosInfoQuery,
-        countOfMembersQuery,
-        workspaceQuery,
-      ]);
+    const [todosInfo, countOfMembers, workspace] = await Promise.all([
+      todosInfoQuery,
+      countOfMembersQuery,
+      workspaceQuery,
+    ]);
 
     if (!workspace) {
-      throw new NotFoundException("Workspace not found");
+      throw new NotFoundError("Workspace not found");
     }
     return {
+      name: workspace.name,
       todo: todosInfo,
       countOfMembers,
-      title: workspace.name,
       description: workspace.description,
       role: currentWorkspaceParticipant!.role,
+      id: workspace.id,
+      ownerId: workspace.ownerId,
     };
   }
 

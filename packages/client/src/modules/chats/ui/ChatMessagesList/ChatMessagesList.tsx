@@ -16,7 +16,7 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
 }) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useGetChatMessages(chatId, workspaceId);
-  const messages = data?.pages.flatMap((page) => page.items) ?? [];
+  const messages = data?.pages.flatMap((page) => page.items).reverse() ??  [];
 
   const currentUserId = useGetMe("id").data;
 
@@ -35,8 +35,6 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
     },
     { scrollMargin: "250px" },
   );
-
-  console.log({ messages });
 
   if (isLoading) {
     return <div className={styles.loading}>Loading messages...</div>;

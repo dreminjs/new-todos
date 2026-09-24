@@ -5,10 +5,10 @@ import type { TWorkspaceInfo } from "types";
 import type { FC } from "react";
 import { WorkspaceSettingsButton } from "./WorkspaceSettings/WorkspaceSettingsButton";
 
-type TWorkspaceInfoProps = Omit<TWorkspaceInfo, "role">;
+type TWorkspaceInfoProps = Omit<TWorkspaceInfo, "role" | "id" | "ownerId">;
 
 export const WorkspaceInfo: FC<TWorkspaceInfoProps> = ({
-  title,
+  name,
   description,
   todo,
 }) => {
@@ -25,7 +25,7 @@ export const WorkspaceInfo: FC<TWorkspaceInfoProps> = ({
       </button>
       <div className={styles.workspaceHeaderInfoInner}>
         <div>
-          <h3 className={styles.workspaceHeaderInfoTitle}>{title}</h3>
+          <h3 className={styles.workspaceHeaderInfoTitle}>{name}</h3>
           <h6 className={styles.workspaceHeaderInfoDescription}>
             {description}
           </h6>

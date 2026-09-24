@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service.js";
 import { Prisma } from "generated/prisma/client.js";
 import { extendedChatMessageSchema, TExtendedChatMessage } from "types";
@@ -13,11 +13,39 @@ import { PUBLIC_USER_SELECT } from "../../../user/index.js";
 export class ChatMessagesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  private logger = new Logger(ChatMessagesRepository.name);
+
   async createExtended(
     data: Prisma.ChatMessageCreateInput,
   ): Promise<TExtendedChatMessage> {
     const chatMessage = await this.prisma.chatMessage.create({
       data,
+      include: {
+        user: {
+          select: PUBLIC_USER_SELECT,
+        },
+        workspace: true,
+        replyTo: {
+          include: {
+            user: {
+              select: PUBLIC_USER_SELECT,
+            },
+          },
+        },
+      },
+    });
+
+    this.logger.log(chatMessage);
+
+    return extendedChatMessageSchema.parse(chatMessage);
+  }
+
+  async findAll(
+    params: GetChatMessagePathParams,
+    query: GetChatMessagesQuery,
+  ): Promise<TExtendedChatMessage[]> {
+    return (await this.prisma.chatMessage.findMany({
+      where: { ...params },
       include: {
         user: {
           select: PUBLIC_USER_SELECT,
@@ -30,39 +58,15 @@ export class ChatMessagesRepository {
           },
         },
       },
-    });
-    return extendedChatMessageSchema.parse(chatMessage);
-  }
-
-  async findAll(
-    params: GetChatMessagePathParams,
-    query: GetChatMessagesQuery,
-  ): Promise<TExtendedChatMessage[]> {
-    return (
-      await this.prisma.chatMessage.findMany({
-        where: { ...params },
-        include: {
-          user: {
-            select: PUBLIC_USER_SELECT,
-          },
-          replyTo: {
-            include: {
-              user: {
-                select: PUBLIC_USER_SELECT,
-              },
-            },
-          },
+      take: query.take + 1,
+      orderBy: { createdAt: "desc" },
+      skip: query.cursor ? 1 : 0,
+      ...(query.cursor && {
+        cursor: {
+          id: query.cursor,
         },
-        take: query.take + 1,
-        orderBy: { createdAt: "desc" },
-        skip: query.cursor ? 1 : 0,
-        ...(query.cursor && {
-          cursor: {
-            id: query.cursor,
-          },
-        }),
-      })
-    ).reverse() as unknown as TExtendedChatMessage[];
+      }),
+    })) as unknown as TExtendedChatMessage[];
   }
 
   async updateOneById(id: string, data: Prisma.ChatMessageUpdateInput) {

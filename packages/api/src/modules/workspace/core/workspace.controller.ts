@@ -49,6 +49,15 @@ export class WorkspaceController {
     );
   }
 
+  @MinRole(WorkspaceUserRole.MEMBER)
+  @UseGuards(WorkspaceRoleGuard)
+  @Get(":workspaceId")
+  async findOneById(
+    @Param("workspaceId") workspaceId: string,
+  ): Promise<TWorkspace> {
+    return await this.workspaceService.findOneById(workspaceId);
+  }
+
   @Get("my")
   async findManyMyWorkspaces(
     @CurrentUser("id") userId: string,

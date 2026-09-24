@@ -271,7 +271,7 @@ export class TodoService {
   async deleteOne(id: string): Promise<Todo> {
     const deletedTodo = await this.todoRepository.delete(id);
     if (!deletedTodo) {
-      throw new NotFoundException(`Todo not found`);
+      throw new NotFoundError(`Todo not found`);
     }
     if (deletedTodo.todoGroupId && deletedTodo.workspaceId) {
       await this.todoGateway.handleTodoDeleted({

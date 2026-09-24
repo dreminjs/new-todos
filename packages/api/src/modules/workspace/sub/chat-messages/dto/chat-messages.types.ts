@@ -29,6 +29,7 @@ export class UpdateMessageBodyDto extends createZodDto(
 export type TCreateMessageDto = TCreateChatMessageBodyDto & {
   userId: string;
   chatId: string;
+  workspaceId: string
 };
 
 export type TUpdateMessageDto = TUpdateChatMessageBodyDto & { userId: string };

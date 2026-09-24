@@ -69,7 +69,9 @@ export const actionWorkspaceRequestSchema = z.object({
 });
 
 export const workspaceInfoSchema = z.object({
-  title: z.string(),
+  id: z.uuid(),
+  ownerId: z.uuid(),
+  name: z.string(),
   description: z.string(),
   todo: todoCountInfoSchema,
   countOfMembers: z.number(),

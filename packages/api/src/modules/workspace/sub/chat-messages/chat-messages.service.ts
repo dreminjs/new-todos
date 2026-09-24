@@ -9,7 +9,6 @@ import {
   TJoinChatRoomDto,
   TUpdateMessageDto,
 } from "./dto/chat-messages.types.js";
-import { ChatMessagesGateway } from "./chat-message.gateway.js";
 import { buildInfinityScrollResponse } from "../../../../libs/buildInfinityScrollResponse.js";
 import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
 import { EventEmitter2 } from "@nestjs/event-emitter";
@@ -18,7 +17,6 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 export class ChatMessagesService {
   constructor(
     private readonly chatMessagesRepository: ChatMessagesRepository,
-    private readonly workspaceParticipantService: WorkspaceParticipantService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 

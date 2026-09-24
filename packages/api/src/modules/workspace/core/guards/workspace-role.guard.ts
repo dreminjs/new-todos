@@ -8,6 +8,7 @@ import { Reflector } from "@nestjs/core";
 import { MIN_ROLE_KEY } from "../decorators/min-role.decorator.js";
 import { hasMinRole } from "../model/workspace-role.enum.js";
 import { WorkspaceParticipantService } from "../../sub/workspace-participant/workspace-participant.service.js";
+import { ForbiddenError } from "../../../../classes/app.error.js";
 
 @Injectable()
 export class WorkspaceRoleGuard implements CanActivate {
@@ -30,9 +31,9 @@ export class WorkspaceRoleGuard implements CanActivate {
         userId,
       );
 
-    if (!participant) throw new ForbiddenException("Not a workspace member");
+    if (!participant) throw new ForbiddenError("Not a workspace member");
     if (!hasMinRole(participant.role, minRole)) {
-      throw new ForbiddenException(`Requires ${minRole} role or higher`);
+      throw new ForbiddenError(`Requires ${minRole} role or higher`);
     }
 
     req.workspaceParticipant = participant;

@@ -32,6 +32,16 @@ export const chatMessageSchema = z.object({
   replyToId: z.uuid().nullish(),
 });
 
+export const replyToPreviewSchema = chatMessageSchema
+  .omit({
+    userId: true,
+    replyToId: true,
+    workspaceId: true,
+  })
+  .extend({
+    user: userSchema.nullable(),
+  });
+
 export const extendedChatMessageSchema: z.ZodType<TExtendedChatMessage> =
   chatMessageSchema
     .omit({
@@ -42,13 +52,14 @@ export const extendedChatMessageSchema: z.ZodType<TExtendedChatMessage> =
     .extend({
       user: userSchema.nullable(),
       workspace: workspaceSchema,
-      replyTo: z.lazy(() => extendedChatMessageSchema).nullish(),
+      replyTo: replyToPreviewSchema.nullish(),
     });
 
 export const createChatMessageBodySchema = chatMessageSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+  workspaceId: true,
   userId: true,
   chatId: true,
 });

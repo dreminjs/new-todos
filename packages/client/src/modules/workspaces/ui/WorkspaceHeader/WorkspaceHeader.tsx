@@ -16,7 +16,7 @@ export const WorkspaceHeader = () => {
   return (
     <header className={styles.workspaceHeader}>
       <WorkspaceInfo
-        title={workspaceInfo.title}
+        name={workspaceInfo.name}
         description={workspaceInfo.description}
         todo={workspaceInfo.todo}
         countOfMembers={workspaceInfo.countOfMembers}

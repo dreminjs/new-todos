@@ -27,6 +27,7 @@ import { useChatStore } from "../model/chat.store";
 import { useGetMe } from "../../users";
 import { useClearReplyMessageId } from "../model/hooks/useClearReplyMessageId";
 import { useGetCurrentEditMessage } from "../model/hooks/useGetCurrentEditMessage";
+import { useCurrentWorkspace } from "../../workspaces/model/hooks/useCurrentWorkspace";
 
 export const useCreateChat = (dtoContext: TCreateChatContext) => {
   const queryClient = useQueryClient();
@@ -97,11 +98,7 @@ export const useUpdateChatMessage = (dtoContext: IChatContext) => {
   const queryClient = useQueryClient();
   const { mutate: handleMutate, isPending } = useMutation({
     mutationFn: (dto: TEditMessageDto) =>
-      editMessage(
-        { content: dto.content, workspaceId: dtoContext.workspaceId },
-        dto.id,
-        dtoContext,
-      ),
+      editMessage({ content: dto.content }, dto.id, dtoContext),
     onMutate: (dto) => {
       queryClient.setQueryData(
         [
@@ -179,6 +176,7 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
   const replyMessageId = useChatStore((state) => state.replyMessageId);
   const clearReplyMessageId = useClearReplyMessageId();
 
+  const currentWorkspace = useCurrentWorkspace();
   const currentUser = useGetMe();
   return useMutation({
     mutationFn: (dto: TCreateChatMessageBodyDto) =>
@@ -196,44 +194,41 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
           dtoContext.chatId,
           "messages",
         ],
-        (
-          old:
-            | {
-                pages: IItemsResponse<TExtendedChatMessage>[];
-                pageParams: (string | undefined)[];
-              }
-            | undefined,
-        ) => {
+        (old) => {
           if (!old) return old;
 
-          const lastPage = old.pages[old.pages.length - 1];
-          const restPages = old.pages.slice(0, -1);
+          const firstPage = old.pages[0];
+          const restPages = old.pages.slice(1);
+
+          const optimisticMessage: TExtendedChatMessage = {
+            ...dto,
+            id: temporaryId,
+            chatId: dtoContext.chatId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            user: currentUser.data,
+            workspace: {
+              name: currentWorkspace.workspaceInfo.name,
+              description: currentWorkspace.workspaceInfo.description,
+              id: currentWorkspace.workspaceInfo.id,
+              ownerId: currentWorkspace.workspaceInfo.ownerId,
+            },
+          };
+
           return {
             ...old,
             pages: [
-              ...restPages,
               {
-                ...lastPage,
-                items: [
-                  ...lastPage.items,
-                  {
-                    ...dto,
-                    id: temporaryId,
-                    chatId: dtoContext.chatId,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    user: currentUser.data,
-                  },
-                ],
+                ...firstPage,
+                items: [optimisticMessage, ...firstPage.items],
               },
+              ...restPages,
             ],
           };
         },
       );
 
-      return {
-        temporaryId,
-      };
+      return { temporaryId };
     },
     onSuccess: (newMessage, _dto, context) => {
       clearReplyMessageId();
