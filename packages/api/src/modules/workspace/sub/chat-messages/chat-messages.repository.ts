@@ -69,6 +69,24 @@ export class ChatMessagesRepository {
     })) as unknown as TExtendedChatMessage[];
   }
 
+  async findOneById(id: string): Promise<TExtendedChatMessage | null> {
+    return this.prisma.chatMessage.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: PUBLIC_USER_SELECT,
+        },
+        replyTo: {
+          include: {
+            user: {
+              select: PUBLIC_USER_SELECT,
+            },
+          },
+        },
+      },
+    }) as unknown as TExtendedChatMessage | null;
+  }
+
   async updateOneById(id: string, data: Prisma.ChatMessageUpdateInput) {
     return this.prisma.chatMessage.update({
       where: { id },
@@ -100,5 +118,14 @@ export class ChatMessagesRepository {
     return this.prisma.chatMessage.delete({
       where: { id, userId },
     });
+  }
+
+  async findChatMessageChat(id: string) {
+    return this.prisma.chatMessage.findUnique({
+      where: { id },
+      select: {
+        chatId: true,
+      },
+    })
   }
 }

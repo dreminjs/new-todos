@@ -5,13 +5,14 @@ import {
   ChatMessagesPathParams,
   GetChatMessagePathParams,
   GetChatMessagesQuery,
-  TCreateMessageDto,
-  TJoinChatRoomDto,
+  type TCreateMessageDto,
   TUpdateMessageDto,
 } from "./dto/chat-messages.types.js";
 import { buildInfinityScrollResponse } from "../../../../libs/buildInfinityScrollResponse.js";
 import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
 import { EventEmitter2 } from "@nestjs/event-emitter";
+import { BadRequestError } from "src/classes/app.error.js";
+import { Transactional } from "@nestjs-cls/transactional";
 
 @Injectable()
 export class ChatMessagesService {
@@ -20,8 +21,18 @@ export class ChatMessagesService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
+  @Transactional()
   async createOne(dto: TCreateMessageDto) {
     const { chatId, content, userId } = dto;
+
+    if (dto.replyToId) {
+      const replyToMessage =
+        await this.chatMessagesRepository.findChatMessageChat(dto.replyToId);
+      if (dto.chatId !== replyToMessage?.chatId) {
+        throw new BadRequestError("Reply to message must be in the same chat");
+      }
+    }
+
     const chatMessage = await this.chatMessagesRepository.createExtended({
       chat: {
         connect: {

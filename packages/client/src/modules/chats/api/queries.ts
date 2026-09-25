@@ -96,10 +96,23 @@ export const useGetChatMessages = (chatId: string, workspaceId: string) => {
 
 export const useUpdateChatMessage = (dtoContext: IChatContext) => {
   const queryClient = useQueryClient();
+  const addNotification = useSystemNotificationStore(
+    (state) => state.addNotification,
+  );
   const { mutate: handleMutate, isPending } = useMutation({
     mutationFn: (dto: TEditMessageDto) =>
       editMessage({ content: dto.content }, dto.id, dtoContext),
     onMutate: (dto) => {
+      const originalData = queryClient.getQueryData<
+        InfiniteData<IItemsResponse<TExtendedChatMessage>>
+      >([
+        "workspaces",
+        dtoContext.workspaceId,
+        "chats",
+        dtoContext.chatId,
+        "messages",
+      ]);
+
       queryClient.setQueryData(
         [
           "workspaces",
@@ -128,6 +141,8 @@ export const useUpdateChatMessage = (dtoContext: IChatContext) => {
           };
         },
       );
+
+      return { originalData };
     },
     onSuccess: (newMessage, dto) => {
       queryClient.setQueryData(
@@ -163,6 +178,27 @@ export const useUpdateChatMessage = (dtoContext: IChatContext) => {
               ),
             })),
           };
+        },
+      );
+    },
+    onError: (error, _dto, context) => {
+      addNotification({
+        type: "error",
+        message: error.message,
+      });
+      queryClient.setQueryData<
+        InfiniteData<IItemsResponse<TExtendedChatMessage>>
+      >(
+        [
+          "workspaces",
+          dtoContext.workspaceId,
+          "chats",
+          dtoContext.chatId,
+          "messages",
+        ],
+        (old) => {
+          if (!old) return old;
+          return context.originalData;
         },
       );
     },
