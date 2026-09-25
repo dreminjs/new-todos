@@ -335,7 +335,6 @@ export const useDeleteChatMessage = (dtoContext: IChatContext) => {
       };
     },
     onError: (_err, _dto, context) => {
-      console.log(_err);
       queryClient.setQueryData<
         InfiniteData<IItemsResponse<TExtendedChatMessage>>
       >(
