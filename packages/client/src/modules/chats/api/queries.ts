@@ -233,9 +233,6 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
         (old) => {
           if (!old) return old;
 
-          const firstPage = old.pages[0];
-          const restPages = old.pages.slice(1);
-
           const optimisticMessage: TExtendedChatMessage = {
             ...dto,
             id: temporaryId,
@@ -250,6 +247,18 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
               ownerId: currentWorkspace.workspaceInfo.ownerId,
             },
           };
+          if (old.pages.length === 0)
+            return {
+              ...old,
+              pages: [
+                {
+                  ...old.pages[0],
+                  items: [optimisticMessage],
+                },
+              ],
+            };
+          const firstPage = old.pages[0];
+          const restPages = old.pages.slice(1);
 
           return {
             ...old,
