@@ -9,9 +9,8 @@ import {
   TUpdateMessageDto,
 } from "./dto/chat-messages.types.js";
 import { buildInfinityScrollResponse } from "../../../../libs/buildInfinityScrollResponse.js";
-import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { BadRequestError } from "src/classes/app.error.js";
+import { BadRequestError } from "../../../../classes/app.error.js";
 import { Transactional } from "@nestjs-cls/transactional";
 
 @Injectable()

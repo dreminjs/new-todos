@@ -16,7 +16,7 @@ import { UserService } from "../../../user/user.service.js";
 import { Prisma, WorkspaceParticipant } from "generated/prisma/browser.js";
 import { WorkspaceRepository } from "../../core/workspace.repository.js";
 import { NotFoundError } from "../../../../classes/app.error.js";
-import { RedisService } from "../../../redis/redis.service.js";
+import { RedisService } from "../../../infra/redis/redis.service.js";
 import {
   getWorkspaceParticipantKeyByIdAndWorkspaceId,
   getWorkspaceParticipantKeyByUserIdAndChatId,

@@ -8,12 +8,16 @@ import { WsException } from "@nestjs/websockets";
 import { Socket } from "socket.io";
 import { TokenService } from "../token.service.js";
 import { UserService } from "../../user/user.service.js";
+import * as cookie from "cookie";
+import { Redis } from "ioredis";
+import { InjectRedis } from "@nestjs-modules/ioredis";
 
 @Injectable()
 export class WsAccessTokenGuard implements CanActivate {
   constructor(
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   private logger = new Logger(WsAccessTokenGuard.name);
@@ -27,17 +31,20 @@ export class WsAccessTokenGuard implements CanActivate {
     try {
       const payload = await this.tokenService.validateAuthToken(token);
 
-      this.logger.log(`Validating token for user: ${payload.userId}`);
-
       const user = await this.userService.findOne({
         where: { id: payload.userId },
       });
 
       if (!user) throw new WsException("Unauthorized");
 
-      this.logger.log(
-        `User authenticated: ${user.id} { email: ${user.email} }`,
-      );
+      const socketId = client.id;
+
+      await this.redis
+        .multi()
+        .sadd(`user-sockets:${user.id}`, socketId)
+        .set(`socket:${socketId}`, user.id, "EX", 60 * 60 * 24)
+        .exec();
+
       client.data.user = user;
       return true;
     } catch {
@@ -48,9 +55,7 @@ export class WsAccessTokenGuard implements CanActivate {
   private extractToken(client: Socket): string | null {
     const cookieHeader = client.handshake.headers.cookie;
     if (cookieHeader) {
-      const cookies = Object.fromEntries(
-        cookieHeader.split(";").map((c) => c.trim().split("=")),
-      );
+      const cookies = cookie.parseCookie(cookieHeader);
       if (cookies["accessToken"]) return cookies["accessToken"];
     }
 

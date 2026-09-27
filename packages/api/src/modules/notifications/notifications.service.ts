@@ -1,22 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import { TCreateNotification, notifactionSchema } from "types";
 import { NotificationsRepository } from "./notifications.repository.js";
-import { NotifactionsGateway } from "./notifactions.gateway.js";
 import { GetNotificationsQuery } from "./dto/notifactions.dto.js";
 import { buildInfinityScrollResponse } from "../../libs/buildInfinityScrollResponse.js";
 import type { IItemsResponse, TNotification } from "types";
+import { NotificationsGateway } from "./notifactions.gateway.js";
 
 @Injectable()
 export class NotificationsService {
   constructor(
     private readonly notificationsRepository: NotificationsRepository,
-    private readonly notifactionsGateway: NotifactionsGateway,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async createOne(data: TCreateNotification): Promise<TNotification> {
     const notification = await this.notificationsRepository.create(data);
 
-    await this.notifactionsGateway.sendNotifitacation(
+    await this.notificationsGateway.sendNotification(
       data.userId,
       notification,
     );

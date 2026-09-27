@@ -5,7 +5,7 @@ import { WorkspaceParticipantController } from "./workspace-participant.controll
 import { WorkspaceParticipantRepository } from "./workspace-participant.repository.js";
 import { WorkspaceModule } from "../../core/workspace.module.js";
 import { UserModule } from "../../../user/user.module.js";
-import { RedisModule } from "../../../redis/redis.module.js";
+import { RedisModule } from "../../../infra/redis/redis.module.js";
 
 @Module({
   imports: [

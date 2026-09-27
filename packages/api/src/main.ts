@@ -3,7 +3,6 @@ import { AppModule } from "./modules/app/app.module.js";
 import fastifyCookie from "@fastify/cookie";
 import fastifyView from "@fastify/view";
 import handlebars from "handlebars";
-import { IoAdapter } from "@nestjs/platform-socket.io";
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -13,6 +12,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import { ZodExceptionFilter } from "./filters/zod-exception.filter.js";
 import { ZodValidationPipe } from "nestjs-zod";
+import { RedisIoAdapter } from "./modules/infra/redis/redis-io.adapter.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,7 +50,10 @@ async function bootstrap() {
     root: path.join(__dirname, "views"),
   });
 
-  app.useWebSocketAdapter(new IoAdapter(app));
+  const redisIoAdapter = new RedisIoAdapter(app);
+  await redisIoAdapter.connectToRedis();
+
+  app.useWebSocketAdapter(redisIoAdapter);
 
   app.enableCors({
     origin: getAllowedOrigins(),

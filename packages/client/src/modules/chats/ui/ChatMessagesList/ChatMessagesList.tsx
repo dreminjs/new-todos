@@ -16,19 +16,28 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
 }) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useGetChatMessages(chatId, workspaceId);
-  const messages = data?.pages.flatMap((page) => page.items).reverse() ??  [];
+  const messages = data?.pages.flatMap((page) => page.items).reverse() ?? [];
 
   const currentUserId = useGetMe("id").data;
 
   const { chatMessageId, chooseMessageId, closeManagementMenu } =
     useChatMessageSelection();
 
-  const { containerRef, bottomRef, markPaginationStart } =
-    useChatScrollBehavior({ itemsCount: messages.length });
+  const {
+    containerRef,
+    bottomRef,
+    markPaginationStart,
+    isFetchingNextPageAllowed,
+  } = useChatScrollBehavior({ itemsCount: messages.length });
 
   const inViewRef = useOnInView(
     (inView) => {
-      if (inView && hasNextPage && !isFetchingNextPage) {
+      if (
+        inView &&
+        hasNextPage &&
+        !isFetchingNextPage &&
+        isFetchingNextPageAllowed()
+      ) {
         markPaginationStart();
         fetchNextPage();
       }
