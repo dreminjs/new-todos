@@ -26,7 +26,6 @@ import type { IChatContext, TEditMessageDto } from "../model/chats.types";
 import { useChatStore } from "../model/chat.store";
 import { useGetMe } from "../../users";
 import { useClearReplyMessageId } from "../model/hooks/useClearReplyMessageId";
-import { useGetCurrentEditMessage } from "../model/hooks/useGetCurrentEditMessage";
 import { useCurrentWorkspace } from "../../workspaces/model/hooks/useCurrentWorkspace";
 
 export const useCreateChat = (dtoContext: TCreateChatContext) => {
@@ -215,11 +214,18 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
   const currentWorkspace = useCurrentWorkspace();
   const currentUser = useGetMe();
   return useMutation({
-    mutationFn: (dto: TCreateChatMessageBodyDto) =>
-      createMessage({ ...dto, replyToId: replyMessageId }, dtoContext),
+    mutationFn: (dto: TCreateChatMessageBodyDto | FormData) => {
+      if (dto instanceof FormData) {
+        if (replyMessageId) dto.set("replyToId", replyMessageId);
+        return createMessage(dto, dtoContext);
+      } else {
+        return createMessage({ ...dto, replyToId: replyMessageId }, dtoContext);
+      }
+    },
     onMutate: (dto) => {
       const temporaryId = crypto.randomUUID();
-
+      const content =
+        dto instanceof FormData ? (dto.get("content") as string) : dto.content;
       queryClient.setQueryData<
         InfiniteData<IItemsResponse<TExtendedChatMessage>>
       >(
@@ -234,8 +240,9 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
           if (!old) return old;
 
           const optimisticMessage: TExtendedChatMessage = {
-            ...dto,
             id: temporaryId,
+            ...dto,
+            content,
             chatId: dtoContext.chatId,
             createdAt: new Date(),
             updatedAt: new Date(),

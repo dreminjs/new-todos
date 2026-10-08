@@ -19,12 +19,18 @@ export class S3Service {
   constructor(private readonly configService: ConfigService) {
     const region = this.configService.get<string>("S3_REGION", "us-east-1");
     const endpoint = this.configService.get<string>("S3_ENDPOINT");
-    const accessKeyId = this.configService.get<string>("S3_ACCESS_KEY_ID", "");
-    const secretAccessKey = this.configService.get<string>(
-      "S3_SECRET_ACCESS_KEY",
-      "",
+    const accessKeyId = this.configService.get<string>(
+      "S3_ACCESS_KEY",
+      "not provided",
     );
-    this.bucket = this.configService.get<string>("S3_BUCKET_NAME", "chat-attachments");
+    const secretAccessKey = this.configService.get<string>(
+      "S3_SECRET_KEY",
+      "not provided",
+    );
+    this.bucket = this.configService.get<string>(
+      "S3_BUCKET",
+      "chat-attachments",
+    );
 
     this.s3Client = new S3Client({
       region,
@@ -43,7 +49,7 @@ export class S3Service {
     mimetype: string,
   ): Promise<{ key: string; url: string }> {
     const uniqueFilename = `${uuidv4()}-${filename}`;
-    const key = `attachments/${uniqueFilename}`
+    const key = `attachments/${uniqueFilename}`;
 
     try {
       await this.s3Client.send(

@@ -11,9 +11,10 @@ import {
   UseInterceptors,
   UploadedFiles,
   Req,
+  Logger,
 } from "@nestjs/common";
 import {
-  FileInterceptor,
+  FilesInterceptor,
   UploadedMultipartFile,
 } from "@nestjs/platform-fastify/multipart";
 import { AccessTokenGuard } from "../../../token/guards/accees-token.guard.js";
@@ -39,6 +40,8 @@ import type { Request } from "express";
 export class ChatMessagesController {
   constructor(private readonly chatMessagesService: ChatMessagesService) {}
 
+  private logger = new Logger(ChatMessagesController.name)
+
   @Get()
   async findMany(
     @Param() pathParams: GetChatMessagePathParams,
@@ -48,13 +51,16 @@ export class ChatMessagesController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor("files"))
+  @UseInterceptors(FilesInterceptor("files"))
   async createOne(
     @Param() pathParams: CreateChatMessagePathParams,
     @CurrentUser("id") userId: string,
     @Body() dto: CreateMessageBodyDto,
     @UploadedFiles() files?: Array<UploadedMultipartFile>,
   ) {
+
+    this.logger.log(files)
+
     return this.chatMessagesService.createOne(
       {
         ...dto,

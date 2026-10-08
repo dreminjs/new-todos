@@ -3,10 +3,11 @@ import { useMessageInteraction } from "../../../../shared/model/hooks/useMessage
 import { ChatMessageListItemManagement } from "./ChatMessageListItemManagement";
 import { Menu } from "@chakra-ui/react";
 import { ChatMessageListItemReplyMessage } from "./ChatMessagesListItemReplyMessage";
-import type { TExtendedChatMessage } from "types";
+import { ChatMessageAttachments } from "./ChatMessageAttachments";
+import { format } from "date-fns";
 import clsx from "clsx";
 import styles from "./ChatMessagesListItem.module.css";
-import { format } from "date-fns";
+import type { TExtendedChatMessage } from "types";
 
 interface IChatMessagesListItemProps {
   message: TExtendedChatMessage;
@@ -31,7 +32,7 @@ export const ChatMessagesListItem: FC<IChatMessagesListItemProps> = ({
     ? `${user.firstName} ${user.lastName}`
     : "Unknown user";
   const initials = user ? `${user.firstName[0]}${user.lastName[0]}` : "?";
-  
+
   const time = format(new Date(message.createdAt), "HH:mm");
 
   const itemRef = useRef<HTMLDivElement>(null);
@@ -64,7 +65,7 @@ export const ChatMessagesListItem: FC<IChatMessagesListItemProps> = ({
           onChooseChatMessageId(messageId);
         }}
         className={clsx(
-          styles.messageRow, 
+          styles.messageRow,
           isMine ? styles.messageRowMine : styles.messageRowOther,
           !isFirstInGroup && styles.messageRowGrouped
         )}
@@ -89,7 +90,6 @@ export const ChatMessagesListItem: FC<IChatMessagesListItemProps> = ({
         )}
 
         <div className={clsx(styles.bubble, isMine ? styles.bubbleMine : styles.bubbleOther)}>
-          {/* Имя показываем только для чужих сообщений и только если это первое сообщение в группе */}
           {!isMine && isFirstInGroup && (
             <div className={styles.senderName}>{displayName}</div>
           )}
@@ -103,13 +103,17 @@ export const ChatMessagesListItem: FC<IChatMessagesListItemProps> = ({
             </div>
           )}
 
+          {message.attachments && message.attachments.length > 0 && (
+            <ChatMessageAttachments attachments={message.attachments} />
+          )}
+
           <div className={styles.contentWrapper}>
             <p className={styles.content}>{message.content}</p>
             <span className={styles.timestamp}>{time}</span>
           </div>
         </div>
       </div>
-      
+
       <ChatMessageListItemManagement isMine={isMine} messageId={messageId} />
     </Menu.Root>
   );

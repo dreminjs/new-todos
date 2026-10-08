@@ -21,9 +21,7 @@ const singleFileSchema = z
   );
 
 export const createChatMessageFormDtoSchema = createChatMessageBodySchema
-  .omit({
-    replyToId: true,
-  })
+  .omit({ replyToId: true })
   .extend({
     files: z.array(singleFileSchema),
   });

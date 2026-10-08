@@ -1,10 +1,7 @@
-import { useRef, type FC, type KeyboardEvent } from "react";
-import { useForm } from "react-hook-form";
-
-import styles from "./ChatInput.module.css";
+import { useRef, type FC } from "react";
 import { FilesList } from "./FilesList";
-import type { TCreateChatMessageFormDto } from "../../../model/chats.types";
 import { useChatMessage } from "../../../model/hooks/useChatMessage";
+import styles from "./ChatInput.module.css";
 
 interface IChatInputProps {
   initialContent: string;
@@ -21,7 +18,7 @@ export const ChatInput: FC<IChatInputProps> = ({ initialContent }) => {
     handleSubmit,
     onAddFiles,
     register,
-    onKeyDown
+    onKeyDown,
   } = useChatMessage(fileInputRef, initialContent);
 
   return (
@@ -32,12 +29,13 @@ export const ChatInput: FC<IChatInputProps> = ({ initialContent }) => {
         <button
           type="button"
           className={styles.attachButton}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => {
+            fileInputRef.current?.click();
+          }}
           disabled={isSubmitDisabled}
         >
           📎
         </button>
-
         <input
           type="file"
           multiple
@@ -45,7 +43,6 @@ export const ChatInput: FC<IChatInputProps> = ({ initialContent }) => {
           ref={fileInputRef}
           onChange={(e) => onAddFiles(e.target.files)}
         />
-
         <textarea
           {...register("content")}
           className={styles.input}
@@ -53,7 +50,6 @@ export const ChatInput: FC<IChatInputProps> = ({ initialContent }) => {
           placeholder="Type a message..."
           rows={1}
         />
-
         <button
           type="submit"
           className={styles.sendButton}

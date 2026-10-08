@@ -26,7 +26,6 @@ export const createOne = async (
   ).data;
 };
 
-
 export const getChatMessages = async (
   { chatId, workspaceId }: IChatContext,
   cursor?: string,
@@ -42,7 +41,7 @@ export const getChatMessages = async (
 };
 
 export const createMessage = async (
-  data: TCreateChatMessageBodyDto,
+  data: TCreateChatMessageBodyDto | FormData,
   { chatId, workspaceId }: IChatContext,
 ): Promise<TExtendedChatMessage> => {
   return (
@@ -77,7 +76,9 @@ export const deleteMessageChat = async (
   chatMessageId: string,
   { chatId, workspaceId }: IChatContext,
 ) => {
-  return (await instance.delete(
-    `${BASE_WORKSPACES_URL}/${workspaceId}/${CHATS_URL}/${chatId}/${MESSAGES_URL}/${chatMessageId}`,
-  )).data;
+  return (
+    await instance.delete(
+      `${BASE_WORKSPACES_URL}/${workspaceId}/${CHATS_URL}/${chatId}/${MESSAGES_URL}/${chatMessageId}`,
+    )
+  ).data;
 };

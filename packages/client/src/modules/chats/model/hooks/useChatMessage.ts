@@ -1,8 +1,8 @@
 import { useParams } from "react-router";
 import { useCreateChatMessage, useUpdateChatMessage } from "../../api/queries";
 import { useChatStore } from "../chat.store";
-import type { TCreateChatMessageFormDto } from "../chats.types";
 import { useForm } from "react-hook-form";
+import type { TCreateChatMessageFormDto } from "../chats.types";
 
 export const useChatMessage = (
   fileInputRef: React.RefObject<HTMLInputElement>,
@@ -67,21 +67,28 @@ export const useChatMessage = (
         },
       );
     } else {
-      if (data.files.length > 0) {
+      if (data.files && data.files.length > 0) {
         const formData = new FormData();
+
         data.files.forEach((file) => {
           formData.append("files", file);
         });
-      }
-
-      createMessage(
-        { content: trimmed },
-        {
+        formData.append("content", trimmed);
+        createMessage(formData, {
           onSettled: () => {
             reset({ content: "", files: [] });
           },
-        },
-      );
+        });
+      } else {
+        createMessage(
+          { content: trimmed },
+          {
+            onSettled: () => {
+              reset({ content: "", files: [] });
+            },
+          },
+        );
+      }
     }
   };
 
@@ -92,8 +99,7 @@ export const useChatMessage = (
     }
   };
 
-  const isSubmitDisabled =
-    (!currentContent?.trim() && files.length === 0) || isPending;
+  const isSubmitDisabled = !currentContent?.trim() || isPending;
 
   return {
     onKeyDown: handleKeyDown,
@@ -105,6 +111,6 @@ export const useChatMessage = (
     handleSubmit,
     currentContent,
     isSubmitDisabled,
-    files
+    files,
   };
 };
