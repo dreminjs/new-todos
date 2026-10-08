@@ -10,7 +10,6 @@ interface DraggingTodosState {
 export const useDraggingTodosStore = create<DraggingTodosState>((set, get) => ({
   draggingTodos: {},
   timers: {},
-
   setDragPosition: (todoId, data) => {
     const existingTimer = get().timers[todoId];
     if (existingTimer) clearTimeout(existingTimer);

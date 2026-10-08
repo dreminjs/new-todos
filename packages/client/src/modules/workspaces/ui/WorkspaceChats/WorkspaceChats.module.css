@@ -1,32 +1,64 @@
 .workspaceChatsList {
-  max-width: 900px;
-  min-width: 370px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
   margin: 0 auto;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
+  padding: 20px;
+  list-style: none;
 }
 
 .workspaceChatsListItem {
   display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.workspaceChatsListItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+.workspaceChatsListItemLink {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  color: lightslategray;
-  border: 1px solid lightslategray;
-  flex: 1 1 280px;
-  padding: 15px 0;
-  border-radius: var(--border-radius);
-  a {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-  }
+  text-decoration: none;
+  padding: 24px 20px;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  gap: 12px;
+}
+
+.chatIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: #f1f5f9;
+  border-radius: 50%;
+  color: #64748b;
+}
+
+.workspaceChatsListItem:hover .chatIconWrapper {
+  background-color: #e0f2fe;
+  color: #0284c7;
 }
 
 .workspaceChatsListItemName {
-  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
   text-align: center;
-  margin-bottom: 15px;
+  word-break: break-word;
 }

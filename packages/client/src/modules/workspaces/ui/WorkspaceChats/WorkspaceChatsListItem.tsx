@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { Link } from "react-router";
+import { LuMessageSquare } from "react-icons/lu";
 import styles from "./WorkspaceChats.module.css";
 
 interface IWorkspaceChatListItemProps {
@@ -13,7 +14,10 @@ export const WorkspaceChatsListItem: FC<IWorkspaceChatListItemProps> = ({
 }) => {
   return (
     <li className={styles.workspaceChatsListItem}>
-      <Link to={`${id}`}>
+      <Link to={`${id}`} className={styles.workspaceChatsListItemLink}>
+        <div className={styles.chatIconWrapper}>
+          <LuMessageSquare size={24} />
+        </div>
         <span className={styles.workspaceChatsListItemName}>{title}</span>
       </Link>
     </li>

@@ -2,10 +2,11 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./modules/app/app.module.js";
 import fastifyCookie from "@fastify/cookie";
 import fastifyView from "@fastify/view";
+import fastifyMultipart from "@fastify/multipart";
 import handlebars from "handlebars";
 import {
   FastifyAdapter,
-  NestFastifyApplication,
+ type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { fileURLToPath } from "url";
@@ -13,17 +14,10 @@ import path from "path";
 import { ZodExceptionFilter } from "./filters/zod-exception.filter.js";
 import { ZodValidationPipe } from "nestjs-zod";
 import { RedisIoAdapter } from "./modules/infra/redis/redis-io.adapter.js";
+import { getAllowedOrigins } from "./scripts/get-allowed-origins.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-function getAllowedOrigins(): string[] {
-  const raw = process.env.CORS_ALLOWED_ORIGINS;
-  if (!raw) {
-    return ["http://localhost:5173"];
-  }
-  return raw.split(",").map((origin) => origin.trim());
-}
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -45,6 +39,7 @@ async function bootstrap() {
   await app.register(fastifyCookie, {
     secret: process.env.COOKIE_SECRET,
   });
+  await app.register(fastifyMultipart);
   await app.register(fastifyView, {
     engine: { handlebars },
     root: path.join(__dirname, "views"),

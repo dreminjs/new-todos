@@ -1,6 +1,7 @@
-import { Menu } from "@chakra-ui/react";
+import { Menu, Icon } from "@chakra-ui/react";
 import type { FC } from "react";
 import { useChatStore } from "../../model/chat.store";
+import { LuPencil } from "react-icons/lu";
 
 interface IChatMessagesListItemEditButtonProps {
   messageId: string;
@@ -12,10 +13,14 @@ export const ChatMessagesListItemEditButton: FC<
   const onSetEditMessageId = useChatStore((state) => state.onSetEditMessageId);
 
   return (
-    <>
-      <Menu.Item value="edit" onClick={() => onSetEditMessageId(messageId)}>
-        Edit
-      </Menu.Item>
-    </>
+    <Menu.Item 
+      value="edit" 
+      onClick={() => onSetEditMessageId(messageId)}
+      display="flex"
+      justifyContent="space-between"
+    >
+      Edit
+      <Icon as={LuPencil} color="gray.500" />
+    </Menu.Item>
   );
 };

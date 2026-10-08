@@ -9,6 +9,7 @@ import { UserModule } from "../../../user/user.module.js";
 import { WorkspaceParticipantModule } from "../workspace-participant/workspace-participant.module.js";
 import { ChatsModule } from "../chats/chats.module.js";
 import { ChatMessagesListener } from "./chat-messages.listener.js";
+import { RedisClientModule } from "../../../infra/redis/redis.module.js";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ChatMessagesListener } from "./chat-messages.listener.js";
     TokenModule,
     UserModule,
     WorkspaceParticipantModule,
+    RedisClientModule,
     forwardRef(() => ChatsModule),
   ],
   controllers: [ChatMessagesController],

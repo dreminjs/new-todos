@@ -7,6 +7,7 @@ import type { IChatContext } from "../../model/chats.types";
 import { useOnInView } from "react-intersection-observer";
 import { useChatMessageSelection } from "../../model/hooks/useChatMessageSelection";
 import { useChatScrollBehavior } from "../../model/hooks/useChatScrollBehavior";
+import { format, isSameDay } from "date-fns";
 
 type TChatMessagesListProps = IChatContext;
 
@@ -51,19 +52,36 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
 
   return (
     <div ref={containerRef} className={styles.container}>
-      <ul className={styles.list}>
-        <li style={{ height: 1 }} ref={inViewRef} />
-        {messages.map((message) => (
-          <ChatMessagesListItem
-            key={message.id}
-            message={message}
-            isMine={currentUserId === message.user.id}
-            currentChoosedChatMessageId={chatMessageId}
-            onCloseManagementMenu={closeManagementMenu}
-            onChooseChatMessageId={chooseMessageId}
-          />
-        ))}
-      </ul>
+      <div className={styles.list}>
+        <div style={{ height: 1 }} ref={inViewRef} />
+        {messages.map((message, index) => {
+          const previousMessage = index > 0 ? messages[index - 1] : null;
+          const isFirstInGroup =
+            !previousMessage || previousMessage.user?.id !== message.user?.id;
+          
+          const showDateDivider =
+            !previousMessage ||
+            !isSameDay(new Date(message.createdAt), new Date(previousMessage.createdAt));
+
+          return (
+            <div key={message.id} className={styles.messageWrapper}>
+              {showDateDivider && (
+                <div className={styles.dateDivider}>
+                  <span>{format(new Date(message.createdAt), "MMMM d, yyyy")}</span>
+                </div>
+              )}
+              <ChatMessagesListItem
+                message={message}
+                isMine={currentUserId === message.user?.id}
+                isFirstInGroup={isFirstInGroup}
+                currentChoosedChatMessageId={chatMessageId}
+                onCloseManagementMenu={closeManagementMenu}
+                onChooseChatMessageId={chooseMessageId}
+              />
+            </div>
+          );
+        })}
+      </div>
       <div ref={bottomRef} />
     </div>
   );

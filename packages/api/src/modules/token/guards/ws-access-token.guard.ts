@@ -10,7 +10,7 @@ import { TokenService } from "../token.service.js";
 import { UserService } from "../../user/user.service.js";
 import * as cookie from "cookie";
 import { Redis } from "ioredis";
-import { InjectRedis } from "@nestjs-modules/ioredis";
+import { InjectRedis } from "@nestjs-redis/client";
 
 @Injectable()
 export class WsAccessTokenGuard implements CanActivate {

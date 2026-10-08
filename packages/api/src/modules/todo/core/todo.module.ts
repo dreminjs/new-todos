@@ -7,9 +7,16 @@ import { TodoRepository } from "./todo.repository.js";
 import { WorkspaceParticipantModule } from "../../workspace/sub/workspace-participant/workspace-participant.module.js";
 import { TokenModule } from "../../token/token.module.js";
 import { UserModule } from "../../../modules/user/user.module.js";
+import { RedisClientModule } from "../../infra/redis/redis.module.js";
 
 @Module({
-  imports: [PrismaModule, WorkspaceParticipantModule, TokenModule, UserModule],
+  imports: [
+    PrismaModule,
+    WorkspaceParticipantModule,
+    TokenModule,
+    UserModule,
+    RedisClientModule,
+  ],
   controllers: [TodoController],
   providers: [TodoService, TodoGateway, TodoRepository],
   exports: [TodoService],

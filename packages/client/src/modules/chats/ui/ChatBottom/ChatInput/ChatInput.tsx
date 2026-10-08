@@ -1,73 +1,67 @@
-import { useState, type FC, type KeyboardEvent } from "react";
-import {
-  useCreateChatMessage,
-  useUpdateChatMessage,
-} from "../../../api/queries";
+import { useRef, type FC, type KeyboardEvent } from "react";
+import { useForm } from "react-hook-form";
+
 import styles from "./ChatInput.module.css";
-import { useParams } from "react-router";
-import { useChatStore } from "../../../model/chat.store";
+import { FilesList } from "./FilesList";
+import type { TCreateChatMessageFormDto } from "../../../model/chats.types";
+import { useChatMessage } from "../../../model/hooks/useChatMessage";
 
 interface IChatInputProps {
   initialContent: string;
 }
 
 export const ChatInput: FC<IChatInputProps> = ({ initialContent }) => {
-  const { chatId, workspaceId } = useParams<{
-    chatId: string;
-    workspaceId: string;
-  }>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [content, setContent] = useState(initialContent);
-  const { mutate: createMessage, isPending: isPendingCreateMessage } =
-    useCreateChatMessage({ chatId, workspaceId });
-  const { mutate: updateMessage, isPending: isPendingUpdateMessage } =
-    useUpdateChatMessage({ chatId, workspaceId });
-  const editMessageId = useChatStore((state) => state.editMessageId);
-  const setEditMessageId = useChatStore((state) => state.onSetEditMessageId);
-  const isPending = isPendingCreateMessage || isPendingUpdateMessage;
-  const handleSend = () => {
-    const trimmed = content.trim();
-    if (!trimmed || isPending) return;
-
-    if (editMessageId) {
-      updateMessage(
-        { content: trimmed, id: editMessageId },
-        {
-          onSettled: () => {
-            setContent("");
-            setEditMessageId(null);
-          },
-        },
-      );
-    } else {
-      createMessage({ content: trimmed }, { onSettled: () => setContent("") });
-    }
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  const {
+    onSubmit,
+    files,
+    isSubmitDisabled,
+    onRemoveFile,
+    handleSubmit,
+    onAddFiles,
+    register,
+    onKeyDown
+  } = useChatMessage(fileInputRef, initialContent);
 
   return (
-    <div className={styles.wrapper}>
-      <textarea
-        className={styles.input}
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Type a message..."
-        rows={1}
-      />
-      <button
-        className={styles.sendButton}
-        onClick={handleSend}
-        disabled={!content?.trim() || isPending}
-      >
-        Send
-      </button>
-    </div>
+    <form className={styles.wrapper} onSubmit={handleSubmit(onSubmit)}>
+      <FilesList files={files} onRemove={onRemoveFile} />
+
+      <div className={styles.inputContainer}>
+        <button
+          type="button"
+          className={styles.attachButton}
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isSubmitDisabled}
+        >
+          📎
+        </button>
+
+        <input
+          type="file"
+          multiple
+          hidden
+          ref={fileInputRef}
+          onChange={(e) => onAddFiles(e.target.files)}
+        />
+
+        <textarea
+          {...register("content")}
+          className={styles.input}
+          onKeyDown={onKeyDown}
+          placeholder="Type a message..."
+          rows={1}
+        />
+
+        <button
+          type="submit"
+          className={styles.sendButton}
+          disabled={isSubmitDisabled}
+        >
+          Send
+        </button>
+      </div>
+    </form>
   );
 };

@@ -12,7 +12,6 @@ export const ChatReplyMessage: FC = () => {
 
   const replyMessage = useReplyMessage({ chatId, workspaceId });
 
-
   if (!replyMessage) return null;
 
   return (

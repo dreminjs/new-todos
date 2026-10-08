@@ -1,4 +1,7 @@
 import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -12,7 +15,6 @@ import { Server, Socket } from "socket.io";
 import { WsAuthMiddleware } from "../../../token/ws-auth.middleware.js";
 import type { IWsChatMessageDeletedPayload, TExtendedChatMessage } from "types";
 import { WorkspaceParticipantService } from "../workspace-participant/workspace-participant.service.js";
-import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ChatsService } from "../chats/chats.service.js";
 @UseGuards(WsAccessTokenGuard)
 @WebSocketGateway({
@@ -21,10 +23,9 @@ import { ChatsService } from "../chats/chats.service.js";
     credentials: true,
   },
 })
-export class ChatMessagesGateway {
+export class ChatMessagesGateway implements OnGatewayInit {
   constructor(
     private readonly wsAuthMiddleware: WsAuthMiddleware,
-    private readonly chatMessagesService: ChatMessagesService,
     private readonly chatsService: ChatsService,
     private readonly workspaceParticipantService: WorkspaceParticipantService,
   ) {}

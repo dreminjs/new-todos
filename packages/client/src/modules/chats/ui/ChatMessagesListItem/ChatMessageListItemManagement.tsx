@@ -13,24 +13,28 @@ export const ChatMessageListItemManagement: FC<
   IChatMessageListItemManagement
 > = ({ isMine, messageId }) => {
   return (
-    <>
-      <>
-        <Menu.Positioner position={"absolute"} top={0} left={0}>
-          <Menu.Content>
-            {isMine ? (
-              <>
-                <ChatMessagesListItemEditButton messageId={messageId} />
-                <ChatMessagesListItemDeleteButton messageId={messageId} />
-                <ChatMessagesListItemReplyButton messageId={messageId} />
-              </>
-            ) : (
-              <>
-                <ChatMessagesListItemReplyButton messageId={messageId} />
-              </>
-            )}
-          </Menu.Content>
-        </Menu.Positioner>
-      </>
-    </>
+    <Menu.Positioner>
+      <Menu.Content 
+        minWidth="140px" 
+        boxShadow="md" 
+        borderRadius="xl" 
+        padding="1" 
+        border="1px solid" 
+        borderColor="gray.200"
+      >
+        {isMine ? (
+          <>
+            <ChatMessagesListItemReplyButton messageId={messageId} />
+            <Menu.Separator />
+            <ChatMessagesListItemEditButton messageId={messageId} />
+            <ChatMessagesListItemDeleteButton messageId={messageId} />
+          </>
+        ) : (
+          <>
+            <ChatMessagesListItemReplyButton messageId={messageId} />
+          </>
+        )}
+      </Menu.Content>
+    </Menu.Positioner>
   );
 };

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service.js";
-import { Prisma } from "generated/prisma/client.js";
+import { Attachment, Prisma } from "generated/prisma/client.js";
 import { extendedChatMessageSchema, TExtendedChatMessage } from "types";
 import {
   ChatMessagesPathParams,
@@ -24,6 +24,7 @@ export class ChatMessagesRepository {
         user: {
           select: PUBLIC_USER_SELECT,
         },
+        attachments: true,
         workspace: true,
         replyTo: {
           include: {
@@ -50,6 +51,7 @@ export class ChatMessagesRepository {
         user: {
           select: PUBLIC_USER_SELECT,
         },
+        attachments: true,
         replyTo: {
           include: {
             user: {
@@ -76,6 +78,7 @@ export class ChatMessagesRepository {
         user: {
           select: PUBLIC_USER_SELECT,
         },
+        attachments: true,
         replyTo: {
           include: {
             user: {
@@ -110,6 +113,7 @@ export class ChatMessagesRepository {
         user: {
           select: PUBLIC_USER_SELECT,
         },
+        attachments: true,
       },
     }) as unknown as TExtendedChatMessage;
   }
@@ -126,6 +130,14 @@ export class ChatMessagesRepository {
       select: {
         chatId: true,
       },
-    })
+    });
+  }
+
+  async createAttachment(
+    data: Prisma.AttachmentCreateInput,
+  ): Promise<Attachment> {
+    return this.prisma.attachment.create({
+      data,
+    });
   }
 }

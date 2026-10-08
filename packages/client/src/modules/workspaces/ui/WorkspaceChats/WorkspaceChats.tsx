@@ -4,6 +4,7 @@ import { WorkspaceChatsList } from "./WorkspaceChatsList";
 import { CreateChatModal } from "../../../chats";
 import { CreateItemButton } from "../../views/CreateItemButton/CreateItemButton";
 import type { TCreateChatContext } from "types";
+import { GlobalLoadingSpinner } from "../../../../shared";
 
 export const WorkspaceChats = () => {
   const [isCreateChatOpen, setIsCreateChatOpen] = useState(false);
@@ -14,7 +15,9 @@ export const WorkspaceChats = () => {
 
   const params = useParams<TCreateChatContext>();
 
-  console.log(params);
+  if (!params.workspaceId) {
+    return <GlobalLoadingSpinner/>
+  }
 
   return (
     <>
@@ -26,7 +29,7 @@ export const WorkspaceChats = () => {
       <CreateChatModal
         isOpen={isCreateChatOpen}
         onClose={handleChatToggle}
-        chatContext={params}
+        chatContext={{ workspaceId: params.workspaceId }}
       />
     </>
   );

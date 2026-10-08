@@ -7,10 +7,22 @@ import { PrismaModule } from "../prisma/prisma.module.js";
 import { AccessTokenStrategy } from "./strategies/access-token.strategy.js";
 import { RefreshTokenStrategy } from "./strategies/refresh-token.strategy.js";
 import { WsAuthMiddleware } from "./ws-auth.middleware.js";
-
+import { WsSessionModule } from "../infra/ws-session/ws-session.module.js";
+import { RedisClientModule } from "../infra/redis/redis.module.js";
 @Module({
-  imports: [UserModule, JwtModule, PrismaModule],
-  providers: [TokenService, AccessTokenStrategy, RefreshTokenStrategy, WsAuthMiddleware],
+  imports: [
+    UserModule,
+    JwtModule,
+    PrismaModule,
+    WsSessionModule,
+    RedisClientModule,
+  ],
+  providers: [
+    TokenService,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+    WsAuthMiddleware,
+  ],
   controllers: [TokenController],
   exports: [TokenService, WsAuthMiddleware],
 })

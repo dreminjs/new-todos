@@ -1,21 +1,17 @@
 import { Module } from "@nestjs/common";
-import { ThrottlerModule } from "@nestjs/throttler";
-import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
-import { Redis } from "ioredis";
+import { seconds, ThrottlerModule } from "@nestjs/throttler";
+import { RedisToken } from "@nestjs-redis/client";
+import { RedisThrottlerStorage } from "@nestjs-redis/throttler-storage";
+import { RedisModule } from "@nestjs-redis/client";
+import { RedisClientModule } from "../redis/redis.module.js";
 @Module({
   imports: [
     ThrottlerModule.forRootAsync({
-      useFactory: () => ({
-        throttlers: [
-          {
-            name: "default",
-            ttl: 60000,
-            limit: process.env.NODE_ENV === "test" ? 10000 : 100,
-          },
-        ],
-        storage: new ThrottlerStorageRedisService(
-          new Redis(process.env.REDIS_URL!),
-        ),
+      imports: [RedisModule, RedisClientModule],
+      inject: [RedisToken()],
+      useFactory: (redis) => ({
+        throttlers: [{ limit: 10, ttl: seconds(60) }],
+        storage: new RedisThrottlerStorage(redis),
       }),
     }),
   ],

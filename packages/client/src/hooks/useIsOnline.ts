@@ -7,7 +7,6 @@ export function useIsOnline() {
   useEffect(() => {
     const unsubscribe = onlineManager.subscribe((online) => {
       setIsOnline(online);
-      console.log(online);
     });
 
     return () => {

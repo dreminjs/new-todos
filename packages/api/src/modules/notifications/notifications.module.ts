@@ -9,9 +9,16 @@ import { NotificationCleanupListener } from "./listeners/notification-cleanup.li
 import { NotificationCreateListener } from "./listeners/notification-create.listener.js";
 import { WsSessionModule } from "../infra/ws-session/ws-session.module.js";
 import { NotificationsGateway } from "./notifactions.gateway.js";
+import { RedisClientModule } from "../infra/redis/redis.module.js";
 
 @Module({
-  imports: [PrismaModule, UserModule, TokenModule, WsSessionModule],
+  imports: [
+    PrismaModule,
+    UserModule,
+    TokenModule,
+    WsSessionModule,
+    RedisClientModule,
+  ],
   providers: [
     NotificationsService,
     NotificationsGateway,

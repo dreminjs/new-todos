@@ -1,34 +1,42 @@
-.messageItem {
+.messageRow {
   display: flex;
-  gap: 12px;
-  padding: 8px 16px;
+  align-items: flex-end;
+  gap: 8px;
   position: relative;
   z-index: 1;
   user-select: none;
-  max-width: 70%;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background-color: #fff;
-  margin-right: auto;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.03);
-    border-color: #cbd5e1;
-  }
   -webkit-touch-callout: none;
   -webkit-user-select: none;
+  width: 100%;
+}
+
+.messageRowMine {
+  flex-direction: row-reverse;
+}
+
+.messageRowGrouped {
+  margin-top: -2px; /* Прижимаем сгруппированные сообщения ближе друг к другу */
+}
+
+/* Обертка для аватарки, чтобы она всегда оставалась внизу (возле последнего сообщения) */
+.avatarWrapper {
+  width: 36px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  flex-shrink: 0;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .avatarImg {
@@ -38,82 +46,121 @@
 }
 
 .avatarFallback {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #64748b;
 }
 
-.body {
-  flex: 1;
-  min-width: 0;
+.bubble {
+  max-width: 75%;
+  min-width: 60px;
+  padding: 6px 10px 8px 12px;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
 }
 
-.header {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
+.bubbleOther {
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-bottom-left-radius: 4px; /* Уголок сообщения */
+}
+
+.messageRowGrouped .bubbleOther {
+  border-bottom-left-radius: 16px;
+  border-top-left-radius: 4px;
+}
+
+.bubbleMine {
+  background-color: #e0f2fe; /* Светло-голубой, как в Telegram */
+  border: 1px solid #bae6fd;
+  border-bottom-right-radius: 4px; /* Уголок сообщения */
+}
+
+.messageRowGrouped .bubbleMine {
+  border-bottom-right-radius: 16px;
+  border-top-right-radius: 4px;
+}
+
+/* Стили при наведении и клике */
+.bubble:active, .bubble:hover {
+  filter: brightness(0.97);
+}
+
+.senderName {
+  font-weight: 600;
+  font-size: 13px;
+  color: #3b82f6; /* Акцентный цвет имени */
   margin-bottom: 2px;
 }
 
-.userName {
-  font-weight: 600;
-  font-size: 14px;
-  color: #1e293b;
-}
-
-.timestamp {
-  font-size: 12px;
-  color: #94a3b8;
+.contentWrapper {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .content {
   font-size: 14px;
-  color: #334155;
-  line-height: 1.5;
+  color: #1e293b;
+  line-height: 1.4;
   word-wrap: break-word;
   white-space: pre-wrap;
   margin: 0;
 }
 
-.mineMessage {
-  flex-direction: row-reverse;
-  margin-right: 0;
-  margin-left: auto;
+.timestamp {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-bottom: -2px; /* Прижимаем время вниз */
+}
 
-  .header {
-    flex-direction: row-reverse;
-  }
+.bubbleMine .timestamp {
+  color: #7dd3fc; /* Время в своих сообщениях чуть светлее */
+}
+
+.replyWrapper {
+  margin-bottom: 4px;
 }
 
 .ChatMessageListItemReply {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 6px 10px;
-  margin-bottom: 4px;
-  border-left: 3px solid #94a3b8;
-  background-color: rgba(148, 163, 184, 0.08);
-  border-radius: 0 6px 6px 0;
+  padding: 4px 8px;
+  border-left: 3px solid #3b82f6;
+  background-color: rgba(59, 130, 246, 0.08);
+  border-radius: 4px;
   cursor: pointer;
   overflow: hidden;
-  transition: background-color 0.15s ease;
-  &:hover {
-    background-color: rgba(148, 163, 184, 0.15);
-  }
+}
+
+.bubbleMine .ChatMessageListItemReply {
+  border-left-color: #0284c7;
+  background-color: rgba(2, 132, 199, 0.08);
 }
 
 .replyAuthor {
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: #3b82f6;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.bubbleMine .replyAuthor {
+  color: #0284c7;
+}
+
 .replyContent {
   font-size: 13px;
-  color: #94a3b8;
+  color: #475569;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

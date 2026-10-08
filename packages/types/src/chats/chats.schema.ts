@@ -42,6 +42,17 @@ export const replyToPreviewSchema = chatMessageSchema
     user: userSchema.nullable(),
   });
 
+export const attachmentSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  name: z.string(),
+  mimetype: z.string().nullable(),
+  size: z.number().nullable(),
+  chatMessageId: z.string().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
 export const extendedChatMessageSchema: z.ZodType<TExtendedChatMessage> =
   chatMessageSchema
     .omit({
@@ -53,6 +64,7 @@ export const extendedChatMessageSchema: z.ZodType<TExtendedChatMessage> =
       user: userSchema.nullable(),
       workspace: workspaceSchema,
       replyTo: replyToPreviewSchema.nullish(),
+      attachments: z.array(attachmentSchema).optional(),
     });
 
 export const createChatMessageBodySchema = chatMessageSchema.omit({
@@ -62,6 +74,8 @@ export const createChatMessageBodySchema = chatMessageSchema.omit({
   workspaceId: true,
   userId: true,
   chatId: true,
+}).extend({
+  replyToId: z.uuid().nullish(),
 });
 
 export const updateChatMessageBodySchema = createChatMessageBodySchema.omit({

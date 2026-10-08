@@ -11,15 +11,15 @@ interface IWorkspaceChatsListProps {
 export const WorkspaceChatsList: FC<IWorkspaceChatsListProps> = ({
   addTodoGroupButton,
 }) => {
-  const { workspaceId } = useParams();
+  const { workspaceId } = useParams<{ workspaceId: string }>();
 
-  const { data: workspaceChatsResponse } = useGetWorkspaceChats(workspaceId);
+  const { data: workspaceChatsResponse } = useGetWorkspaceChats(workspaceId!);
 
   return (
     <ul className={styles.workspaceChatsList}>
-      {addTodoGroupButton}
+      <li>{addTodoGroupButton}</li>
       {workspaceChatsResponse?.map((chat) => (
-        <WorkspaceChatsListItem title={chat.name} id={chat.id} />
+        <WorkspaceChatsListItem key={chat.id} title={chat.name} id={chat.id} />
       ))}
     </ul>
   );

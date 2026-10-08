@@ -9,6 +9,7 @@ import {
   replyToPreviewSchema,
   updateChatBodySchema,
   updateChatMessageBodySchema,
+  attachmentSchema,
 } from "./chats.schema.js";
 import { userSchema } from "../user/user.schema.js";
 import { workspaceSchema } from "../workspace/workspace.schema.js";
@@ -23,6 +24,8 @@ export type TJoinChatRoomBodyDto = z.infer<typeof joinChatRoomBodySchema>;
 
 export type TReplyToPreview = z.infer<typeof replyToPreviewSchema>
 
+export type TAttachment = z.infer<typeof attachmentSchema>;
+
 export type TExtendedChatMessage = Omit<
   z.infer<typeof chatMessageSchema>,
   "userId" | "replyToId" | "workspaceId"
@@ -30,6 +33,7 @@ export type TExtendedChatMessage = Omit<
   user: z.infer<typeof userSchema> | null;
   workspace: z.infer<typeof workspaceSchema>;
   replyTo?: TReplyToPreview | null;
+  attachments?: TAttachment[];
 };
 
 export type TChatMessage = z.infer<typeof chatMessageSchema>;
