@@ -1,8 +1,8 @@
 import type { FC } from "react";
 import { useParams } from "react-router";
 import { WorkspaceChatsListItem } from "./WorkspaceChatsListItem";
-import styles from "./WorkspaceChats.module.css";
 import { useGetWorkspaceChats } from "../../../chats/api/queries";
+import { DashboardGrid } from "../../../../shared/ui/DashboardGrid/DashboardGrid";
 
 interface IWorkspaceChatsListProps {
   addTodoGroupButton: React.ReactNode;
@@ -16,11 +16,11 @@ export const WorkspaceChatsList: FC<IWorkspaceChatsListProps> = ({
   const { data: workspaceChatsResponse } = useGetWorkspaceChats(workspaceId!);
 
   return (
-    <ul className={styles.workspaceChatsList}>
+    <DashboardGrid>
       <li>{addTodoGroupButton}</li>
       {workspaceChatsResponse?.map((chat) => (
         <WorkspaceChatsListItem key={chat.id} title={chat.name} id={chat.id} />
       ))}
-    </ul>
+    </DashboardGrid>
   );
 };

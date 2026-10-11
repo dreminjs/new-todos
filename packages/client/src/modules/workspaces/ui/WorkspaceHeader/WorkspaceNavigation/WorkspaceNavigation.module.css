@@ -1,20 +1,28 @@
 
-
-
 .workspaceNavigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.workspaceNavigationList {
     padding: 5px;
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.workspaceNavigationItem {
+.workspaceNavigationListItem {
     padding: 3px 12px;
     border-radius: 8px;
     font-size: 18px;
 }
 
-.workspaceNavigationItemActive {
+.workspaceNavigationListItemActive {
     background-color: #6366F1;
     color: white;
+}
+
+.workspaceCallManagement {
+    display: flex;
+    gap: 12px;
 }

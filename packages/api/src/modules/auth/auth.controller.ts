@@ -29,7 +29,7 @@ export class AuthController {
     return await this.authService.login(authDto, res);
   }
 
-  @Throttle({ default: { limit: 10, ttl: minutes(5) } })
+  @Throttle({ default: { limit: 100, ttl: minutes(5) } })
   @Post("register")
   async register(
     @Body() authDto: SignUpDto,
@@ -41,7 +41,6 @@ export class AuthController {
   @Render("thankYouForConfirmation.hbs")
   @Get("confirm-your-email/:token")
   async confirmYourEmail(
-    @Res() res: FastifyReply,
     @Param("token") token: string,
   ) {
     const user = await this.authService.verifyEmailConfirmationToken(token);

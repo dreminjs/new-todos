@@ -10,6 +10,7 @@ import {
   updateChatBodySchema,
   updateChatMessageBodySchema,
   attachmentSchema,
+  findWorkspaceCallPathParamsSchema,
 } from "./chats.schema.js";
 import { userSchema } from "../user/user.schema.js";
 import { workspaceSchema } from "../workspace/workspace.schema.js";
@@ -22,7 +23,7 @@ export type TUpdateChatBodyDto = z.infer<typeof updateChatBodySchema>;
 
 export type TJoinChatRoomBodyDto = z.infer<typeof joinChatRoomBodySchema>;
 
-export type TReplyToPreview = z.infer<typeof replyToPreviewSchema>
+export type TReplyToPreview = z.infer<typeof replyToPreviewSchema>;
 
 export type TAttachment = z.infer<typeof attachmentSchema>;
 
@@ -53,3 +54,7 @@ export type TUpdateChatMessageBodyDto = z.infer<
 >;
 
 export type TCreateChatContext = Omit<TChat, "name" | "id">;
+
+export type TFindWorkspaceCallPathParams = z.infer<
+  typeof findWorkspaceCallPathParamsSchema
+>;

@@ -1,22 +1,16 @@
 import { InjectRedis } from "@nestjs-redis/client";
 import { Injectable } from "@nestjs/common";
 import { Redis } from "ioredis";
-import { IStartCall } from "./calls.interfaces.js";
+import { Call, IStartCall } from "./calls.interfaces.js";
 
 @Injectable()
-export class CallPresenceService {
+export class CallsService {
   constructor(@InjectRedis() private readonly redis: Redis) {}
 
   async startCall(dto: IStartCall) {
     await this.redis
       .multi()
-      .hset(`call:${dto.callId}`, {
-        status: "active",
-        chatId: dto.chatId,
-        workspaceId: dto.workspaceId,
-        initiatorId: dto.initiatorId,
-        startedAt: Date.now().toString(),
-      })
+      .hset(`call:${dto.callId}`, new Call(dto))
       .set(`chat-active-call:${dto.chatId}`, dto.callId)
       .exec();
   }
@@ -25,13 +19,15 @@ export class CallPresenceService {
     await this.redis.sadd(`call:${callId}:participants`, userId);
   }
 
-  async removeParticipant(callId: string, userId: string) {
+  async removeParticipant(callId: string, userId: string): Promise<number> {
     await this.redis.srem(`call:${callId}:participants`, userId);
     const count = await this.redis.scard(`call:${callId}:participants`);
 
     if (count === 0) {
       await this.endCall(callId);
     }
+
+    return count;
   }
 
   async endCall(callId: string) {
@@ -51,8 +47,8 @@ export class CallPresenceService {
 
   async getCallInfo(callId: string) {
     const [call, participants] = await Promise.all([
-      this.redis.hgetall(`call:${callId}`),
-      this.redis.smembers(`call:${callId}:participants`),
+      this.redis.hgetall(`call:${callId}`) as unknown as Promise<Call>,
+      this.redis.smembers(`call:${callId}:participants`) as unknown as string[],
     ]);
 
     if (!call.status) return null;

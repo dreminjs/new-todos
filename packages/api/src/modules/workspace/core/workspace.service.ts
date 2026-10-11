@@ -7,6 +7,7 @@ import {
 import { CreateWorkspaceDto } from "./dto/workspace.dto.js";
 import {
   TChat,
+  TFindWorkspaceCallPathParams,
   TTodoGroup,
   TTodoGroupResponse,
   TWorkspace,
@@ -247,4 +248,6 @@ export class WorkspaceService {
   async findWorkspaceChats(workspaceId: string): Promise<TChat[]> {
     return this.chatsService.findAllByWorkspaceId(workspaceId);
   }
+
+  async findWorkspaceChatInfo(dto: TFindWorkspaceCallPathParams) {}
 }

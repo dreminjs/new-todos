@@ -1,10 +1,8 @@
-import { useParams } from "react-router";
-import { useGetWorkspaceInfo } from "../..";
-import styles from "./WorkspaceHeader.module.css";
 import { WorkspaceInfo } from "./WorkspaceInfo";
 import { WorkspaceNavigation } from "./WorkspaceNavigation/WorkspaceNavigation";
 import { Skeleton } from "@chakra-ui/react";
 import { useCurrentWorkspace } from "../../model/hooks/useCurrentWorkspace";
+import styles from "./WorkspaceHeader.module.css";
 
 export const WorkspaceHeader = () => {
   const { workspaceInfo, isPending, isError } = useCurrentWorkspace();

@@ -7,9 +7,10 @@ import type {
   IEmailConfirmationTokenPayload,
   ITokens,
 } from "../token/token.interface.js";
-import { FastifyReply } from "fastify";
+import type { FastifyReply } from "fastify";
 import * as crypto from "crypto";
 import type { IStandartResponse } from "types";
+import { Transactional } from "@nestjs-cls/transactional";
 
 @Injectable()
 export class TokenService {
@@ -19,6 +20,7 @@ export class TokenService {
     private readonly configService: ConfigService,
   ) {}
 
+  @Transactional()
   public async generateAuthTokens(
     payload: IAuthTokenPayload,
     res: FastifyReply,

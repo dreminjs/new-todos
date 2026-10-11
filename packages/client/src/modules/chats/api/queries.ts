@@ -301,7 +301,6 @@ export const useCreateChatMessage = (dtoContext: IChatContext) => {
           const pages = old.pages.map((page) => ({
             ...page,
             items: page.items
-              .filter((el) => el.id !== newMessage.id)
               .map((msg) =>
                 msg.id === context.temporaryId ? newMessage : msg,
               ),

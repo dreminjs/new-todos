@@ -52,19 +52,19 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
 
   return (
     <div ref={containerRef} className={styles.container}>
-      <div className={styles.list}>
+      <ul className={styles.list}>
         <div style={{ height: 1 }} ref={inViewRef} />
         {messages.map((message, index) => {
           const previousMessage = index > 0 ? messages[index - 1] : null;
           const isFirstInGroup =
             !previousMessage || previousMessage.user?.id !== message.user?.id;
-          
+
           const showDateDivider =
             !previousMessage ||
             !isSameDay(new Date(message.createdAt), new Date(previousMessage.createdAt));
 
           return (
-            <div key={message.id} className={styles.messageWrapper}>
+            <li key={message.id} className={styles.messageWrapper}>
               {showDateDivider && (
                 <div className={styles.dateDivider}>
                   <span>{format(new Date(message.createdAt), "MMMM d, yyyy")}</span>
@@ -78,10 +78,10 @@ export const ChatMessagesList: FC<TChatMessagesListProps> = ({
                 onCloseManagementMenu={closeManagementMenu}
                 onChooseChatMessageId={chooseMessageId}
               />
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
       <div ref={bottomRef} />
     </div>
   );

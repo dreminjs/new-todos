@@ -67,19 +67,26 @@ export const extendedChatMessageSchema: z.ZodType<TExtendedChatMessage> =
       attachments: z.array(attachmentSchema).optional(),
     });
 
-export const createChatMessageBodySchema = chatMessageSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  workspaceId: true,
-  userId: true,
-  chatId: true,
-}).extend({
-  replyToId: z.uuid().nullish(),
-});
+export const createChatMessageBodySchema = chatMessageSchema
+  .omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    workspaceId: true,
+    userId: true,
+    chatId: true,
+  })
+  .extend({
+    replyToId: z.uuid().nullish(),
+  });
 
 export const updateChatMessageBodySchema = createChatMessageBodySchema.omit({
   replyToId: true,
+});
+
+export const findWorkspaceCallPathParamsSchema = z.object({
+  workspaceId: z.uuid(),
+  chatId: z.uuid(),
 });
 
 // model ChatMessage {

@@ -1,6 +1,6 @@
 import type { FC } from "react";
-import { Link } from "react-router";
-import styles from "./WorkspaceTodoGroups.module.css";
+import { LuListTodo } from "react-icons/lu";
+import { DashboardCard } from "../../../../shared/ui/DashboardCard/DashboardCard";
 
 interface IWorkspaceTodoGroupsListItemProps {
   title: string;
@@ -12,11 +12,11 @@ export const WorkspaceTodoGroupsListItem: FC<
   IWorkspaceTodoGroupsListItemProps
 > = ({ title, id, countOfActiveTodos }) => {
   return (
-    <li className={styles.workspaceTodoGroupsListItem}>
-      <Link to={`${id}/todos`}>
-        <span className={styles.workspaceTodoGroupsListItemName}>{title}</span>
-        <span>{`${countOfActiveTodos} active todos`}</span>
-      </Link>
-    </li>
+    <DashboardCard
+      title={title}
+      href={`${id}/todos`}
+      icon={<LuListTodo size={24} />}
+      subtitle={`${countOfActiveTodos} active todos`}
+    />
   );
 };

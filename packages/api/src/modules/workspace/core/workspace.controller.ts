@@ -16,7 +16,14 @@ import {
   WorkspaceQueryParamsDto,
 } from "./dto/workspace.dto.js";
 import { WorkspaceService } from "./workspace.service.js";
-import { TChat, TTodoGroupResponse, TWorkspace, TWorkspaceInfo } from "types";
+import {
+  findWorkspaceCallPathParamsSchema,
+  type TChat,
+  type TFindWorkspaceCallPathParams,
+  type TTodoGroupResponse,
+  type TWorkspace,
+  type TWorkspaceInfo,
+} from "types";
 import { MinRole } from "./decorators/min-role.decorator.js";
 import { WorkspaceRoleGuard } from "./guards/workspace-role.guard.js";
 import { WorkspaceUserRole } from "#generated/enums.js";
@@ -111,4 +118,12 @@ export class WorkspaceController {
   ): Promise<TChat[]> {
     return await this.workspaceService.findWorkspaceChats(workspaceId);
   }
+
+  @MinRole(WorkspaceUserRole.MEMBER)
+  @UseGuards(WorkspaceRoleGuard)
+  @Get(":workspaceId:/chats/:chatId/info")
+  async findWorkspaceChatInfo(
+    @Param({ schema: findWorkspaceCallPathParamsSchema })
+    pathParams: TFindWorkspaceCallPathParams,
+  ) {}
 }

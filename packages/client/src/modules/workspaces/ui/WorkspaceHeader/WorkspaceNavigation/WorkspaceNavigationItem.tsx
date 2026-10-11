@@ -17,8 +17,8 @@ export const WorkspaceNavigationItem: FC<WorkspaceNavigationItemProps> = ({
     <Link
       to={href}
       className={clsx(
-        styles.workspaceNavigationItem,
-        isActive && styles.workspaceNavigationItemActive,
+        styles.workspaceNavigationListItem,
+        isActive && styles.workspaceNavigationListItemActive,
       )}
     >
       {children}

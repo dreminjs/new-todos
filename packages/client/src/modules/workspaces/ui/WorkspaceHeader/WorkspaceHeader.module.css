@@ -1,48 +1,53 @@
-
 .workspaceHeader {
-    /*display: flex;*/
+  padding: 5px;
+
+  background-color: rgba(241, 245, 249, 0.75);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 1px 12px rgba(15, 23, 42, 0.06);
+  border-radius: 8px;
 }
 
-
-
 .workspaceHeaderBackButton {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .workspaceHeaderInfo {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 5px 5px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 5px 5px;
 }
 
 .workspaceHeaderInfoInner {
-    padding-left: 15px;
-    border-left: 1px solid black;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  padding-left: 15px;
+  border-left: 1px solid black;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .workspaceHeaderInfoInnerRight {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .workspaceHeaderInfoTitle {
-    font-size: 18px;
-    font-weight: 600;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .workspaceHeaderInfoDescription {
-    font-size: 14px;
+  font-size: 14px;
 }

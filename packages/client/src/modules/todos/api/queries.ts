@@ -250,8 +250,8 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
         InfiniteData<IItemsResponse<TTodo>>
       >({ queryKey: ["todos"] });
 
-      let movedTodo: TTodo | undefined;
-      let sourceQueryKey: QueryKey | undefined;
+      let movedTodo: TTodo | null = null
+      let sourceQueryKey: QueryKey | null = null;
 
       for (const [key, data] of previousData) {
         if (!data) continue;

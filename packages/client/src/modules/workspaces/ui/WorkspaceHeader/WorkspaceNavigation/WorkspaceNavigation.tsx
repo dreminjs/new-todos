@@ -1,8 +1,7 @@
-import { useLocation } from "react-router";
-import { WorkspaceNavigationItem } from "./WorkspaceNavigationItem";
-import styles from "./WorkspaceNavigation.module.css";
 import type { FC } from "react";
-
+import { WorkspaceNavigationList } from "./WorkspaceNavigationList";
+import { WorkspaceCallManagement } from "./WorkspaceCallManagement";
+import styles from "./WorkspaceNavigation.module.css"
 interface IWorkspaceNavigationProps {
   countOfMembers: number;
 }
@@ -10,42 +9,10 @@ interface IWorkspaceNavigationProps {
 export const WorkspaceNavigation: FC<IWorkspaceNavigationProps> = ({
   countOfMembers,
 }) => {
-  const pathname = useLocation().pathname.split("/")[3];
-  const workspaceId = useLocation().pathname.split("/")[2];
   return (
-    <nav>
-      <ul className={styles.workspaceNavigation}>
-        <WorkspaceNavigationItem
-          isActive={pathname === undefined}
-          href={workspaceId}
-        >
-          Home
-        </WorkspaceNavigationItem>
-        <WorkspaceNavigationItem
-          isActive={pathname === "all-todos"}
-          href={`${workspaceId}/all-todos`}
-        >
-          All tasks
-        </WorkspaceNavigationItem>
-        <WorkspaceNavigationItem
-          isActive={pathname === `todo-groups`}
-          href={`${workspaceId}/todo-groups`}
-        >
-          Todo groups
-        </WorkspaceNavigationItem>
-        <WorkspaceNavigationItem
-          isActive={pathname === `chats`}
-          href={`${workspaceId}/chats`}
-        >
-          Chats
-        </WorkspaceNavigationItem>
-        <WorkspaceNavigationItem
-          isActive={pathname === `members`}
-          href={`${workspaceId}/members`}
-        >
-          Members ({countOfMembers})
-        </WorkspaceNavigationItem>
-      </ul>
+    <nav className={styles.workspaceNavigation}>
+      <WorkspaceNavigationList countOfMembers={countOfMembers} />
+      <WorkspaceCallManagement />
     </nav>
   );
 };
