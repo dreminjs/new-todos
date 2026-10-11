@@ -46,12 +46,12 @@ export class CallsService {
   }
 
   async getCallInfo(callId: string) {
-    const [call, participants] = await Promise.all([
+    const [call, participantsIds] = await Promise.all([
       this.redis.hgetall(`call:${callId}`) as unknown as Promise<Call>,
       this.redis.smembers(`call:${callId}:participants`) as unknown as string[],
     ]);
 
     if (!call.status) return null;
-    return { ...call, participants };
+    return { ...call, participantsIds };
   }
 }

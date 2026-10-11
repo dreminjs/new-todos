@@ -2,7 +2,7 @@ import { z } from "zod";
 import { userSchema } from "../user/user.schema.js";
 import { todoGroupSchema } from "../todo-groups/todo-groups.schema.js";
 import { TExtendedChatMessage } from "./chats.types.js";
-import { workspaceSchema } from "../workspace/workspace.schema.js";
+import { workspaceParticipantSchema, workspaceSchema } from "../workspace/workspace.schema.js";
 
 export const chatsSchema = z.object({
   id: z.uuid(),
@@ -102,3 +102,11 @@ export const findWorkspaceCallPathParamsSchema = z.object({
 //   replies   ChatMessage[] @relation("MessageReplies")
 //   user      User          @relation(fields: [userId], references: [id])
 // }
+
+export const chatCallResponseSchema = z.object({
+  chatId: z.uuid(),
+  callId: z.uuid(),
+  workspaceId: z.uuid(),
+  participants: z.array(workspaceParticipantSchema),
+  status: z.string()
+})

@@ -1,6 +1,10 @@
 import { Prisma, WorkspaceParticipant } from "api/generated/prisma/client.js";
 import { PrismaService } from "../../../prisma/prisma.service.js";
-import { IExtendedWorkspaceParticipant } from "types";
+import {
+  IExtendedWorkspaceParticipant,
+  TWorkspaceParticipant,
+  workspaceParticipantSchema,
+} from "types";
 import { Injectable } from "@nestjs/common";
 import { PUBLIC_USER_SELECT } from "../../../user/index.js";
 
@@ -13,8 +17,13 @@ export class WorkspaceParticipantRepository {
     return this.prisma.workspaceParticipant.create(args);
   }
 
-  async findMany(args: Prisma.WorkspaceParticipantFindManyArgs) {
-    return this.prisma.workspaceParticipant.findMany(args);
+  async findMany(
+    args: Prisma.WorkspaceParticipantFindManyArgs,
+  ): Promise<TWorkspaceParticipant[]> {
+    const participants = await this.prisma.workspaceParticipant.findMany(args);
+    return participants.map((el) =>
+      workspaceParticipantSchema.parse(participants),
+    );
   }
 
   async findManyShortInfoByWorkspaceId(
