@@ -23,7 +23,7 @@ import { Transactional } from "@nestjs-cls/transactional";
 import { WorkspaceParticipantService } from "../sub/workspace-participant/workspace-participant.service.js";
 import { TodoGroupsService } from "../../todo/sub/todo-groups/todo-groups.service.js";
 import { ChatsService } from "../sub/chats/chats.service.js";
-import { NotFoundError } from "../../../classes/app.error.js";
+import { BadRequestError, NotFoundError } from "../../../classes/app.error.js";
 import { CallsService } from "../../calls/calls.service.js";
 @Injectable()
 export class WorkspaceService {
@@ -36,8 +36,6 @@ export class WorkspaceService {
     private readonly chatsService: ChatsService,
     private readonly callsService: CallsService,
   ) {}
-
-  private logger = new Logger(WorkspaceService.name);
 
   @Transactional()
   async leave(workspaceId: string, userId: string): Promise<void> {
@@ -59,7 +57,7 @@ export class WorkspaceService {
     }
 
     if (userId === workspace.ownerId && participantsCount > 1) {
-      throw new BadRequestException(
+      throw new BadRequestError(
         "Cannot leave workspace as owner and have other participants",
       );
     }
@@ -94,13 +92,13 @@ export class WorkspaceService {
     return workspaceSchema.parse(workspace);
   }
 
-  async findOne(args: Prisma.WorkspaceFindUniqueArgs): Promise<TWorkspace> {
-    const workspace = await this.workspaceRepository.findOne(args);
-    if (!workspace) {
-      throw new NotFoundException("Workspace not found!");
-    }
-    return workspace;
-  }
+  // async findOne(args: Prisma.WorkspaceFindUniqueArgs): Promise<TWorkspace> {
+  //   const workspace = await this.workspaceRepository.findOne(args);
+  //   if (!workspace) {
+  //     throw new NotFoundError("Workspace not found!");
+  //   }
+  //   return workspace;
+  // }
 
   async findOneById(workspaceId: string): Promise<TWorkspace> {
     const workspace = await this.workspaceRepository.findOne({
@@ -129,7 +127,7 @@ export class WorkspaceService {
       where: { workspaceId },
     });
 
-    const workspaceQuery = this.findOne({ where: { id: workspaceId } });
+    const workspaceQuery = this.findOneById(workspaceId);
 
     const [todosInfo, countOfMembers, workspace] = await Promise.all([
       todosInfoQuery,
@@ -157,7 +155,7 @@ export class WorkspaceService {
     participantId: string,
     previousOwnerId: string,
   ): Promise<TWorkspace> {
-    await this.findOne({ where: { id: workspaceId } });
+    await this.findOneById(workspaceId);
     const candidateParticipantQuery =
       this.workspaceParticipantRepository.findOne({
         where: { id: participantId },

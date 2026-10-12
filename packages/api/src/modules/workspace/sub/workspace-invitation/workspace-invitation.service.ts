@@ -26,7 +26,7 @@ export class WorkspaceInvitationService {
     private readonly workspaceParticipantService: WorkspaceParticipantService,
     private readonly eventEmitter: EventEmitter2,
     private readonly workspaceService: WorkspaceService,
-  ) {}
+  ) { }
 
   @Transactional()
   async createOne(
@@ -57,7 +57,7 @@ export class WorkspaceInvitationService {
         },
       });
     if (oldWorkspaceInvitation) {
-      throw new ConflictException(`User is already invited to this workspace`);
+      throw new ConflictException(`User is already invited to the workspace`);
     }
 
     const workspaceInvitation =
@@ -120,11 +120,7 @@ export class WorkspaceInvitationService {
       },
     });
 
-    const workspace = await this.workspaceService.findOne({
-      where: {
-        id: workspaceInvitation.workspaceId,
-      },
-    });
+    const workspace = await this.workspaceService.findOneById(workspaceInvitation.workspaceId,);
 
     this.eventEmitter.emit(
       "notifications.create",
@@ -152,11 +148,9 @@ export class WorkspaceInvitationService {
       throw new NotFoundException(`Workspace invitation not found`);
     }
 
-    const workspace = await this.workspaceService.findOne({
-      where: {
-        id: workspaceInvitation.workspaceId,
-      },
-    });
+    const workspace = await this.workspaceService.findOneById(
+      workspaceInvitation.workspaceId,
+    );
 
     this.eventEmitter.emit(
       "notifications.create",

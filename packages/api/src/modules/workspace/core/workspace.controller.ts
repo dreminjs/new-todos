@@ -121,7 +121,7 @@ export class WorkspaceController {
 
   @MinRole(WorkspaceUserRole.MEMBER)
   @UseGuards(WorkspaceRoleGuard)
-  @Get(":workspaceId:/chats/:chatId/call/")
+  @Get(":workspaceId/chats/:chatId/call")
   async findWorkspaceChatInfo(
     @Param({ schema: findWorkspaceCallPathParamsSchema })
     pathParams: TFindWorkspaceCallPathParams,

@@ -18,6 +18,7 @@
   min-height: 42px;
   max-height: 120px;
   font-family: inherit;
+  overflow: auto;
 
   &:focus {
     border-color: #93c5fd;
@@ -93,4 +94,3 @@
 .attachButton:hover {
   background-color: #f1f5f9;
 }
-
