@@ -58,8 +58,6 @@
     "hbs": "^4.2.1",
     "ioredis": "^6.0.0",
     "js-yaml": "^4.1.1",
-    "mediasoup": "^3.27.1",
-    "mediasoup-client": "^3.24.5",
     "nanoid": "^3.3.18",
     "nestjs-cls": "^7.0.1",
     "nestjs-zod": "^5.5.0",

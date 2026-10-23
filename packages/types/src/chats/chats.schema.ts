@@ -2,7 +2,7 @@ import { z } from "zod";
 import { userSchema } from "../user/user.schema.js";
 import { todoGroupSchema } from "../todo-groups/todo-groups.schema.js";
 import { TExtendedChatMessage } from "./chats.types.js";
-import { workspaceParticipantSchema, workspaceSchema } from "../workspace/workspace.schema.js";
+import { workspaceSchema } from "../workspace/workspace.schema.js";
 
 export const chatsSchema = z.object({
   id: z.uuid(),
@@ -84,29 +84,3 @@ export const updateChatMessageBodySchema = createChatMessageBodySchema.omit({
   replyToId: true,
 });
 
-export const findWorkspaceCallPathParamsSchema = z.object({
-  workspaceId: z.uuid(),
-  chatId: z.uuid(),
-});
-
-// model ChatMessage {
-//   id        String        @id @default(uuid())
-//   content   String
-//   chatId    String
-//   userId    String
-//   replyToId String?
-//   createdAt DateTime      @default(now())
-//   updatedAt DateTime      @updatedAt
-//   chat      Chat          @relation(fields: [chatId], references: [id])
-//   replyTo   ChatMessage?  @relation("MessageReplies", fields: [replyToId], references: [id])
-//   replies   ChatMessage[] @relation("MessageReplies")
-//   user      User          @relation(fields: [userId], references: [id])
-// }
-
-export const chatCallResponseSchema = z.object({
-  chatId: z.uuid(),
-  callId: z.uuid(),
-  workspaceId: z.uuid(),
-  participants: z.array(workspaceParticipantSchema),
-  status: z.string()
-})

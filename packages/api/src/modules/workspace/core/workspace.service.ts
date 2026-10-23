@@ -7,8 +7,6 @@ import {
 import { CreateWorkspaceDto } from "./dto/workspace.dto.js";
 import {
   TChat,
-  TChatCallResponse,
-  TFindWorkspaceCallPathParams,
   TTodoGroup,
   TTodoGroupResponse,
   TWorkspace,
@@ -24,7 +22,6 @@ import { WorkspaceParticipantService } from "../sub/workspace-participant/worksp
 import { TodoGroupsService } from "../../todo/sub/todo-groups/todo-groups.service.js";
 import { ChatsService } from "../sub/chats/chats.service.js";
 import { BadRequestError, NotFoundError } from "../../../classes/app.error.js";
-import { CallsService } from "../../calls/calls.service.js";
 @Injectable()
 export class WorkspaceService {
   constructor(
@@ -34,7 +31,6 @@ export class WorkspaceService {
     private readonly workspaceParticipantService: WorkspaceParticipantService,
     private readonly todoGroupsService: TodoGroupsService,
     private readonly chatsService: ChatsService,
-    private readonly callsService: CallsService,
   ) {}
 
   @Transactional()
@@ -247,31 +243,5 @@ export class WorkspaceService {
 
   async findWorkspaceChats(workspaceId: string): Promise<TChat[]> {
     return this.chatsService.findAllByWorkspaceId(workspaceId);
-  }
-
-  async findChatCall(
-    dto: TFindWorkspaceCallPathParams,
-  ): Promise<TChatCallResponse> {
-    const callInfo = await this.callsService.getCallInfo(dto.chatId);
-
-    if (!callInfo) {
-      throw new NotFoundError("That call doesn't exist");
-    }
-
-    const participants = await this.workspaceParticipantRepository.findMany({
-      where: {
-        id: {
-          in: callInfo.participantsIds,
-        },
-      },
-    });
-
-    return {
-      participants,
-      chatId: callInfo.chatId,
-      callId: callInfo.id,
-      status: callInfo.status,
-      workspaceId: callInfo.workspaceId,
-    };
   }
 }

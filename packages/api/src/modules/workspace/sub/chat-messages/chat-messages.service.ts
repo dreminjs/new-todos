@@ -17,6 +17,7 @@ import { S3Service } from "../../../infra/s3/s3.service.js";
 import type { UploadedMultipartFile } from "@nestjs/platform-fastify/multipart";
 import type { IUploadedFile } from "../../../../interfaces/multipart.js";
 import { Attachment } from "#generated/client.js";
+import { normalizeFiles } from "./helpers/normalize-files.helper.js";
 @Injectable()
 export class ChatMessagesService {
   constructor(
@@ -24,24 +25,6 @@ export class ChatMessagesService {
     private readonly eventEmitter: EventEmitter2,
     private readonly s3Service: S3Service,
   ) {}
-  // TODO: make separated Job
-  private async normalizeFiles(
-    files: Array<UploadedMultipartFile>,
-  ): Promise<IUploadedFile[]> {
-    return Promise.all(
-      files.map(async (file) => {
-        const buffer =
-          (file as any).buffer ?? (await (file as any).toBuffer?.());
-        return {
-          fieldname: file.fieldname,
-          filename: file.filename || (file as any).originalname,
-          mimetype: file.mimetype,
-          buffer,
-          size: (file as any).size ?? buffer.length,
-        };
-      }),
-    );
-  }
 
   @Transactional()
   async createOne(
@@ -50,8 +33,6 @@ export class ChatMessagesService {
   ) {
     const { chatId, content, userId } = dto;
 
-    let attachments: Attachment[] = [];
-
     if (dto.replyToId) {
       const replyToMessage =
         await this.chatMessagesRepository.findChatMessageChat(dto.replyToId);
@@ -59,6 +40,10 @@ export class ChatMessagesService {
         throw new BadRequestError("Reply to message must be in the same chat");
       }
     }
+
+    const uploadedFiles = files?.length
+      ? await this.s3Service.uploadMultipleFiles(await normalizeFiles(files))
+      : [];
 
     const chatMessage = await this.chatMessagesRepository.createExtended({
       chat: {
@@ -85,29 +70,15 @@ export class ChatMessagesService {
         },
       },
       content,
+      attachments: {
+        create: uploadedFiles.map((file) => ({
+          key: file.key,
+          name: file.filename,
+          mimetype: file.mimetype,
+          size: file.size,
+        })),
+      },
     });
-
-    if (files?.length) {
-      const normalizedFiles = await this.normalizeFiles(files);
-      const uploadedS3Files =
-        await this.s3Service.uploadMultipleFiles(normalizedFiles);
-
-      attachments = await Promise.all(
-        uploadedS3Files.map((file) =>
-          this.chatMessagesRepository.createAttachment({
-            key: file.key,
-            name: file.filename,
-            mimetype: file.mimetype,
-            size: file.size,
-            chatMessage: {
-              connect: {
-                id: chatMessage.id,
-              },
-            },
-          }),
-        ),
-      );
-    }
 
     this.eventEmitter.emit("chat-messages.created", chatMessage);
     return chatMessage;

@@ -10,7 +10,6 @@ import {
   Put,
   UseInterceptors,
   UploadedFiles,
-  Req,
   Logger,
 } from "@nestjs/common";
 import {

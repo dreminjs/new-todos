@@ -12,8 +12,3 @@ export type TCreateChatMessageFormDto = z.infer<typeof createChatMessageFormDtoS
 export type TEditMessageDto = TCreateChatMessageBodyDto & {
   id: string;
 };
-
-export interface RemoteParticipant {
-  socketId: string;
-  stream: MediaStream;
-}

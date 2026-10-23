@@ -17,9 +17,7 @@ import {
 } from "./dto/workspace.dto.js";
 import { WorkspaceService } from "./workspace.service.js";
 import {
-  findWorkspaceCallPathParamsSchema,
   type TChat,
-  type TFindWorkspaceCallPathParams,
   type TTodoGroupResponse,
   type TWorkspace,
   type TWorkspaceInfo,
@@ -117,15 +115,5 @@ export class WorkspaceController {
     @Param("workspaceId") workspaceId: string,
   ): Promise<TChat[]> {
     return await this.workspaceService.findWorkspaceChats(workspaceId);
-  }
-
-  @MinRole(WorkspaceUserRole.MEMBER)
-  @UseGuards(WorkspaceRoleGuard)
-  @Get(":workspaceId/chats/:chatId/call")
-  async findWorkspaceChatInfo(
-    @Param({ schema: findWorkspaceCallPathParamsSchema })
-    pathParams: TFindWorkspaceCallPathParams,
-  ) {
-    return this.workspaceService.findChatCall(pathParams);
   }
 }

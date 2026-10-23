@@ -11,7 +11,6 @@ import { WorkspaceRepository } from "./workspace.repository.js";
 import { TodoGroupsModule } from "../../todo/sub/todo-groups/todo-groups.module.js";
 import { TodoModule } from "../../todo/core/todo.module.js";
 import { ChatsModule } from "../sub/chats/chats.module.js";
-import { CallsModule } from "../../../modules/calls/calls.module.js";
 
 @Module({
   imports: [
@@ -24,7 +23,6 @@ import { CallsModule } from "../../../modules/calls/calls.module.js";
     TokenModule,
     TodoGroupsModule,
     ChatsModule,
-    CallsModule
   ],
   controllers: [WorkspaceController],
   providers: [WorkspaceService, WorkspaceRepository],
