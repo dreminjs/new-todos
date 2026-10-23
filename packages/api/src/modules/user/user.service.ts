@@ -3,6 +3,7 @@ import { PrismaService } from "../prisma/prisma.service.js";
 import { Prisma, User } from "generated/prisma/client.js";
 import { UploadedMultipartFile } from "@nestjs/platform-fastify/multipart";
 import { S3Service } from "../infra/s3/s3.service.js";
+import { TUser, userSchema } from "types";
 
 @Injectable()
 export class UserService {
@@ -26,7 +27,7 @@ export class UserService {
   async uploadUserAvatar(
     userId: string,
     avatar: UploadedMultipartFile,
-  ): Promise<User> {
+  ): Promise<TUser> {
     const newFilename = crypto.randomUUID();
 
     const uploadedAvatar = await this.s3Service.uploadFile(
@@ -35,12 +36,27 @@ export class UserService {
       avatar.mimetype,
     );
 
-    return await this.updateOne({
+    const updatedUser = await this.updateOne({
       where: { id: userId },
       data: {
         avatarUrl: uploadedAvatar.url,
       },
     });
+
+    return userSchema.parse(updatedUser);
+  }
+
+  async removeAvatar(currentUserId: string): Promise<TUser> {
+    const updatedUser = await this.updateOne({
+      where: {
+        id: currentUserId,
+      },
+      data: {
+        avatarUrl: null,
+      },
+    });
+
+    return userSchema.parse(updatedUser);
   }
 
   async confirmEmail(email: string): Promise<User> {

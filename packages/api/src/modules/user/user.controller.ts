@@ -5,6 +5,8 @@ import {
   Logger,
   MaxFileSizeValidator,
   ParseFilePipe,
+  Patch,
+  Post,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -23,28 +25,27 @@ import { UserService } from "./user.service.js";
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  private logger = new Logger(UserController.name);
-
   @Get("me")
   async findMe(@CurrentUser() user: TUser): Promise<TUser> {
     return userSchema.parse(user);
   }
 
   @UseInterceptors(FileInterceptor("avatar"))
-  @Get("upload-avatar")
+  @Post("upload-avatar")
   async uploadAvatar(
     @UploadedFile(
       new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 1000 }),
-          new FileTypeValidator({ fileType: "image/png" }),
-          new FileTypeValidator({ fileType: "image/jpg" }),
-        ],
+        validators: [new MaxFileSizeValidator({ maxSize: 10000000 })],
       }),
     )
     avatar: UploadedMultipartFile,
     @CurrentUser("id") currentUserId: string,
-  ) {
+  ): Promise<TUser> {
     return this.userService.uploadUserAvatar(currentUserId, avatar);
+  }
+
+  @Patch("remove-avatar")
+  async removeAvatar(@CurrentUser("id") currentUserId: string): Promise<TUser> {
+    return await this.userService.removeAvatar(currentUserId);
   }
 }

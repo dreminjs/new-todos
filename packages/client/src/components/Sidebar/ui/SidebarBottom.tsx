@@ -5,12 +5,12 @@ import { SidebarMenuItem } from "./SidebarMenuItem";
 export const SidebarBottom = () => {
   return (
     <ul className={styles.sidebarBottom}>
-      {sidebarMenuBottomData.map(({ icon: Icon, label }, index) => (
+      {sidebarMenuBottomData.map(({ icon: Icon, label, to }, index) => (
         <SidebarMenuItem
           key={index}
           icon={<Icon width={22} height={22} />}
           label={label}
-          to={"/label"}
+          to={to}
         />
       ))}
     </ul>

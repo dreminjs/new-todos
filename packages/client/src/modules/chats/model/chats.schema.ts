@@ -1,13 +1,10 @@
 import { createChatMessageBodySchema } from "types";
 
 import z from "zod";
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
+import {
+  MAX_FILE_SIZE,
+  ACCEPTED_IMAGE_TYPES,
+} from "../../../shared/model/files.constants";
 
 const singleFileSchema = z
   .custom<File>((val) => val instanceof File, "Файл обязателен")

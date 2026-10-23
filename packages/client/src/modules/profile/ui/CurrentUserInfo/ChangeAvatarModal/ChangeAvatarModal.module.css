@@ -1,0 +1,28 @@
+.changeAvatarInner {
+}
+
+.changeAvatarModalList {
+  /*padding: 10px;*/
+}
+
+.changeAvatarModalListItem {
+  padding: 10px;
+  border-bottom: 1px solid #cbd5e1;
+}
+.changeAvatarModalListItem:last-child {
+  border-bottom: none;
+}
+
+.changeAvatarModalButton {
+  font-size: 24px;
+  width: 100%;
+  font-weight: 600;
+}
+
+.removeAvatarButton {
+    color: #dc2626;
+}
+
+.uploadAvatarButton {
+    color: #3b82f6;
+}

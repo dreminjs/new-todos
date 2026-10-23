@@ -10,7 +10,7 @@ import { RedisClientModule } from "../redis/redis.module.js";
       imports: [RedisModule, RedisClientModule],
       inject: [RedisToken()],
       useFactory: (redis) => ({
-        throttlers: [{ limit: 10, ttl: seconds(60) }],
+        throttlers: [{ limit: 100000, ttl: seconds(30) }],
         storage: new RedisThrottlerStorage(redis),
       }),
     }),

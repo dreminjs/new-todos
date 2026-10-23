@@ -1,14 +1,14 @@
+import { UserInfo } from "../ui/CurrentUserInfo/CurrentUserInfo"
+import { ProfilePageWrapper } from "../ui/ProfilePageWrapper/ProfilePageWrapper"
 
 
 
 
 export const ProfilePage = () => {
 
-
-
   return (
-    <div>
-
-    </div>
+    <ProfilePageWrapper>
+      <UserInfo />
+    </ProfilePageWrapper>
   )
 }

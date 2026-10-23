@@ -8,3 +8,4 @@ export * from "./ui/FormBottom/FormBottom";
 export * from "./ui/CustomCheckbox/CustomCheckbox";
 export * from "./ui/CustomAccordion/CustomAccordion";
 export * from "./model/hooks/useEscapeToClose";
+export * from "./model/lib/getDownloadLink"

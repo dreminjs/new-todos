@@ -3,16 +3,11 @@ import type { TAttachment } from "types";
 import { LuFile, LuDownload } from "react-icons/lu";
 import styles from "./ChatMessagesListItem.module.css";
 import { Link } from "react-router";
+import { getDownloadUrl } from "../../../../shared";
 
 interface IChatMessageAttachmentsProps {
   attachments: TAttachment[];
 }
-
-const getDownloadUrl = (key: string) => {
-  return `http://localhost:9001/api/v1/buckets/todos-bucket/objects/download?preview=true&prefix=${encodeURIComponent(
-    key,
-  )}&version_id=null`;
-};
 
 export const ChatMessageAttachments: FC<IChatMessageAttachmentsProps> = ({
   attachments,
