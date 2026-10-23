@@ -26,13 +26,34 @@ export class WsAccessTokenGuard implements CanActivate {
     const client: Socket = context.switchToWs().getClient();
     const token = this.extractToken(client);
 
-    if (!token) throw new WsException("Unauthorized");
-
     try {
-      const payload = await this.tokenService.validateAuthToken(token);
+      let userId: string | undefined;
+      if (token) {
+        try {
+          const payload = await this.tokenService.validateAuthToken(token);
+          userId = payload.userId;
+        } catch {
+          // Token expired, fallback to refreshToken
+        }
+      }
+
+      if (!userId) {
+        const cookieHeader = client.handshake.headers.cookie;
+        if (cookieHeader) {
+          const cookies = cookie.parseCookie(cookieHeader);
+          if (cookies["refreshToken"]) {
+            try {
+              const refreshPayload = this.tokenService.validateRefreshToken(cookies["refreshToken"]);
+              userId = refreshPayload.userId;
+            } catch {}
+          }
+        }
+      }
+
+      if (!userId) throw new WsException("Unauthorized");
 
       const user = await this.userService.findOne({
-        where: { id: payload.userId },
+        where: { id: userId },
       });
 
       if (!user) throw new WsException("Unauthorized");

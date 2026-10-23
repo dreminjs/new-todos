@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Device, type types } from 'mediasoup-client';
 import { io, Socket } from 'socket.io-client';
+import { instance } from '../../../../shared/api/api.instance';
 
 interface RemoteParticipant {
   socketId: string;
@@ -14,6 +15,7 @@ export function useCall(
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteParticipants, setRemoteParticipants] = useState<RemoteParticipant[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const socketRef = useRef<Socket | null>(null);
@@ -58,13 +60,43 @@ export function useCall(
     [addRemoteTrack],
   );
 
+  const chatId = options?.chatId ?? callId;
+  const workspaceId = options?.workspaceId ?? '';
+
   const join = useCallback(async () => {
+    if (isConnected || isJoining) return;
+
     try {
+      setIsJoining(true);
+      setError(null);
+
+      // Обновляем токен, чтобы сессия была гарантированно валидной перед подключением сокета
+      try {
+        await instance.get('/token');
+      } catch (tokenErr) {
+        console.warn('[useCall] Token refresh error:', tokenErr);
+      }
+
       const socket = io("http://localhost:3000", {
         withCredentials: true,
-        transports: ["websocket"],
+        transports: ["websocket", "polling"],
       });
       socketRef.current = socket;
+
+      await new Promise<void>((resolve, reject) => {
+        if (socket.connected) {
+          resolve();
+          return;
+        }
+        socket.once('connect', () => {
+          console.log('[useCall] Socket connected, id:', socket.id);
+          resolve();
+        });
+        socket.once('connect_error', (err) => {
+          console.error('[useCall] Socket connect_error:', err);
+          reject(err);
+        });
+      });
 
       socket.on('new-producer', ({ producerId, socketId }) => {
         consume(producerId, socketId);
@@ -76,8 +108,8 @@ export function useCall(
 
       const { rtpCapabilities } = await socket.emitWithAck('join-room', {
         callId,
-        chatId: options?.chatId ?? callId,
-        workspaceId: options?.workspaceId ?? '',
+        chatId,
+        workspaceId,
       });
 
       const device = new Device();
@@ -88,39 +120,68 @@ export function useCall(
       const sendTransport = device.createSendTransport(sendParams);
       sendTransportRef.current = sendTransport;
 
-      sendTransport.on('connect', async ({ dtlsParameters }, callback) => {
-        await socket.emitWithAck('connect-transport', {
-          transportId: sendTransport.id,
-          dtlsParameters,
-        });
-        callback();
+      sendTransport.on('connect', async ({ dtlsParameters }, callback, errback) => {
+        try {
+          await socket.emitWithAck('connect-transport', {
+            transportId: sendTransport.id,
+            dtlsParameters,
+          });
+          callback();
+        } catch (err) {
+          errback?.(err as Error);
+        }
       });
 
-      sendTransport.on('produce', async ({ kind, rtpParameters }, callback) => {
-        const { id } = await socket.emitWithAck('produce', {
-          transportId: sendTransport.id,
-          kind,
-          rtpParameters,
-        });
-        callback({ id });
+      sendTransport.on('produce', async ({ kind, rtpParameters }, callback, errback) => {
+        try {
+          const { id } = await socket.emitWithAck('produce', {
+            transportId: sendTransport.id,
+            kind,
+            rtpParameters,
+          });
+          callback({ id });
+        } catch (err) {
+          errback?.(err as Error);
+        }
       });
 
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      } catch (mediaErr) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (audioErr) {
+          alert('Доступ к микрофону или камере запрещён или устройство не найдено');
+          throw new Error('Доступ к микрофону или камере запрещён или устройство не найдено');
+        }
+      }
       setLocalStream(stream);
 
-      await sendTransport.produce({ track: stream.getVideoTracks()[0] });
-      await sendTransport.produce({ track: stream.getAudioTracks()[0] });
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack) {
+        await sendTransport.produce({ track: videoTrack });
+      }
+
+      const audioTrack = stream.getAudioTracks()[0];
+      if (audioTrack) {
+        await sendTransport.produce({ track: audioTrack });
+      }
 
       const recvParams = await socket.emitWithAck('create-transport', { direction: 'recv' });
       const recvTransport = device.createRecvTransport(recvParams);
       recvTransportRef.current = recvTransport;
 
-      recvTransport.on('connect', async ({ dtlsParameters }, callback) => {
-        await socket.emitWithAck('connect-transport', {
-          transportId: recvTransport.id,
-          dtlsParameters,
-        });
-        callback();
+      recvTransport.on('connect', async ({ dtlsParameters }, callback, errback) => {
+        try {
+          await socket.emitWithAck('connect-transport', {
+            transportId: recvTransport.id,
+            dtlsParameters,
+          });
+          callback();
+        } catch (err) {
+          errback?.(err as Error);
+        }
       });
 
       const existingProducers = await socket.emitWithAck('get-producers');
@@ -131,8 +192,10 @@ export function useCall(
       setIsConnected(true);
     } catch (err) {
       setError(err as Error);
+    } finally {
+      setIsJoining(false);
     }
-  }, [callId, consume, removeRemoteParticipant]);
+  }, [callId, chatId, workspaceId, isConnected, isJoining, consume, removeRemoteParticipant]);
 
   const leave = useCallback(() => {
     localStream?.getTracks().forEach((track) => track.stop());
@@ -143,6 +206,7 @@ export function useCall(
     setLocalStream(null);
     setRemoteParticipants([]);
     setIsConnected(false);
+    setIsJoining(false);
   }, [localStream]);
 
   const toggleMic = useCallback(() => {
@@ -161,5 +225,15 @@ export function useCall(
     return () => leave();
   }, []);
 
-  return { localStream, remoteParticipants, isConnected, error, join, leave, toggleMic, toggleCamera };
+  return {
+    localStream,
+    remoteParticipants,
+    isConnected,
+    isJoining,
+    error,
+    join,
+    leave,
+    toggleMic,
+    toggleCamera,
+  };
 }

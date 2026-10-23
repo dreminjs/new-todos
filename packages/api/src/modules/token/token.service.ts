@@ -167,4 +167,10 @@ export class TokenService {
       secret: this.configService.getOrThrow("ACCESS_TOKEN"),
     });
   }
+
+  public validateRefreshToken(token: string): IAuthTokenPayload {
+    return this.jwtService.verify(token, {
+      secret: this.configService.getOrThrow("REFRESH_TOKEN"),
+    });
+  }
 }

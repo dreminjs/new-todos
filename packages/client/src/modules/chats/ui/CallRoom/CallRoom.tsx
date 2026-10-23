@@ -30,6 +30,7 @@ export const CallRoom: FC<CallRoomProps> = ({
     localStream,
     remoteParticipants,
     isConnected,
+    isJoining,
     error,
     join,
     leave,
@@ -108,10 +109,11 @@ export const CallRoom: FC<CallRoomProps> = ({
           <button
             type="button"
             onClick={join}
+            disabled={isJoining}
             className={`${styles.btn} ${styles.btnJoin}`}
           >
             <IoCall size={20} />
-            <span>Присоединиться к звонку</span>
+            <span>{isJoining ? "Подключение..." : "Присоединиться к звонку"}</span>
           </button>
         ) : (
           <>

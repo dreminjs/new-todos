@@ -6,7 +6,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
-import { UseGuards } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import { RoomsService } from "./rooms.service.js";
 import { Server, Socket } from "socket.io";
 import { CallsService } from "./calls.service.js";
@@ -37,6 +37,8 @@ export class CallsGateway implements OnGatewayInit {
   @WebSocketServer()
   private server: Server;
 
+  private readonly logger = new Logger(CallsGateway.name);
+
   afterInit(server: Server) {
     server.use(this.wsAuthMiddleware.use);
   }
@@ -47,7 +49,11 @@ export class CallsGateway implements OnGatewayInit {
     @MessageBody()
     payload: { callId: string; chatId: string; workspaceId: string },
   ) {
-    const userId = client.data.userId;
+    const userId = client.data.userId || client.id;
+    this.logger.log(
+      `[CallsGateway] User ${userId} joining room ${payload?.callId}`,
+    );
+
     const room = await this.roomService.getOrCreateRoom(payload.callId);
     this.roomService.addPeer(payload.callId, client.id, userId);
 
@@ -55,7 +61,7 @@ export class CallsGateway implements OnGatewayInit {
     if (!existingCall) {
       await this.callsService.startCall({
         callId: payload.callId,
-        chatId: payload.chatId,
+        chatId: payload.chatId || payload.callId,
         workspaceId: payload.workspaceId,
         initiatorId: userId,
       });
@@ -78,11 +84,12 @@ export class CallsGateway implements OnGatewayInit {
     const peer = this.roomService.getPeer(callId, client.id);
 
     if (!room || !peer) {
-      throw new NotFoundError("No found");
+      throw new NotFoundError("No room or peer found");
     }
 
+    const announcedIp = process.env.PUBLIC_IP || "127.0.0.1";
     const transport = await room.router.createWebRtcTransport({
-      listenIps: [{ ip: "0.0.0.0", announcedIp: process.env.PUBLIC_IP }],
+      listenIps: [{ ip: "0.0.0.0", announcedIp }],
       enableUdp: true,
       enableTcp: true,
       preferUdp: true,
@@ -230,7 +237,8 @@ export class CallsGateway implements OnGatewayInit {
     if (callId) {
       client.to(callId).emit("peer-left", { socketId: client.id });
       this.roomService.removePeer(callId, client.id);
-      this.callsService.removeParticipant(callId, client.data.userId);
+      const userId = client.data.userId || client.id;
+      this.callsService.removeParticipant(callId, userId);
     }
   }
 }
