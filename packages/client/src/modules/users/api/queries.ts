@@ -40,7 +40,7 @@ export const useUploadAvatar = ({ onSettled }: { onSettled: () => void }) => {
     },
     onSuccess: (user) => {
       onSettled();
-      console.log({user}, "success")
+      console.log({ user }, "success");
       client.setQueryData(["user", "me"], () => user);
       addNotification({ type: "success", message: "Avatar is uploaded!" });
     },
