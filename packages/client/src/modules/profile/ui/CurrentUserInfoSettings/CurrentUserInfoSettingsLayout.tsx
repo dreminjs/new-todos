@@ -17,8 +17,6 @@ export const CurrentUserInfoSettingsLayout: FC<ICurrentUserInfoFormLayoutProps> 
         isVisible && styles.currentUserInfoFormLayoutActive,
       )}
     >
-      <h3>Personal Information</h3>
-      <h6>Manage your public information visible across your projects.</h6>
       {children}
     </div>
   );

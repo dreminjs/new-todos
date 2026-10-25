@@ -1,15 +1,18 @@
 
 
-.forContainer {
+.formContainer {
     background-color: white;
     padding: 24px;
     border-radius: 14px;
+    border: 1px solid #cbd5e1;
+
 }
 
 .formContainerHeader {
     display: flex;
     padding-bottom: 5px;
     border-bottom: 1px solid #475569;
+    margin-bottom: 5px;
 }
 
 .formContainerTitle {

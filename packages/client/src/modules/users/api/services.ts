@@ -1,5 +1,5 @@
 import { instance } from "../../../shared/api/api.instance";
-import type { TUser } from "types";
+import type { TUpdateUserDto, TUser } from "types";
 
 const BASE_URL = "user" as const;
 
@@ -18,3 +18,7 @@ export const uploadAvatar = async (newAvatar: File): Promise<TUser> => {
 export const removeAvatar = async (): Promise<TUser> => {
   return (await instance.patch(`${BASE_URL}/remove-avatar`)).data;
 };
+
+export const updateMe = async (dto: TUpdateUserDto): Promise<TUser> => {
+  return await instance.patch(`${BASE_URL}/me`, dto)
+}

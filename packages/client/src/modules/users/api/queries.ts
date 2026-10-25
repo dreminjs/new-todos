@@ -4,8 +4,8 @@ import {
   useQueryClient,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import { findMe, removeAvatar, uploadAvatar } from "./services";
-import type { TUser } from "types";
+import { findMe, removeAvatar, updateMe, uploadAvatar } from "./services";
+import type { TUpdateUserDto, TUser } from "types";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 export function useGetMe(): UseQueryResult<TUser>;
 export function useGetMe<K extends keyof TUser>(
@@ -84,6 +84,47 @@ export const useRemoveAvatar = ({ onSettled }: { onSettled: () => void }) => {
         type: "error",
         message: "Avatar removing is error...",
       });
+    },
+  });
+};
+
+export const useUpdateMe = () => {
+  const client = useQueryClient();
+  const addNotification = useSystemNotificationStore(
+    (state) => state.addNotification,
+  );
+
+  const previousData = client.getQueryData<TUser>(["user", "me"]);
+  return useMutation({
+    mutationFn: (dto: TUpdateUserDto) => updateMe(dto),
+    onMutate: (dto) => {
+      client.setQueryData<TUser>(["user", "me"], (user) => ({
+        ...user,
+        ...dto,
+      }));
+
+      addNotification({
+        type: "info",
+        message: "Current user info is updating",
+      });
+
+      return { previousData };
+    },
+    onSuccess: (updatedUser) => {
+      addNotification({
+        type: "success",
+        message: "Current user info is updated",
+      });
+      client.setQueryData<TUser>(["user", "me"], () => updatedUser);
+    },
+    onError: (_dto, _vars, context) => {
+      addNotification({
+        type: "success",
+        message: "something went wrong",
+      });
+      if (context.previousData) {
+        client.setQueryData<TUser>(["user", "me"], () => context.previousData);
+      }
     },
   });
 };

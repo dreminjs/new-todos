@@ -11,22 +11,20 @@
 }
 
 .formWrapperActive {
-  max-width: 320px;
+  max-width: 520px;
   margin-left: 16px;
   visibility: visible;
   transition-delay: 0s;
 }
 
 .currentUserInfoFormLayout {
-  background-color: white;
-  padding: 10px;
-  border-radius: 15px;
-  width: 320px;
+  /*background-color: white;*/
+  width: 520px;
   box-sizing: border-box;
-  padding: 24px;
-  border: 1px solid #cbd5e1;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  /*padding: 24px;*/
+  /*border: 1px solid #cbd5e1;*/
+  /*border-radius: 16px;*/
+  /*box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);*/
   h3 {
     font-size: 24px;
     font-weight: 700;

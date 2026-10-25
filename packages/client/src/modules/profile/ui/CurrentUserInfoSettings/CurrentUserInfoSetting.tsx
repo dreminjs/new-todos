@@ -2,6 +2,8 @@ import type { FC } from "react";
 import { CurrentUserInfoSettingsLayout } from "./CurrentUserInfoSettingsLayout";
 import clsx from "clsx";
 import styles from "./CurrentUserInfoSettings.module.css";
+import { FullnameForm } from "./FullnameForm/FullnameForm";
+import { useGetMe } from "../../../users";
 interface ICurrentUserInfoSettingsProps {
   isVisible: boolean;
 }
@@ -9,6 +11,8 @@ interface ICurrentUserInfoSettingsProps {
 export const CurrentUserInfoSettings: FC<ICurrentUserInfoSettingsProps> = ({
   isVisible,
 }) => {
+  const { data } = useGetMe();
+
   return (
     <div
       className={clsx(
@@ -18,7 +22,7 @@ export const CurrentUserInfoSettings: FC<ICurrentUserInfoSettingsProps> = ({
       aria-hidden={!isVisible}
     >
       <CurrentUserInfoSettingsLayout isVisible={isVisible}>
-        <div>123  </div>
+        <FullnameForm firstName={data.firstName} lastName={data.lastName} />
       </CurrentUserInfoSettingsLayout>
     </div>
   );

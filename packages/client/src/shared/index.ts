@@ -9,3 +9,4 @@ export * from "./ui/CustomCheckbox/CustomCheckbox";
 export * from "./ui/CustomAccordion/CustomAccordion";
 export * from "./model/hooks/useEscapeToClose";
 export * from "./model/lib/getDownloadLink"
+export * from "./ui/FormContainer/FormContainer"
