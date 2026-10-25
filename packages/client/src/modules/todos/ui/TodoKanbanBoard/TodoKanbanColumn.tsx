@@ -62,7 +62,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
 
   return (
     <>
-      <div className={styles.TodoKanbanBoardColumn}>
+      <li className={styles.TodoKanbanBoardColumn}>
         <TodoKanbanHeader
           title={title}
           todos={todos}
@@ -94,7 +94,7 @@ export const TodoKanbanColumn: FC<TKanbanColumn> = ({
             </Fragment>
           ))}
         </ul>
-      </div>
+      </li>
       {todoModalOpen && (
         <AddTodoModal
           showAssignee={showAssignee}
