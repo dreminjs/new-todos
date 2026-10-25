@@ -1,0 +1,25 @@
+.usernameForm {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  position: relative;
+}
+
+.usernameField {
+  margin-bottom: 15px;
+  flex: 1;
+}
+
+.usernameStatus {
+  position: absolute;
+  top: 50%;
+  left: 75%;
+}
+
+.usernameCancel {
+    color: red;
+}
+
+.usernameAvailable {
+    color: limegreen;
+}

@@ -6,17 +6,19 @@ import styles from "./FormBottom.module.css";
 interface IFormBottomProps {
   onClose?: () => void;
   isLoading: boolean;
+  disabled?: boolean;
   className?: string;
 }
 
 export const FormBottom: FC<IFormBottomProps> = ({
   onClose,
   isLoading,
+  disabled,
   className,
 }) => {
   return (
     <div className={clsx(styles.formBottom, className)}>
-      <Button variant="primary" type="submit" disabled={isLoading}>
+      <Button variant="primary" type="submit" disabled={isLoading || disabled}>
         {isLoading ? "Loading..." : "Submit"}
       </Button>
       {onClose && (

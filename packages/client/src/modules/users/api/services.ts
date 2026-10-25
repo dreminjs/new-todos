@@ -1,5 +1,10 @@
 import { instance } from "../../../shared/api/api.instance";
-import type { TUpdateUserDto, TUser } from "types";
+import type {
+  TCheckUsernameAvailableResult,
+  TUpdateUserDto,
+  TUser,
+  TUsernameQueryParams,
+} from "types";
 
 const BASE_URL = "user" as const;
 
@@ -20,5 +25,15 @@ export const removeAvatar = async (): Promise<TUser> => {
 };
 
 export const updateMe = async (dto: TUpdateUserDto): Promise<TUser> => {
-  return await instance.patch(`${BASE_URL}/me`, dto)
-}
+  return await instance.patch(`${BASE_URL}/me`, dto);
+};
+
+export const getUsernameAvailabilty = async (
+  dto: TUsernameQueryParams,
+): Promise<TCheckUsernameAvailableResult> => {
+  const params = new URLSearchParams(dto);
+
+  return (await instance.get(
+    `${BASE_URL}/username-available?${params.toString()}`,
+  )).data
+};

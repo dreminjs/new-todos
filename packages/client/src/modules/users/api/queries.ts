@@ -4,8 +4,14 @@ import {
   useQueryClient,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import { findMe, removeAvatar, updateMe, uploadAvatar } from "./services";
-import type { TUpdateUserDto, TUser } from "types";
+import {
+  findMe,
+  getUsernameAvailabilty,
+  removeAvatar,
+  updateMe,
+  uploadAvatar,
+} from "./services";
+import type { TUpdateUserDto, TUser, TUsernameQueryParams } from "types";
 import { useSystemNotificationStore } from "../../system-notifications/model/notification.store";
 export function useGetMe(): UseQueryResult<TUser>;
 export function useGetMe<K extends keyof TUser>(
@@ -126,5 +132,16 @@ export const useUpdateMe = () => {
         client.setQueryData<TUser>(["user", "me"], () => context.previousData);
       }
     },
+  });
+};
+
+
+export const useGetUsernameAvailability = ({
+  username,
+}: TUsernameQueryParams) => {
+  return useQuery({
+    queryKey: ["user", "username", "availability", username],
+    queryFn: () => getUsernameAvailabilty({ username }),
+    staleTime: 0,
   });
 };

@@ -11,8 +11,9 @@ export const userSchema = z.object({
 
 export const updateUserDtoSchema = userSchema.pick({
   lastName: true,
-  firstName: true
-})
+  firstName: true,
+  username: true
+}).partial()
 
 export const usernameQueryParamsSchema = userSchema.pick({
   username: true

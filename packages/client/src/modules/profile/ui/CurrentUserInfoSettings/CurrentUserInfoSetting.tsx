@@ -24,7 +24,7 @@ export const CurrentUserInfoSettings: FC<ICurrentUserInfoSettingsProps> = ({
     >
       <CurrentUserInfoSettingsLayout isVisible={isVisible}>
         <FullnameForm firstName={data.firstName} lastName={data.lastName} />
-        <UsernameForm />
+        <UsernameForm username={data.username} />
       </CurrentUserInfoSettingsLayout>
     </div>
   );

@@ -18,16 +18,12 @@
 }
 
 .currentUserInfoFormLayout {
-  /*background-color: white;*/
   width: 520px;
   display: flex;
   flex-direction: column;
   gap: 5px;
   box-sizing: border-box;
-  /*padding: 24px;*/
-  /*border: 1px solid #cbd5e1;*/
-  /*border-radius: 16px;*/
-  /*box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);*/
+
   h3 {
     font-size: 24px;
     font-weight: 700;
@@ -35,7 +31,7 @@
     line-height: 28px;
 
   }
-  h6 {
+  h5 {
     font-size: 14px;
     font-weight: 500;
     color: #475569;
