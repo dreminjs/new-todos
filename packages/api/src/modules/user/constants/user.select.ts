@@ -4,4 +4,5 @@ export const PUBLIC_USER_SELECT = {
   lastName: true,
   email: true,
   avatarUrl: true,
+  username: true
 };

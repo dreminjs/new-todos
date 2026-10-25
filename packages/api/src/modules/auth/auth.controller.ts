@@ -10,9 +10,14 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service.js";
-import { AuthDto, SignUpDto } from "./auth.dto.js";
 import type { FastifyReply } from "fastify";
-import { IStandartResponse } from "types";
+import {
+  authSchema,
+  IStandartResponse,
+  signUpSchema,
+  type AuthDto,
+  type SignUpDto,
+} from "types";
 import { CurrentUser } from "../user/decorators/user.decorator.js";
 import { AccessTokenGuard } from "../token/guards/accees-token.guard.js";
 import { minutes, Throttle } from "@nestjs/throttler";
@@ -20,19 +25,19 @@ import { minutes, Throttle } from "@nestjs/throttler";
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
-  @Throttle({ default: { limit: 10, ttl: minutes(5) } })
+  @Throttle({ default: { limit: 1000, ttl: minutes(1) } })
   @Post("login")
   async login(
-    @Body() authDto: AuthDto,
+    @Body({ schema: authSchema }) authDto: AuthDto,
     @Res({ passthrough: true }) res: FastifyReply,
   ): Promise<IStandartResponse> {
     return await this.authService.login(authDto, res);
   }
 
-  @Throttle({ default: { limit: 100, ttl: minutes(5) } })
+  @Throttle({ default: { limit: 1000, ttl: minutes(1) } })
   @Post("register")
   async register(
-    @Body() authDto: SignUpDto,
+    @Body({ schema: signUpSchema }) authDto: SignUpDto,
     @Res({ passthrough: true }) res: FastifyReply,
   ): Promise<IStandartResponse> {
     return await this.authService.register(authDto, res);
@@ -40,9 +45,7 @@ export class AuthController {
 
   @Render("thankYouForConfirmation.hbs")
   @Get("confirm-your-email/:token")
-  async confirmYourEmail(
-    @Param("token") token: string,
-  ) {
+  async confirmYourEmail(@Param("token") token: string) {
     const user = await this.authService.verifyEmailConfirmationToken(token);
     return { name: `${user.firstName}`, returnUrl: "/" };
   }

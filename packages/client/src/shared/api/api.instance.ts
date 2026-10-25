@@ -1,4 +1,5 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { PUBLIC_AUTH_PATHS } from "../model/auth.constants";
 
 export const instance = axios.create({
   baseURL: "http://localhost:3000",
@@ -51,7 +52,7 @@ instance.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError);
 
-      if (window.location.pathname !== "/auth/signin") {
+      if (!PUBLIC_AUTH_PATHS.includes(window.location.pathname)) {
         window.location.href = "/auth/signin";
       }
 

@@ -49,6 +49,15 @@ export const SignupForm = () => {
           className={styles.signupFormEmail}
         />
         <AuthField<SignUpDto>
+          label={"Username"}
+          name={"username"}
+          register={register}
+          type={"text"}
+          error={errors.email?.message}
+          placeholder={"username"}
+          className={styles.signupFormUsername}
+        />
+        <AuthField<SignUpDto>
           label={"Password"}
           name={"password"}
           register={register}

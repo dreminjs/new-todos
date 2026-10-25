@@ -1,4 +1,5 @@
 import { Prisma } from "generated/prisma/client.js";
+import { PUBLIC_USER_SELECT } from "../../../../modules/user/index.js";
 
 export const EXTENDED_TODO_SELECT: Prisma.TodoSelect = {
   id: true,
@@ -13,21 +14,9 @@ export const EXTENDED_TODO_SELECT: Prisma.TodoSelect = {
   workspace: true,
   todoGroup: true,
   user: {
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      avatarUrl: true,
-    },
+    select: PUBLIC_USER_SELECT,
   },
   assignee: {
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      avatarUrl: true,
-    },
+    select: PUBLIC_USER_SELECT,
   },
 };

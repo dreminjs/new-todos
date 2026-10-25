@@ -4,7 +4,7 @@ import clsx from "clsx";
 import styles from "./FormBottom.module.css";
 
 interface IFormBottomProps {
-  onClose: () => void;
+  onClose?: () => void;
   isLoading: boolean;
   className?: string;
 }
@@ -15,18 +15,20 @@ export const FormBottom: FC<IFormBottomProps> = ({
   className,
 }) => {
   return (
-    <div className={clsx(styles.todoFormBottom, className)}>
+    <div className={clsx(styles.formBottom, className)}>
       <Button variant="primary" type="submit" disabled={isLoading}>
         {isLoading ? "Loading..." : "Submit"}
       </Button>
-      <Button
-        variant="secondary"
-        onClick={onClose}
-        type="button"
-        disabled={isLoading}
-      >
-        Close
-      </Button>
+      {onClose && (
+        <Button
+          variant="secondary"
+          onClick={onClose}
+          type="button"
+          disabled={isLoading}
+        >
+          Close
+        </Button>
+      )}
     </div>
   );
 };

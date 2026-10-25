@@ -1,0 +1,43 @@
+.formWrapper {
+  max-width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  visibility: hidden;
+  transition:
+    max-width 0.3s linear,
+    margin-left 0.3s ease,
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+
+.formWrapperActive {
+  max-width: 320px;
+  margin-left: 16px;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.currentUserInfoFormLayout {
+  background-color: white;
+  padding: 10px;
+  border-radius: 15px;
+  width: 320px;
+  box-sizing: border-box;
+  padding: 24px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 28px;
+
+  }
+  h6 {
+    font-size: 14px;
+    font-weight: 500;
+    color: #475569;
+    line-height: 18px;
+  }
+}

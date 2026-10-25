@@ -9,6 +9,12 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 
+.currentUserInfoContainer {
+  display: flex;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
 .avatarWrapper {
   width: 254px;
   margin-bottom: 20px;
@@ -37,12 +43,29 @@
 }
 
 .currentUserFullname {
-  font-size: 24px;
-  font-weight: 700;
-  color: #0f172a;
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+}
+
+.currentUserFullnameEdit {
+  position: absolute;
+  right: -20px;
 }
 
 .currentUserEmail {
+  font-size: 16px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.currentUserUsername {
   font-size: 16px;
   font-weight: 500;
   color: #475569;

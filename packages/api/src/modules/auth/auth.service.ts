@@ -1,17 +1,17 @@
 import {
-    BadRequestException,
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
 import { UserService } from "../user/user.service.js";
 import type { User } from "generated/prisma/client.js";
-import { AuthDto, SignUpDto } from "./auth.dto.js";
 import { TokenService } from "../token/token.service.js";
 import { hashPassword, comparePasswords } from "./helpers/hash.js";
 import { MailService } from "../mail/mail.service.js";
 import { FastifyReply } from "fastify";
-import { IStandartResponse } from "types";
+import { AuthDto, IStandartResponse, SignUpDto } from "types";
+import { NotFoundError } from "../../classes/app.error.js";
 
 @Injectable()
 export class AuthService {
@@ -30,9 +30,9 @@ export class AuthService {
   }): Promise<User | null> {
     const candidate = await this.userService.findOne({ where: { email } });
     if (isUserRequired && !candidate) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundError("User not found");
     } else if (!isUserRequired && candidate) {
-      throw new NotFoundException("User already exists");
+      throw new NotFoundError("User already exists");
     }
 
     return candidate;
@@ -69,6 +69,7 @@ export class AuthService {
         firstName: dto.firstName,
         lastName: dto.lastName,
         hashedPassword,
+        username: dto.username,
       },
     });
 

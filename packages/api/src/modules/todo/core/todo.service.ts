@@ -84,7 +84,7 @@ export class TodoService {
         assigneeId: targetAssigneeId,
       },
       currentUserId,
-    )) as unknown as TExtendedTodo;
+    ))
 
     if (result.todoGroup?.id && result.workspace?.id) {
       await this.todoGateway.handleTodoAdded(

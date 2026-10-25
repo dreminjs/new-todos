@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   FileTypeValidator,
   Get,
@@ -12,8 +13,8 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { CurrentUser } from "./decorators/user.decorator.js";
-import type { TUser } from "types";
-import { userSchema } from "types";
+import type { TUpdateUserDto, TUser } from "types";
+import { updateUserDtoSchema, userSchema } from "types";
 import { AccessTokenGuard } from "../token/guards/accees-token.guard.js";
 import {
   FileInterceptor,
@@ -47,5 +48,18 @@ export class UserController {
   @Patch("remove-avatar")
   async removeAvatar(@CurrentUser("id") currentUserId: string): Promise<TUser> {
     return await this.userService.removeAvatar(currentUserId);
+  }
+
+  @Patch("me")
+  async updateMe(
+    @Body({ schema: updateUserDtoSchema }) dto: TUpdateUserDto,
+    @CurrentUser("id") userId: string,
+  ) {
+    return await this.userService.updateOne({
+      where: { id: userId },
+      data: {
+        ...dto,
+      },
+    });
   }
 }
