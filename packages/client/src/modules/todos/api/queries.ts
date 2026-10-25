@@ -104,10 +104,9 @@ export const useCreateTodo = ({
             ...old,
             pages: old.pages.map((page) => ({
               ...page,
-              items: page.items
-                .map((todo) =>
-                  todo.id === context.temporaryTodoId ? createdTodo : todo,
-                ),
+              items: page.items.map((todo) =>
+                todo.id === context.temporaryTodoId ? createdTodo : todo,
+              ),
             })),
           };
         },
@@ -180,37 +179,34 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
     onMutate: async ({ todoId, status }) => {
       await client.cancelQueries({ queryKey: ["todos"] });
 
-      const previousData = client.getQueriesData<
+      const allTodoQueries = client.getQueriesData<
         InfiniteData<IItemsResponse<TTodo>>
       >({ queryKey: ["todos"] });
 
-      let movedTodo: TTodo | undefined;
-      let sourceQueryKey: QueryKey | undefined;
+      let movedTodo: TTodo | null = null;
 
-      for (const [key, data] of previousData) {
-        if (!data) continue;
-        for (const page of data.pages) {
-          const found = page.items.find((t) => t.id === todoId);
-          if (found) {
-            movedTodo = found;
-            sourceQueryKey = key;
-            break;
-          }
-        }
+      for (const [_, data] of allTodoQueries) {
+        movedTodo = data.pages
+          .flatMap((page) => page.items)
+          .find((el) => el.id === todoId);
         if (movedTodo) break;
       }
 
+      const sourceQueryKey = getTodosQueryKey({
+        ...query,
+        status: movedTodo.status,
+      });
+
       if (!movedTodo || !sourceQueryKey) {
-        return { previousData };
+        return { previousData: allTodoQueries };
       }
 
       const targetQueryKey = getTodosQueryKey({
         ...query,
         status,
       } as TFindAllQuery);
-
-      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
-        sourceQueryKey,
+      client.setQueriesData<InfiniteData<IItemsResponse<TTodo>>>(
+        { queryKey: ["todos"] },
         (old) => {
           if (!old) return old;
           return {
@@ -243,55 +239,11 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
         },
       );
 
-      return { previousData };
+      return { previousData: allTodoQueries, sourceQueryKey, targetQueryKey };
     },
-    onSuccess: async (newTodo) => {
-      const previousData = client.getQueriesData<
-        InfiniteData<IItemsResponse<TTodo>>
-      >({ queryKey: ["todos"] });
-
-      let movedTodo: TTodo | null = null
-      let sourceQueryKey: QueryKey | null = null;
-
-      for (const [key, data] of previousData) {
-        if (!data) continue;
-        for (const page of data.pages) {
-          const found = page.items.find((t) => t.id === newTodo.id);
-          if (found) {
-            movedTodo = found;
-            sourceQueryKey = key;
-            break;
-          }
-        }
-        if (movedTodo) break;
-      }
-
-      if (!movedTodo || !sourceQueryKey) {
-        return { previousData };
-      }
-
-      const targetQueryKey = getTodosQueryKey({
-        ...query,
-        status: newTodo.status,
-      } as TFindAllQuery);
-
+    onSuccess: async (newTodo, _dto, context) => {
       client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
-        sourceQueryKey,
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            pages: old.pages.map((page) => ({
-              ...page,
-              items: page.items.filter((t) => t.id !== newTodo.id),
-              total: page.items.length - 1,
-            })),
-          };
-        },
-      );
-
-      client.setQueryData<InfiniteData<IItemsResponse<TTodo>>>(
-        targetQueryKey,
+        context.targetQueryKey,
         (old) => {
           if (!old) return old;
           const [firstPage, ...restPages] = old.pages;
@@ -300,10 +252,9 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
             pages: [
               {
                 ...firstPage,
-                items: [
-                  { ...movedTodo, status: newTodo.status } as TTodo,
-                  ...firstPage.items,
-                ],
+                items: firstPage.items.map((el) =>
+                  el.id === newTodo.id ? newTodo : el,
+                ),
                 total: firstPage.items.length + 1,
               },
               ...restPages,
@@ -311,8 +262,11 @@ export const useUpdateTodoStatus = (query: Omit<TFindAllQuery, "status">) => {
           };
         },
       );
-
-      return { previousData };
+    },
+    onError: (_err, _vars, context) => {
+      context?.previousData?.forEach(([key, data]) => {
+        client.setQueryData(key, data);
+      });
     },
   });
 
