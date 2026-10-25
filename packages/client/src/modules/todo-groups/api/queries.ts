@@ -3,6 +3,7 @@ import {
   useMutation,
   useQueryClient,
   type InfiniteData,
+  type QueryFilters,
 } from "@tanstack/react-query";
 import {
   findGroups,
@@ -16,10 +17,12 @@ import type {
   IItemsResponse,
   TCreateTodoGroupBody,
   TExtendedTodo,
+  TTodo,
   TTodoGroup,
-  TTodoGroupResponse,
 } from "types";
 import type { TCreateTodoGroupForm } from "../model/todo-group.dto";
+import { getTodosQueryKey } from "../../todos/model/todo.helper";
+import type { TFindAllQuery } from "../../todos/model/todo.types";
 
 export const useGetTodoGroups = () => {
   return useQuery({
@@ -56,9 +59,9 @@ export const useCreateTodoGroup = () => {
         });
       }
       client.setQueryData<TTodoGroup[]>(["todo-groups"], (old) =>
-        (old ?? [])
-          .filter((el) => el.id !== context.temporaryId)
-          .concat(todoGroup),
+        (old ?? []).map((el) =>
+          el.id === context.temporaryId ? todoGroup : el,
+        ),
       );
     },
     onError: (_err, _dto, context) => {
@@ -104,53 +107,59 @@ export const useDeleteTodoGroup = () => {
     },
   });
 };
-
 export const useUpdateTodoGroup = (id: string) => {
   const addNotification = useSystemNotificationStore(
     (state) => state.addNotification,
   );
+
+  const todosQueryKey = getTodosQueryKey({ todoGroupId: id });
   const client = useQueryClient();
+
   const { mutate, ...props } = useMutation({
-    mutationFn: (data: TCreateTodoGroupBody) => {
-      return updateOne(data, id);
-    },
+    mutationFn: (data: TCreateTodoGroupBody) => updateOne(data, id),
     mutationKey: ["todo-groups"],
+
+    onMutate: async (newTodoGroup) => {
+      await client.cancelQueries({ queryKey: ["todo-groups"] });
+
+      const previous = client.getQueryData<TTodoGroup[]>(["todo-groups"]);
+
+      client.setQueryData<TTodoGroup[]>(["todo-groups"], (old) =>
+        old?.map((el) => (el.id === id ? { ...el, ...newTodoGroup } : el)),
+      );
+
+      return { previous };
+    },
+
     onSuccess: (newTodoGroup) => {
       addNotification({
         type: "success",
         message: "Todo group updated successfully",
       });
-      client.setQueryData<TTodoGroup[]>(["todo-groups"], (old) => [
-        ...old,
-        newTodoGroup,
-      ]);
-      client.setQueriesData<InfiniteData<IItemsResponse<TExtendedTodo>>>(
-        { queryKey: ["todos"] },
+
+      client.setQueryData<TTodoGroup[]>(["todo-groups"], (old) =>
+        old?.map((el) => (el.id === id ? newTodoGroup : el)),
+      );
+
+      client.setQueriesData<InfiniteData<IItemsResponse<TTodo>>>(
+        { queryKey: todosQueryKey },
         (old) => {
+          if (!old) return old;
           return {
             ...old,
             pages: old.pages.map((page) => ({
               ...page,
-              items: page.items.map((item) => ({
-                ...item,
-                todoGroup: newTodoGroup,
-              })),
+              items: page.items.map((item) =>
+                item.todoGroupId === id
+                  ? { ...item, todoGroup: newTodoGroup }
+                  : item,
+              ),
             })),
           };
         },
       );
     },
-    onMutate: async (newTodoGroup) => {
-      await client.cancelQueries({
-        queryKey: ["todo-groups"],
-      });
-      const previous = client.getQueryData<TTodoGroup[]>(["todo-groups"]);
-      client.setQueryData<TTodoGroup[]>(["todo-groups"], (old) => [
-        ...old,
-        { ...newTodoGroup, id: crypto.randomUUID() },
-      ]);
-      return { previous };
-    },
+
     onError: (_err, _newTodoGroup, context) => {
       if (context?.previous) {
         client.setQueryData(["todo-groups"], context.previous);
@@ -160,12 +169,13 @@ export const useUpdateTodoGroup = (id: string) => {
         message: "Failed to update todo group",
       });
     },
+
+    onSettled: () => {
+      client.invalidateQueries({ queryKey: ["todo-groups"] });
+    },
   });
 
-  const handleSubmit = (dto: TCreateTodoGroupForm, cb?: () => void) => {
-    mutate({ name: dto.name }, { onSuccess: cb });
-  };
-  return { mutate: handleSubmit, ...props };
+  return { mutate, ...props };
 };
 
 export const useGetTodoGroup = (id: string) => {

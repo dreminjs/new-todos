@@ -3,6 +3,7 @@ import { GlobalLoadingSpinner } from "../../../../shared";
 import { useGetMe } from "../../../users";
 import { CurrentUserInfoView } from "./CurrentUserInfoView";
 import { ChangeAvatarModal } from "./ChangeAvatarModal/ChangeAvatarModal";
+import { LuPen } from "react-icons/lu";
 
 export const UserInfo = () => {
   const [changeAvatarModalVisible, setChangeAvatarModalVisible] =

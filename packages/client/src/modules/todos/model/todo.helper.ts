@@ -1,7 +1,11 @@
 import { TODOS_QUERY_FIELDS } from "./todo.constants";
 import type { TFindAllQuery } from "./todo.types";
 
-export const getTodosQueryKey = (dto: Partial<TFindAllQuery>) => [
+export const getTodosQueryKey = (
+  dto: Partial<TFindAllQuery>,
+) => [
   "todos",
-  ...TODOS_QUERY_FIELDS.map((key) => dto?.[key] ?? null).filter(el => el !== null),
+  ...TODOS_QUERY_FIELDS.map((key) => dto?.[key] ?? null).filter(
+    (el) => el !== null,
+  ),
 ];

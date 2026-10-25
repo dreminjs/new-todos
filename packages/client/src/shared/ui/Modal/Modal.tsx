@@ -37,11 +37,13 @@ export const Modal: FC<IModalProps> = ({
               <CloseButton size="lg" />
             </Dialog.CloseTrigger>
             {title && (
-              <Dialog.Header>
-                <Heading size="2xl">{title}</Heading>
-              </Dialog.Header>
+              <>
+                <Dialog.Header>
+                  <Heading size="2xl">{title}</Heading>
+                </Dialog.Header>
+                <Separator size="md" />
+              </>
             )}
-            <Separator size="md" />
             <Dialog.Body>{children}</Dialog.Body>
           </Dialog.Content>
         </Dialog.Positioner>

@@ -8,4 +8,5 @@ export const authSchema = z.object({
 export const signUpSchema = authSchema.extend({
   firstName: z.string(),
   lastName: z.string(),
+  username: z.string(),
 });

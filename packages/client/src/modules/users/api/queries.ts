@@ -78,7 +78,7 @@ export const useRemoveAvatar = ({ onSettled }: { onSettled: () => void }) => {
       client.setQueryData(["user", "me"], () => user);
       addNotification({ type: "success", message: "Avatar is removed!" });
     },
-    onError: (_, _result, context) => {
+    onError: (_error, _result, context) => {
       onSettled();
       client.setQueryData(["user", "me"], () => context.previousData);
       addNotification({

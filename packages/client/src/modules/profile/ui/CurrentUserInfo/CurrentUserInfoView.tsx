@@ -27,7 +27,10 @@ export const CurrentUserInfoView: FC<ICurrentUserInfoViewProps> = ({
           </button>
         )}
       </div>
-      <h3 className={styles.currentUserFullname}>{fullName}</h3>
+      <div>
+        <h3 className={styles.currentUserFullname}>{fullName}</h3>
+        <button></button>
+      </div>
       <h6 className={styles.currentUserEmail}> {email}</h6>
     </div>
   );
