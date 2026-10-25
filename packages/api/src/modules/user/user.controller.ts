@@ -8,13 +8,18 @@ import {
   ParseFilePipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { CurrentUser } from "./decorators/user.decorator.js";
-import type { TUpdateUserDto, TUser } from "types";
-import { updateUserDtoSchema, userSchema } from "types";
+import type { TCheckUsernameAvailableResult, TUpdateUserDto, TUser, TUsernameQueryParams } from "types";
+import {
+  updateUserDtoSchema,
+  usernameQueryParamsSchema,
+  userSchema,
+} from "types";
 import { AccessTokenGuard } from "../token/guards/accees-token.guard.js";
 import {
   FileInterceptor,
@@ -61,5 +66,12 @@ export class UserController {
         ...dto,
       },
     });
+  }
+
+  @Get("username-available")
+  async checkUsername(
+    @Query({ schema: usernameQueryParamsSchema }) dto: TUsernameQueryParams,
+  ): Promise<TCheckUsernameAvailableResult> {
+    return await this.userService.checkUsername(dto);
   }
 }

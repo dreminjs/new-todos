@@ -13,3 +13,11 @@ export const updateUserDtoSchema = userSchema.pick({
   lastName: true,
   firstName: true
 })
+
+export const usernameQueryParamsSchema = userSchema.pick({
+  username: true
+})
+
+export const checkUsernameAvailableResult = z.object({
+  availabel: z.boolean()
+})

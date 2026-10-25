@@ -3,7 +3,12 @@ import { PrismaService } from "../prisma/prisma.service.js";
 import { Prisma, User } from "generated/prisma/client.js";
 import { UploadedMultipartFile } from "@nestjs/platform-fastify/multipart";
 import { S3Service } from "../infra/s3/s3.service.js";
-import { TUser, userSchema } from "types";
+import {
+  TCheckUsernameAvailableResult,
+  TUser,
+  TUsernameQueryParams,
+  userSchema,
+} from "types";
 
 @Injectable()
 export class UserService {
@@ -67,5 +72,25 @@ export class UserService {
       },
     });
     return user;
+  }
+
+  async checkUsername(
+    dto: TUsernameQueryParams,
+  ): Promise<TCheckUsernameAvailableResult> {
+    const user = await this.findOne({
+      where: {
+        username: dto.username,
+      },
+    });
+
+    if (!user) {
+      return {
+        availabel: true,
+      };
+    } else {
+      return {
+        availabel: false,
+      };
+    }
   }
 }

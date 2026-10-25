@@ -4,6 +4,7 @@ import clsx from "clsx";
 import styles from "./CurrentUserInfoSettings.module.css";
 import { FullnameForm } from "./FullnameForm/FullnameForm";
 import { useGetMe } from "../../../users";
+import { UsernameForm } from "./UsernameForm/UsernameForm";
 interface ICurrentUserInfoSettingsProps {
   isVisible: boolean;
 }
@@ -23,6 +24,7 @@ export const CurrentUserInfoSettings: FC<ICurrentUserInfoSettingsProps> = ({
     >
       <CurrentUserInfoSettingsLayout isVisible={isVisible}>
         <FullnameForm firstName={data.firstName} lastName={data.lastName} />
+        <UsernameForm />
       </CurrentUserInfoSettingsLayout>
     </div>
   );
