@@ -10,8 +10,15 @@ import { TokenService } from "../token/token.service.js";
 import { hashPassword, comparePasswords } from "./helpers/hash.js";
 import { MailService } from "../mail/mail.service.js";
 import { FastifyReply } from "fastify";
-import { AuthDto, IStandartResponse, SignUpDto } from "types";
-import { NotFoundError } from "../../classes/app.error.js";
+import {
+  AuthDto,
+  IStandartResponse,
+  SignUpDto,
+  TChangePassword,
+  TChangePasswordResult,
+} from "types";
+import { BadRequestError, NotFoundError } from "../../classes/app.error.js";
+import { validatePassword } from "./helpers/comparePasswords.js";
 
 @Injectable()
 export class AuthService {
@@ -44,9 +51,7 @@ export class AuthService {
       isUserRequired: true,
     });
 
-    if (!(await comparePasswords(dto.password, user!.hashedPassword))) {
-      throw new BadRequestException("Invalid password");
-    }
+    await validatePassword(dto.password, user!.hashedPassword);
 
     return await this.tokenService.generateAuthTokens(
       {
@@ -97,5 +102,57 @@ export class AuthService {
 
   async logout(userId: string, res: FastifyReply): Promise<void> {
     await this.tokenService.logout(userId, res);
+  }
+
+  async requestChangePassword(
+    userId: string,
+    oldPassword: string,
+  ): Promise<TChangePasswordResult> {
+    const user = await this.userService.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundError("No user.");
+    }
+
+    validatePassword(oldPassword, user.hashedPassword);
+
+    await this.mailService.sendChangePasswordEmail(
+      { email: user.email, userId: user.id },
+      `${user.firstName} ${user.lastName}`,
+    );
+
+    return {
+      message: "Email was sent.",
+    };
+  }
+
+  async changePassword(
+    userId: string,
+    dto: TChangePassword,
+  ): Promise<IStandartResponse> {
+    const user = await this.userService.findOne({
+      where: { id: userId },
+    });
+
+    if (!userId) {
+      throw new NotFoundError("No user found");
+    }
+
+    await this.tokenService.verifyChangePasswordToken(dto.token);
+
+    const hashedPassword = await hashPassword(dto.password);
+
+    await this.userService.updateOne({
+      where: { id: userId },
+      data: { hashedPassword: hashedPassword },
+    });
+
+    return {
+      message: "Password is changed"
+    }
   }
 }

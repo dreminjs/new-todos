@@ -10,3 +10,11 @@ export const signUpSchema = authSchema.extend({
   lastName: z.string(),
   username: z.string(),
 });
+export const changePasswordSchema = z.object({
+  password: z.string(),
+  token: z.uuid()
+});
+
+export const requestChangePasswordSchema = changePasswordSchema.omit({
+  token: true
+});

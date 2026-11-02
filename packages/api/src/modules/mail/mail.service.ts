@@ -1,6 +1,7 @@
 import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable } from "@nestjs/common";
 import { TokenService } from "../token/token.service.js";
+import { IChangePasswordDto } from "../token/dto/token.dto.js";
 
 @Injectable()
 export class MailService {
@@ -14,6 +15,19 @@ export class MailService {
       to: email,
       subject: "Confirm your email",
       template: "confirmEmail",
+      context: {
+        token,
+        fullName,
+      },
+    });
+  }
+
+  async sendChangePasswordEmail(dto: IChangePasswordDto, fullName: string) {
+    const token = this.tokenService.generateChangePasswordToken(dto);
+    await this.mailerService.sendMail({
+      to: dto.email,
+      subject: "Change your email",
+      template: "changeYourPassword",
       context: {
         token,
         fullName,

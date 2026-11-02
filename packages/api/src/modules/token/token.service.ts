@@ -11,6 +11,7 @@ import type { FastifyReply } from "fastify";
 import * as crypto from "crypto";
 import type { IStandartResponse } from "types";
 import { Transactional } from "@nestjs-cls/transactional";
+import { IChangePasswordDto } from "./dto/token.dto.js";
 
 @Injectable()
 export class TokenService {
@@ -155,6 +156,18 @@ export class TokenService {
       },
     );
   }
+
+  public generateChangePasswordToken(dto: IChangePasswordDto) {
+    return this.jwtService.sign(dto, {
+      secret: this.configService.getOrThrow("CHANGE_PASSWORD_TOKEN"),
+    });
+  }
+
+  public verifyChangePasswordToken(token: string): IChangePasswordDto {
+    return this.jwtService.verify(token, {
+      secret: this.configService.getOrThrow("CHANGE_PASSWORD_TOKEN"),
+    });
+  }s
 
   public verifyEmailConfirmationToken(token: string): { email: string } {
     return this.jwtService.verify(token, {

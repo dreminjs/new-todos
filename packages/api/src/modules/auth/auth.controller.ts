@@ -14,9 +14,13 @@ import type { FastifyReply } from "fastify";
 import {
   authSchema,
   IStandartResponse,
+  requestChangePasswordSchema,
   signUpSchema,
+  type TRequestChangePassword,
   type AuthDto,
   type SignUpDto,
+  type TChangePassword,
+  changePasswordSchema,
 } from "types";
 import { CurrentUser } from "../user/decorators/user.decorator.js";
 import { AccessTokenGuard } from "../token/guards/accees-token.guard.js";
@@ -43,6 +47,36 @@ export class AuthController {
     return await this.authService.register(authDto, res);
   }
 
+  @UseGuards(AccessTokenGuard)
+  @Delete("logout")
+  async logout(
+    @CurrentUser("id") id: string,
+    @Res({ passthrough: true }) res: FastifyReply,
+  ): Promise<void> {
+    await this.authService.logout(id, res);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post("password/request/change")
+  async requestChangePassword(
+    @CurrentUser("id") userId: string,
+    @Body({ schema: requestChangePasswordSchema }) dto: TRequestChangePassword,
+  ) {
+    return this.authService.requestChangePassword(userId, dto.password);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post("password/change")
+  async changePassword(
+    @CurrentUser("id") userId: string,
+    @Body({ schema: changePasswordSchema }) dto: TChangePassword,
+  ) {
+    return this.authService.changePassword(userId, {
+      password: dto.password,
+      token: dto.token,
+    });
+  }
+
   @Render("thankYouForConfirmation.hbs")
   @Get("confirm-your-email/:token")
   async confirmYourEmail(@Param("token") token: string) {
@@ -53,14 +87,5 @@ export class AuthController {
   @Get("thank-you-for-confirmation")
   thankYouForConfirmation(@Res() res: FastifyReply) {
     return res.view("thankYouForConfirmation.hbs");
-  }
-
-  @UseGuards(AccessTokenGuard)
-  @Delete("logout")
-  async logout(
-    @CurrentUser("id") id: string,
-    @Res({ passthrough: true }) res: FastifyReply,
-  ): Promise<void> {
-    await this.authService.logout(id, res);
   }
 }
