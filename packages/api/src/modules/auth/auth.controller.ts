@@ -21,6 +21,7 @@ import {
   type SignUpDto,
   type TChangePassword,
   changePasswordSchema,
+  IRequestChangePasswordResult,
 } from "types";
 import { CurrentUser } from "../user/decorators/user.decorator.js";
 import { AccessTokenGuard } from "../token/guards/accees-token.guard.js";
@@ -61,7 +62,7 @@ export class AuthController {
   async requestChangePassword(
     @CurrentUser("id") userId: string,
     @Body({ schema: requestChangePasswordSchema }) dto: TRequestChangePassword,
-  ) {
+  ): Promise<IRequestChangePasswordResult> {
     return this.authService.requestChangePassword(userId, dto.password);
   }
 
@@ -70,11 +71,8 @@ export class AuthController {
   async changePassword(
     @CurrentUser("id") userId: string,
     @Body({ schema: changePasswordSchema }) dto: TChangePassword,
-  ) {
-    return this.authService.changePassword(userId, {
-      password: dto.password,
-      token: dto.token,
-    });
+  ): Promise<IStandartResponse> {
+    return this.authService.changePassword(userId, dto);
   }
 
   @Render("thankYouForConfirmation.hbs")

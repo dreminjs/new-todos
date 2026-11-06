@@ -21,17 +21,4 @@ export class MailService {
       },
     });
   }
-
-  async sendChangePasswordEmail(dto: IChangePasswordDto, fullName: string) {
-    const token = this.tokenService.generateChangePasswordToken(dto);
-    await this.mailerService.sendMail({
-      to: dto.email,
-      subject: "Change your email",
-      template: "changeYourPassword",
-      context: {
-        token,
-        fullName,
-      },
-    });
-  }
 }

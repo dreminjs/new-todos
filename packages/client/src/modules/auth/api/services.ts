@@ -1,6 +1,13 @@
 import type { AxiosResponse } from "axios";
 import { instance } from "../../../shared/api/api.instance";
-import type { AuthDto, IStandartResponse, SignUpDto } from "types";
+import type {
+  AuthDto,
+  IRequestChangePasswordResult,
+  IStandartResponse,
+  SignUpDto,
+  TChangePassword,
+  TRequestChangePassword,
+} from "types";
 
 const BASE_URL = "auth" as const;
 
@@ -18,4 +25,14 @@ export const signin = async (
 
 export const logout = async () => {
   return await instance.delete(`${BASE_URL}/logout`);
+};
+
+export const requestChangePassword = async (
+  dto: TRequestChangePassword,
+): Promise<IRequestChangePasswordResult> => {
+  return (await instance.post(`${BASE_URL}/password/request/change`, dto)).data;
+};
+
+export const changePassword = async (dto: TChangePassword) => {
+  return (await instance.post(`${BASE_URL}/password/change`, dto)).data;
 };

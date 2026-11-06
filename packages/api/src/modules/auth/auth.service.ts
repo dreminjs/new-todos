@@ -15,7 +15,7 @@ import {
   IStandartResponse,
   SignUpDto,
   TChangePassword,
-  TChangePasswordResult,
+  type IRequestChangePasswordResult,
 } from "types";
 import { BadRequestError, NotFoundError } from "../../classes/app.error.js";
 import { validatePassword } from "./helpers/comparePasswords.js";
@@ -107,7 +107,7 @@ export class AuthService {
   async requestChangePassword(
     userId: string,
     oldPassword: string,
-  ): Promise<TChangePasswordResult> {
+  ): Promise<IRequestChangePasswordResult> {
     const user = await this.userService.findOne({
       where: {
         id: userId,
@@ -115,18 +115,18 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new NotFoundError("No user.");
+      throw new NotFoundError("No user found.");
     }
 
-    validatePassword(oldPassword, user.hashedPassword);
+    await validatePassword(oldPassword, user.hashedPassword);
 
-    await this.mailService.sendChangePasswordEmail(
-      { email: user.email, userId: user.id },
-      `${user.firstName} ${user.lastName}`,
-    );
+    const token = await this.tokenService.generateChangePasswordToken({
+      email: user.email,
+      userId: user.id,
+    });
 
     return {
-      message: "Email was sent.",
+      token,
     };
   }
 
@@ -138,7 +138,7 @@ export class AuthService {
       where: { id: userId },
     });
 
-    if (!userId) {
+    if (!user) {
       throw new NotFoundError("No user found");
     }
 
@@ -152,7 +152,7 @@ export class AuthService {
     });
 
     return {
-      message: "Password is changed"
-    }
+      message: "Password is changed",
+    };
   }
 }

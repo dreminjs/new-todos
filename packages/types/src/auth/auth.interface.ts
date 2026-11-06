@@ -13,3 +13,7 @@ export type TRequestChangePassword = z.infer<
 >;
 
 export type TChangePassword = z.infer<typeof changePasswordSchema>;
+
+export interface IRequestChangePasswordResult {
+  token: string;
+}

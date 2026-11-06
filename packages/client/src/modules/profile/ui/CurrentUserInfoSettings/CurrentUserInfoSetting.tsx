@@ -5,6 +5,7 @@ import styles from "./CurrentUserInfoSettings.module.css";
 import { FullnameForm } from "./FullnameForm/FullnameForm";
 import { useGetMe } from "../../../users";
 import { UsernameForm } from "./UsernameForm/UsernameForm";
+import { ChangePassword } from "./ChangePassword/ChangePassword";
 interface ICurrentUserInfoSettingsProps {
   isVisible: boolean;
 }
@@ -25,6 +26,7 @@ export const CurrentUserInfoSettings: FC<ICurrentUserInfoSettingsProps> = ({
       <CurrentUserInfoSettingsLayout isVisible={isVisible}>
         <FullnameForm firstName={data.firstName} lastName={data.lastName} />
         <UsernameForm username={data.username} />
+        <ChangePassword />
       </CurrentUserInfoSettingsLayout>
     </div>
   );
