@@ -1,4 +1,3 @@
-import type { TChangePassword } from "types";
 import styles from "./ChangePassword.module.css";
 import { FormBottom, FormField } from "../../../../../shared";
 import { useForm } from "react-hook-form";

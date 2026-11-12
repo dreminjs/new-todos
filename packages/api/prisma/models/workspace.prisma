@@ -32,7 +32,7 @@ model WorkspaceInvitation {
   id             String         @id @default(uuid())
   workspaceId    String
   userId         String
-  createdAt      DateTime      @default(now())
+  createdAt      DateTime       @default(now())
   notificationId String?        @unique
   notification   Notification?
   user           User           @relation(fields: [userId], references: [id])

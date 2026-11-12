@@ -15,6 +15,7 @@ import {
   IStandartResponse,
   SignUpDto,
   TChangePassword,
+  TForgotPassword,
   type IRequestChangePasswordResult,
 } from "types";
 import { BadRequestError, NotFoundError } from "../../classes/app.error.js";
@@ -102,6 +103,10 @@ export class AuthService {
 
   async logout(userId: string, res: FastifyReply): Promise<void> {
     await this.tokenService.logout(userId, res);
+  }
+
+  async forgotPassword(dto: TForgotPassword) {
+    const token = await this.tokenService.generateForgotPasswordToken(dto);
   }
 
   async requestChangePassword(

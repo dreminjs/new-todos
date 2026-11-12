@@ -3,7 +3,6 @@ import type { FC } from "react";
 import { RequestPasswordForm } from "./RequestPasswordForm";
 import { useChangePassword } from "../../../model/hooks/useChangePassword";
 import { ConfirmPasswordChanging } from "./ConfirmPasswordChanging";
-import type { TChangePasswordForm } from "../../../model/change-password.types";
 
 export const ChangePassword: FC = () => {
   const {
@@ -14,15 +13,13 @@ export const ChangePassword: FC = () => {
     step,
   } = useChangePassword();
 
-  console.log(step);
-
   return (
     <>
       <FormContainer
         title={
           step === "request" ? "Enter your old password" : "enter new password"
         }
-        subtitle=""
+        subtitle="Make sure that your password is enough complicated"
       >
         {step === "request" && (
           <>

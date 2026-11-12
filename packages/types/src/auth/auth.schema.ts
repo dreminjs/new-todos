@@ -12,9 +12,13 @@ export const signUpSchema = authSchema.extend({
 });
 export const changePasswordSchema = z.object({
   password: z.string(),
-  token: z.uuid()
+  token: z.uuid(),
 });
 
 export const requestChangePasswordSchema = changePasswordSchema.omit({
-  token: true
+  token: true,
+});
+
+export const forgotPasswordSchema = authSchema.pick({
+  email: true,
 });

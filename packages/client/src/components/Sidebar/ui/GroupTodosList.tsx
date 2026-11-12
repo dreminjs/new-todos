@@ -30,7 +30,11 @@ export const GroupTodosList = () => {
             <SidebarMenuItem
               key={el.id}
               label={el.name}
-              to={`/todo-groups/${el.id}/todos`}
+              to={
+                el.workspaceId
+                  ? `/workspaces/${el.workspaceId}/todo-groups/${el.id}/todos`
+                  : `/todo-groups/${el.id}/todos`
+              }
             />
           ))}
         </ul>
