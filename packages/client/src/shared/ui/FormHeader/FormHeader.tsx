@@ -8,10 +8,10 @@ interface IFormHeaderProps {
 export const FormHeader: FC<IFormHeaderProps> = ({ title, subtitle }) => {
   return (
     <>
-      <div>
+      <header>
         <h3 className={styles.formHeaderTitle}>{title}</h3>
         <h5 className={styles.formHeaderSubtitle}>{subtitle}</h5>
-      </div>
+      </header>
     </>
   );
 };

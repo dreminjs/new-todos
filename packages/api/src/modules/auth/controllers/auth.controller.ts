@@ -9,15 +9,12 @@ import {
   Delete,
   UseGuards,
 } from "@nestjs/common";
-import { AuthService } from "./auth.service.js";
+import { AuthService } from "../auth.service.js";
 import type { FastifyReply } from "fastify";
 import {
   authSchema,
   IStandartResponse,
-  requestChangePasswordSchema,
   signUpSchema,
-  changePasswordSchema,
-  IRequestChangePasswordResult,
   forgotPasswordSchema,
   verifyCodeSchema,
   type AuthDto,
@@ -27,8 +24,8 @@ import {
   type TVerifyCodeDto,
   type TRequestChangePassword,
 } from "types";
-import { CurrentUser } from "../user/decorators/user.decorator.js";
-import { AccessTokenGuard } from "../token/guards/accees-token.guard.js";
+import { CurrentUser } from "../../user/decorators/user.decorator.js";
+import { AccessTokenGuard } from "../../token/guards/accees-token.guard.js";
 import { minutes, Throttle } from "@nestjs/throttler";
 
 @Controller("auth")
@@ -59,24 +56,6 @@ export class AuthController {
     @Res({ passthrough: true }) res: FastifyReply,
   ): Promise<void> {
     await this.authService.logout(id, res);
-  }
-
-  @UseGuards(AccessTokenGuard)
-  @Post("password/request/change")
-  async requestChangePassword(
-    @CurrentUser("id") userId: string,
-    @Body({ schema: requestChangePasswordSchema }) dto: TRequestChangePassword,
-  ): Promise<IRequestChangePasswordResult> {
-    return this.authService.requestChangePassword(userId, dto.password);
-  }
-
-  @UseGuards(AccessTokenGuard)
-  @Post("password/change")
-  async changePassword(
-    @CurrentUser("id") userId: string,
-    @Body({ schema: changePasswordSchema }) dto: TChangePassword,
-  ): Promise<IStandartResponse> {
-    return this.authService.changePassword(userId, dto);
   }
 
   @Render("thankYouForConfirmation.hbs")
