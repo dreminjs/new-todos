@@ -8,6 +8,7 @@ import styles from "./WorkspaceMembers.module.css";
 import { useCurrentWorkspace } from "../../model/hooks/useCurrentWorkspace";
 import { useGetMe } from "../../../users";
 import { useKickParticipant } from "../../api/queries";
+import { GlobalLoadingSpinner } from "../../../../shared";
 interface IWorkspaceMembersListProps {
   workspaceId: string;
 }
@@ -15,12 +16,17 @@ interface IWorkspaceMembersListProps {
 export const WorkspaceMembersList: FC<IWorkspaceMembersListProps> = ({
   workspaceId,
 }) => {
-  const { data } = useGetParticipantsByWorkspaceId(workspaceId);
+  const { data, isPending, isError } =
+    useGetParticipantsByWorkspaceId(workspaceId);
   const { workspaceInfo } = useCurrentWorkspace();
   const { data: me } = useGetMe();
   const { mutate: kickParticipant } = useKickParticipant(workspaceId);
   const { mutate: patchTransferOwnership } =
     usePatchTransferOwnership(workspaceId);
+
+  if (isPending) return <GlobalLoadingSpinner />;
+
+  if (!data && isError) return <h3>error...</h3>;
 
   return (
     <>

@@ -7,6 +7,7 @@ import { usernameQueryParamsSchema, type TUsernameQueryParams } from "types";
 import { UsernameField } from "./UsernameField";
 import { Skeleton } from "@chakra-ui/react";
 import styles from "./UsernameForm.module.css";
+import { FormHeader } from "../../../../../shared/ui/FormHeader/FormHeader";
 interface IUsernameFormProps {
   username: string;
 }
@@ -49,8 +50,12 @@ export const UsernameForm: FC<IUsernameFormProps> = (props) => {
   return (
     <>
       <FormContainer
-        title="Public Username"
-        subtitle="People can use it for mentioning you in conversations"
+        header={
+          <FormHeader
+            title="Public Username"
+            subtitle="People can use it for mentioning you in conversations"
+          />
+        }
       >
         <form onSubmit={handleSubmit(onSubmit)} className={styles.usernameForm}>
           <UsernameField

@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUserDtoSchema, type TUpdateUserDto, type TUser } from "types";
 import { FormBottom, FormContainer, FormField } from "../../../../../shared";
 import type { FC } from "react";
+import { FormHeader } from "../../../../../shared/ui/FormHeader/FormHeader";
 
 type TFullnameForm = Pick<TUser, "firstName" | "lastName">;
 
@@ -29,8 +30,12 @@ export const FullnameForm: FC<TFullnameForm> = ({ firstName, lastName }) => {
 
   return (
     <FormContainer
-      title="Display Fullname"
-      subtitle="This name will appear on official invoices, workspace member lists, and team mentions"
+      header={
+        <FormHeader
+          title="Display Fullname"
+          subtitle="This name will appear on official invoices, workspace member lists, and team mentions"
+        />
+      }
     >
       <form onSubmit={handleSubmit(onSubmit)} className={styles.fullnameForm}>
         <div className={styles.fullnameFormInner}>

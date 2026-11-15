@@ -22,3 +22,8 @@ export const requestChangePasswordSchema = changePasswordSchema.omit({
 export const forgotPasswordSchema = authSchema.pick({
   email: true,
 });
+
+export const verifyCodeSchema = z.object({
+  code: z.string(),
+  email: z.string()
+});

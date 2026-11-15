@@ -3,6 +3,7 @@ import type { FC } from "react";
 import { RequestPasswordForm } from "./RequestPasswordForm";
 import { useChangePassword } from "../../../model/hooks/useChangePassword";
 import { ConfirmPasswordChanging } from "./ConfirmPasswordChanging";
+import { FormHeader } from "../../../../../shared/ui/FormHeader/FormHeader";
 
 export const ChangePassword: FC = () => {
   const {
@@ -16,10 +17,18 @@ export const ChangePassword: FC = () => {
   return (
     <>
       <FormContainer
-        title={
-          step === "request" ? "Enter your old password" : "enter new password"
+        header={
+          <>
+            <FormHeader
+              title={
+                step === "request"
+                  ? "Enter your old password"
+                  : "Enter new password"
+              }
+              subtitle="Make sure that your password is enough complicated"
+            />
+          </>
         }
-        subtitle="Make sure that your password is enough complicated"
       >
         {step === "request" && (
           <>

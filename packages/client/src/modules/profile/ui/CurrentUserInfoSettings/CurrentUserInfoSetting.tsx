@@ -5,28 +5,15 @@ import styles from "./CurrentUserInfoSettings.module.css";
 import { FullnameForm } from "./FullnameForm/FullnameForm";
 import { useGetMe } from "../../../users";
 import { UsernameForm } from "./UsernameForm/UsernameForm";
-import { ChangePassword } from "./ChangePassword/ChangePassword";
-interface ICurrentUserInfoSettingsProps {
-  isVisible: boolean;
-}
 
-export const CurrentUserInfoSettings: FC<ICurrentUserInfoSettingsProps> = ({
-  isVisible,
-}) => {
+export const CurrentUserInfoSettings = () => {
   const { data } = useGetMe();
 
   return (
-    <div
-      className={clsx(
-        styles.formWrapper,
-        isVisible && styles.formWrapperActive,
-      )}
-      aria-hidden={!isVisible}
-    >
-      <CurrentUserInfoSettingsLayout isVisible={isVisible}>
+    <div className={clsx(styles.formWrapper)}>
+      <CurrentUserInfoSettingsLayout>
         <FullnameForm firstName={data.firstName} lastName={data.lastName} />
         <UsernameForm username={data.username} />
-        <ChangePassword />
       </CurrentUserInfoSettingsLayout>
     </div>
   );

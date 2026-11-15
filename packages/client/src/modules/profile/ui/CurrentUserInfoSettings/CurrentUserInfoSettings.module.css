@@ -1,16 +1,4 @@
 .formWrapper {
-  max-width: 0;
-  margin-left: 0;
-  overflow: hidden;
-  visibility: hidden;
-  transition:
-    max-width 0.3s linear,
-    margin-left 0.3s ease,
-    opacity 0.3s ease,
-    visibility 0s linear 0.3s;
-}
-
-.formWrapperActive {
   max-width: 520px;
   margin-left: 16px;
   visibility: visible;
@@ -29,7 +17,6 @@
     font-weight: 700;
     color: #0f172a;
     line-height: 28px;
-
   }
   h5 {
     font-size: 14px;

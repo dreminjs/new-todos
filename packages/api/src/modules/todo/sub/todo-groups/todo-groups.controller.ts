@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -44,6 +46,7 @@ export class TodoGroupsController {
     });
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(IsTodoGroupOnwerGuard)
   @Delete(":id")
   async deleteOne(@Param("id") id: string): Promise<void> {

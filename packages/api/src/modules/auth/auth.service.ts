@@ -15,11 +15,13 @@ import {
   IStandartResponse,
   SignUpDto,
   TChangePassword,
-  TForgotPassword,
+  TForgotPasswordDto,
+  TVerifyCodeDto,
   type IRequestChangePasswordResult,
 } from "types";
-import { BadRequestError, NotFoundError } from "../../classes/app.error.js";
+import { NotFoundError } from "../../classes/app.error.js";
 import { validatePassword } from "./helpers/comparePasswords.js";
+import { generateSixDigitsCode } from "./helpers/generate-6-digits-code.js";
 
 @Injectable()
 export class AuthService {
@@ -105,8 +107,13 @@ export class AuthService {
     await this.tokenService.logout(userId, res);
   }
 
-  async forgotPassword(dto: TForgotPassword) {
-    const token = await this.tokenService.generateForgotPasswordToken(dto);
+  async forgotPassword(dto: TForgotPasswordDto): Promise<IStandartResponse> {
+    const code = generateSixDigitsCode();
+
+    await this.mailService.sendForgotPasswordEmail(dto.email, code);
+    return {
+      message: "ok",
+    };
   }
 
   async requestChangePassword(
@@ -153,11 +160,29 @@ export class AuthService {
 
     await this.userService.updateOne({
       where: { id: userId },
-      data: { hashedPassword: hashedPassword },
+      data: { hashedPassword },
     });
 
     return {
       message: "Password is changed",
     };
+  }
+
+  async verifyPasswordCode(dto: TVerifyCodeDto) {
+    const user = await this.userService.findOne({
+      where: {
+        userForgotPasswordCode: {
+          code: dto.code,
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundError("no user");
+    }
+
+    const token = this.tokenService.generateForgotPasswordToken({
+      email: user.email,
+    });
   }
 }

@@ -19,7 +19,6 @@ export const ChangeAvatarButton: FC<IChangeAvatarButtonProps> = ({
       <input
         onChange={(e) => {
           const file = e.target.files?.[0];
-          console.log("File uploaded")
           mutate(file);
         }}
         ref={inputRef}

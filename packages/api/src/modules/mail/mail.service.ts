@@ -21,4 +21,16 @@ export class MailService {
       },
     });
   }
+
+  async sendForgotPasswordEmail(email: string, code: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: "Reset your password",
+      template: "forgotPasswordCode",
+      context: {
+        email,
+        code,
+      },
+    });
+  }
 }

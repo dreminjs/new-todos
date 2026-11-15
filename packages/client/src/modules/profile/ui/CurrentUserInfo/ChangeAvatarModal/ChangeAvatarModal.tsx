@@ -17,20 +17,22 @@ export const ChangeAvatarModal: FC<IChangeAvatarModalProps> = ({
   avatarUrl,
 }) => {
   return (
-    <Modal title="Upload Avatar Photo" isOpen={isOpen} onClose={onClose}>
-      <ul className={styles.changeAvatarModalList}>
-        <li className={styles.changeAvatarModalListItem}>
-          <ChangeAvatarButton onClose={onClose} />
-        </li>
-        {avatarUrl && (
+    <>
+      <Modal title="Upload Avatar Photo" isOpen={isOpen} onClose={onClose}>
+        <ul className={styles.changeAvatarModalList}>
           <li className={styles.changeAvatarModalListItem}>
-            <RemoveAvatarButton onClose={onClose} />
+            <ChangeAvatarButton onClose={onClose} />
           </li>
-        )}
-        <li className={styles.changeAvatarModalListItem}>
-          <CancelButton onClick={onClose} />
-        </li>
-      </ul>
-    </Modal>
+          {avatarUrl && (
+            <li className={styles.changeAvatarModalListItem}>
+              <RemoveAvatarButton onClose={onClose} />
+            </li>
+          )}
+          <li className={styles.changeAvatarModalListItem}>
+            <CancelButton onClick={onClose} />
+          </li>
+        </ul>
+      </Modal>
+    </>
   );
 };

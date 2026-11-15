@@ -5,6 +5,7 @@ import { CreateChatModal } from "../../../chats";
 import { CreateItemButton } from "../../views/CreateItemButton/CreateItemButton";
 import type { TCreateChatContext } from "types";
 import { GlobalLoadingSpinner } from "../../../../shared";
+import { useGetWorkspaceInfo } from "../../api/queries";
 
 export const WorkspaceChats = () => {
   const [isCreateChatOpen, setIsCreateChatOpen] = useState(false);
@@ -15,15 +16,24 @@ export const WorkspaceChats = () => {
 
   const params = useParams<TCreateChatContext>();
 
-  if (!params.workspaceId) {
-    return <GlobalLoadingSpinner/>
+  const { data, isPending } = useGetWorkspaceInfo(params.workspaceId);
+
+  if (!params.workspaceId && isPending) {
+    return <GlobalLoadingSpinner />;
   }
 
   return (
     <>
       <WorkspaceChatsList
         addTodoGroupButton={
-          <CreateItemButton onClick={handleChatToggle} title={"Create Chat"} />
+          data.role === "OWNER" && (
+            <>
+              <CreateItemButton
+                onClick={handleChatToggle}
+                title={"Create Chat"}
+              />
+            </>
+          )
         }
       />
       <CreateChatModal

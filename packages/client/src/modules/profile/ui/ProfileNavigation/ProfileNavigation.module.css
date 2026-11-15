@@ -1,0 +1,22 @@
+.navigation {
+  margin-bottom: 15px;
+}
+
+.navigationList {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 20px;
+  background-color: #eaecf0;
+}
+
+.navigationListItem {
+  padding: 10px 0px;
+  color: #4f46e5;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.navigationListItemActive {
+  border-bottom: 2px solid #4f46e5;
+}

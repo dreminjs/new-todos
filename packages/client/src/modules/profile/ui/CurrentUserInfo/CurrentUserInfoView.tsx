@@ -8,7 +8,6 @@ interface ICurrentUserInfoViewProps {
   username: string;
   avatarUrl?: string;
   onAvatarClick: () => void;
-  onEditFullnameClick: () => void
 }
 
 export const CurrentUserInfoView: FC<ICurrentUserInfoViewProps> = ({
@@ -17,14 +16,13 @@ export const CurrentUserInfoView: FC<ICurrentUserInfoViewProps> = ({
   avatarUrl,
   onAvatarClick,
   username,
-  onEditFullnameClick
 }) => {
   return (
     <div className={styles.currentUserInfo}>
       <div className={styles.avatarWrapper}>
         {avatarUrl ? (
           <button onClick={onAvatarClick}>
-            <img src={getDownloadUrl(avatarUrl)} alt="avatar" />
+            <img className={styles.avatarImg} src={getDownloadUrl(avatarUrl)} alt="avatar" />
           </button>
         ) : (
           <button onClick={onAvatarClick} className={styles.avatarFallback}>
@@ -32,12 +30,7 @@ export const CurrentUserInfoView: FC<ICurrentUserInfoViewProps> = ({
           </button>
         )}
       </div>
-      <div className={styles.currentUserFullname}>
-        <h3>{fullName}</h3>
-        <button onClick={onEditFullnameClick} className={styles.currentUserFullnameEdit}>
-          <LuPen />
-        </button>
-      </div>
+      <h3 className={styles.currentUserFullname}>{fullName}</h3>
       <h6 className={styles.currentUserEmail}> {email}</h6>
       <h6 className={styles.currentUserUsername}>@{username}</h6>
     </div>

@@ -37,26 +37,19 @@
 }
 
 .avatarImg {
-  width: 100%;
-  height: 100%;
+  width: 250px;
+  height: 250px;
   object-fit: cover;
+  display: block;
+  border-radius: 50%;
 }
 
 .currentUserFullname {
   display: flex;
   align-items: center;
-  position: relative;
-
-  h3 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #0f172a;
-  }
-}
-
-.currentUserFullnameEdit {
-  position: absolute;
-  right: -20px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .currentUserEmail {

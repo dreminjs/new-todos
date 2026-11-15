@@ -3,6 +3,7 @@ import { CreateTodoGroupModal } from "../../../todo-groups";
 import { CreateItemButton } from "../../views/CreateItemButton/CreateItemButton";
 import { WorkspaceTodoGroupList } from "./WorkspaceTodoGroupsList";
 import { useParams } from "react-router";
+import { useGetWorkspaceInfo } from "../../api/queries";
 
 export const WorkspaceTodoGroups = () => {
   const { workspaceId } = useParams();
@@ -13,15 +14,21 @@ export const WorkspaceTodoGroups = () => {
     setIsTodoGroupOpen((prev) => !prev);
   };
 
+  const { data } = useGetWorkspaceInfo(workspaceId);
+
   return (
     <>
       <WorkspaceTodoGroupList
         addTodoGroupButton={
           <>
-            <CreateItemButton
-              onClick={handleTodoGroupToggle}
-              title={"Create Todo Group"}
-            />
+            {data.role === "OWNER" && (
+              <>
+                <CreateItemButton
+                  onClick={handleTodoGroupToggle}
+                  title={"Create Todo Group"}
+                />
+              </>
+            )}
           </>
         }
       />

@@ -1,0 +1,13 @@
+.formHeaderTitle {
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.formHeaderSubtitle {
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+}

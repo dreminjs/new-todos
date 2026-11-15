@@ -16,12 +16,16 @@ import {
   IStandartResponse,
   requestChangePasswordSchema,
   signUpSchema,
-  type TRequestChangePassword,
+  changePasswordSchema,
+  IRequestChangePasswordResult,
+  forgotPasswordSchema,
+  verifyCodeSchema,
   type AuthDto,
   type SignUpDto,
   type TChangePassword,
-  changePasswordSchema,
-  IRequestChangePasswordResult,
+  type TForgotPasswordDto,
+  type TVerifyCodeDto,
+  type TRequestChangePassword,
 } from "types";
 import { CurrentUser } from "../user/decorators/user.decorator.js";
 import { AccessTokenGuard } from "../token/guards/accees-token.guard.js";
@@ -79,11 +83,23 @@ export class AuthController {
   @Get("confirm-your-email/:token")
   async confirmYourEmail(@Param("token") token: string) {
     const user = await this.authService.verifyEmailConfirmationToken(token);
-    return { name: `${user.firstName}`, returnUrl: "/" };
+    return { name: user.firstName };
   }
 
   @Get("thank-you-for-confirmation")
   thankYouForConfirmation(@Res() res: FastifyReply) {
     return res.view("thankYouForConfirmation.hbs");
   }
+
+  @Post("forgot-password")
+  async forgotPassword(
+    @Body({ schema: forgotPasswordSchema }) dto: TForgotPasswordDto,
+  ): Promise<IStandartResponse> {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @Post("forgot-password/verify")
+  async verifyCodeByForgotPassword(
+    @Body({ schema: verifyCodeSchema }) dto: TVerifyCodeDto,
+  ) {}
 }

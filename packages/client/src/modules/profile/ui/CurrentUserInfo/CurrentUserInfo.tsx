@@ -9,9 +9,6 @@ export const UserInfo = () => {
   const [changeAvatarModalVisible, setChangeAvatarModalVisible] =
     useState(false);
 
-  const [isCurrentUserFormVisible, setIsCurrentUserFormVisible] =
-    useState(false);
-
   const { data, isLoading, isError } = useGetMe();
 
   if (isLoading) return <GlobalLoadingSpinner />;
@@ -26,14 +23,13 @@ export const UserInfo = () => {
         onAvatarClick={() => setChangeAvatarModalVisible(true)}
         avatarUrl={data.avatarUrl}
         username={data.username}
-        onEditFullnameClick={() => setIsCurrentUserFormVisible((prev) => !prev)}
       />
       <ChangeAvatarModal
         isOpen={changeAvatarModalVisible}
         onClose={() => setChangeAvatarModalVisible(false)}
         avatarUrl={data.avatarUrl}
       />
-      <CurrentUserInfoSettings isVisible={isCurrentUserFormVisible} />
+      <CurrentUserInfoSettings/>
     </div>
   );
 };
